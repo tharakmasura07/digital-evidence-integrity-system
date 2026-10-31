@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEIS — Digital Evidence Integrity System</title>
+  
+  <!-- Core Stylesheet & Fallbacks -->
+  <link rel="stylesheet" href="css/styles.css">
+
+  <!-- Tailwind CSS Engine -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              navy: {
+                950: '#070B13',
+                900: '#0D1322',
+                800: '#141C30',
+                700: '#1E293B'
+              }
+            }
+          }
+        }
+      };
+    }
+  </script>
+</head>
+<body class="bg-navy-950 text-slate-100 min-h-screen flex flex-col selection:bg-cyan-500 selection:text-black">
+
+  <!-- Main Application Wrapper -->
+  <div class="flex h-screen overflow-hidden">
+    
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="no-print w-64 bg-navy-900 border-r border-slate-800 flex flex-col justify-between shrink-0 transition-transform duration-200 z-30 hidden" style="display: none;">
+      <!-- Brand & Header -->
+      <div>
+        <div class="h-16 px-5 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-emerald-500 text-navy-950 flex items-center justify-center font-black text-base shadow-lg shadow-cyan-500/20">
+              <i data-lucide="shield-check" class="w-5 h-5 text-slate-950"></i>
+            </div>
+            <div>
+              <h1 class="text-sm font-extrabold tracking-tight text-white flex items-center gap-1.5">
+                <span>DEIS</span>
+                <span class="text-[10px] font-mono px-1.5 py-0.2 bg-cyan-500/20 text-cyan-400 rounded border border-cyan-500/30">v1.0</span>
+              </h1>
+              <p class="text-[10px] text-slate-400 tracking-wider font-mono">EVIDENCE INTEGRITY</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="p-3 space-y-1 text-xs font-medium">
+          <a href="#dashboard" data-route="dashboard" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+            <span>Dashboard (Home)</span>
+          </a>
+
+          <a href="#evidence" data-route="evidence" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <i data-lucide="folder-lock" class="w-4 h-4"></i>
+            <span>Evidence Files</span>
+          </a>
+
+          <a href="#transfers" data-route="transfers" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <div class="flex items-center gap-3">
+              <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+              <span>Transfer Evidence</span>
+            </div>
+            <span id="nav-transfer-badge" class="hidden px-1.5 py-0.5 rounded-full bg-amber-500 text-navy-950 font-bold text-[10px] animate-pulse">
+              0
+            </span>
+          </a>
+
+          <a href="#chain" data-route="chain" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <i data-lucide="shield-alert" class="w-4 h-4"></i>
+            <span>History & Tamper Test</span>
+          </a>
+
+          <a href="#verifier" data-route="verifier" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <i data-lucide="scan-line" class="w-4 h-4"></i>
+            <span>Verify File</span>
+          </a>
+
+          <a href="#certificate" data-route="certificate" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <i data-lucide="file-check" class="w-4 h-4"></i>
+            <span>Court Certificate</span>
+          </a>
+
+          <!-- Administrator Only: Manage Officers -->
+          <a href="#users" id="nav-users-link" data-route="users" class="nav-link hidden flex items-center gap-3 px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span>Manage Officers</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Bottom User / Reset Info -->
+      <div class="p-3 border-t border-slate-800 space-y-2">
+        <!-- Logged-in Officer Card -->
+        <div class="p-2.5 rounded-lg bg-navy-950/90 border border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center font-bold text-xs shrink-0">
+              <i data-lucide="user-check" class="w-4 h-4"></i>
+            </div>
+            <div class="min-w-0">
+              <div id="sidebar-user-name" class="text-xs font-bold text-slate-200 truncate">Officer</div>
+              <div id="sidebar-user-badge" class="text-[10px] font-mono text-cyan-400 truncate">ID</div>
+            </div>
+          </div>
+          <button onclick="window.DEISApp.logout()" class="text-slate-500 hover:text-rose-400 p-1.5 rounded hover:bg-slate-900 transition shrink-0" title="Sign Out & Lock Console">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80 text-[10px] space-y-0.5 text-slate-400 font-mono">
+          <div class="flex items-center justify-between">
+            <span>System Status:</span>
+            <span class="text-emerald-400 font-bold">SECURE & READY</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-slate-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Tamper Detection Active</span>
+          </div>
+        </div>
+
+        <button onclick="window.DEISStore.resetFactoryData(); location.reload();" class="w-full py-1 px-2 text-[10px] text-slate-500 hover:text-rose-400 text-center hover:bg-slate-900 rounded transition font-mono">
+          Reset Demo Data
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+      
+      <!-- Top Application Header (Hidden when on Login Page) -->
+      <header id="app-header" class="no-print h-16 bg-navy-900/90 backdrop-blur border-b border-slate-800 px-4 sm:px-6 flex items-center justify-between z-20 shrink-0 hidden" style="display: none;">
+        <!-- Logged-in Officer Profile & Agency Badge -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center font-bold text-xs font-mono shadow-sm" id="user-avatar-initials">
+              AD
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span id="user-profile-name" class="font-bold text-sm text-white">System Security Administrator</span>
+                <span id="user-profile-badge" class="cyber-badge bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 text-[10px]">ADMIN-0001</span>
+              </div>
+              <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono">
+                <span id="active-agency-name" class="text-slate-300 hidden md:inline">Root Access & Identity Control Authority</span>
+                <span class="hidden md:inline text-slate-600">•</span>
+                <span id="user-clearance-badge" class="text-emerald-400 font-semibold">LEVEL 6 — ROOT SECURITY</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Switcher, Ingest CTA, & Sign Out Button -->
+        <div class="flex items-center gap-3">
+          <!-- Role Switcher Dropdown (Allows fast persona switching) -->
+          <div class="hidden lg:flex items-center gap-1.5 bg-navy-950 px-2.5 py-1.5 rounded-lg border border-slate-700">
+            <i data-lucide="user-cog" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span class="text-[11px] text-slate-400 font-mono">SWITCH USER:</span>
+            <select 
+              id="role-switcher-select" 
+              onchange="window.DEISApp.switchRole(this.value)"
+              class="bg-transparent text-xs text-slate-200 font-semibold focus:outline-none cursor-pointer"
+            >
+              <option value="usr_admin_0001" class="bg-navy-900 text-slate-200">🛡️ Administrator (ADMIN-0001)</option>
+            </select>
+          </div>
+
+          <!-- Ingest Button Shortcut -->
+          <button onclick="window.DEISApp.openModal('ingest-modal')" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold rounded-lg shadow-md transition">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span>Ingest</span>
+          </button>
+
+          <!-- Sign Out / Lock Button -->
+          <button onclick="window.DEISApp.logout()" class="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-rose-950/80 text-slate-300 hover:text-rose-300 border border-slate-700 hover:border-rose-500/50 text-xs font-semibold rounded-lg transition" title="Terminate Session">
+            <i data-lucide="log-out" class="w-3.5 h-3.5 text-rose-400"></i>
+            <span class="hidden sm:inline">Sign Out</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dynamic View Container (Login Gateway or Dashboard Views) -->
+      <main id="view-container" class="flex-1 overflow-y-auto p-0" style="min-height: 100vh;"></main>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="no-print fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. INGEST EVIDENCE MODAL -->
+  <div id="ingest-modal" class="no-print fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="cyber-card p-6 rounded-xl border border-slate-700 w-full max-w-xl max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-cyan-400"></i>
+          <h3 class="font-bold text-white text-base">Ingest & Seal Digital Evidence Artifact</h3>
+        </div>
+        <button onclick="window.DEISApp.closeModal('ingest-modal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- File Dropzone for live hashing -->
+      <div class="p-4 rounded-xl border-2 border-dashed border-slate-700 hover:border-cyan-500/70 text-center space-y-2 cursor-pointer transition bg-slate-900/40" id="ingest-file-dropzone" onclick="document.getElementById('ingest-file-input').click()">
+        <input type="file" id="ingest-file-input" class="hidden" />
+        <i data-lucide="file-up" class="w-8 h-8 mx-auto text-cyan-400"></i>
+        <div class="text-xs text-slate-300 font-medium">Drop any file here to calculate genuine SHA-256 / SHA-512 in browser</div>
+        <div class="text-[10px] text-slate-500 font-mono">Selected: <span id="ingest-file-name" class="text-cyan-300">No file chosen</span> (<span id="ingest-file-size">0 MB</span>)</div>
+      </div>
+
+      <!-- Hash Preview -->
+      <div class="bg-navy-950 p-3 rounded-lg border border-slate-800 font-mono text-[11px] space-y-1">
+        <div class="text-[10px] text-slate-500 uppercase">Calculated SHA-256 Digest:</div>
+        <div id="ingest-calculated-hash" class="text-cyan-300 break-all select-all">Pending file drop...</div>
+      </div>
+
+      <!-- Form Fields -->
+      <form id="ingest-form" onsubmit="window.DEISApp.submitEvidenceIngestion(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Artifact Title / Identifier:</label>
+          <input type="text" id="ingest-title" required placeholder="e.g. Memory Dump of C2 Server" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-slate-400">Target Case File:</label>
+              <button type="button" onclick="window.DEISApp.closeModal('ingest-modal'); window.DEISApp.openModal('create-case-modal');" class="text-[10px] text-cyan-400 hover:underline cursor-pointer">
+                + New Case File
+              </button>
+            </div>
+            <select id="ingest-case" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500 cursor-pointer">
+              <!-- Populated dynamically with registered Case Files -->
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Evidence Category:</label>
+            <select id="ingest-category" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500">
+              <option value="Memory Dump">Memory Dump</option>
+              <option value="Video Surveillance">Video Surveillance</option>
+              <option value="Mobile Forensics">Mobile Forensics</option>
+              <option value="Network Telemetry">Network Telemetry</option>
+              <option value="Disk Image">Disk Image</option>
+              <option value="Encrypted Archive">Encrypted Archive</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Seizure Location / Facility:</label>
+            <input type="text" id="ingest-location" placeholder="e.g. Server Room 4B" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Source Device / Serial #:</label>
+            <input type="text" id="ingest-device" placeholder="e.g. Dell PowerEdge R750" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Forensic Acquisition Notes & Integrity Seals:</label>
+          <textarea id="ingest-notes" rows="2" placeholder="Hardware write-blocker utilized. Faraday bagging intact." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500"></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+          <button type="button" onclick="window.DEISApp.closeModal('ingest-modal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg shadow-lg shadow-cyan-600/20 transition">
+            Cryptographically Seal & Register
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CREATE CASE FILE MODAL -->
+  <div id="create-case-modal" class="no-print fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="cyber-card p-6 rounded-xl border border-slate-700 w-full max-w-lg max-h-[90vh] overflow-y-auto space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="folder-plus" class="w-5 h-5 text-cyan-400"></i>
+          <h3 class="font-bold text-white text-base">Open New Legal Case File</h3>
+        </div>
+        <button onclick="window.DEISApp.closeModal('create-case-modal')" class="text-slate-400 hover:text-white cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400">
+        Create a new judicial investigation dossier. Once created, you can store and transfer digital evidence files directly inside this case.
+      </p>
+
+      <form id="create-case-form" onsubmit="window.DEISApp.submitCreateCase(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Case Number / ID:</label>
+            <input type="text" id="case-number-input" required placeholder="e.g. CR-2026-9401" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 font-mono focus:outline-none focus:border-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Crime / Incident Category:</label>
+            <select id="case-category-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500">
+              <option value="Cybercrime & Ransomware">Cybercrime & Ransomware</option>
+              <option value="Financial Extortion & Fraud">Financial Extortion & Fraud</option>
+              <option value="Corporate Espionage">Corporate Espionage</option>
+              <option value="Data Breach & Unauthorized Access">Data Breach & Unauthorized Access</option>
+              <option value="Digital Surveillance & Wiretapping">Digital Surveillance & Wiretapping</option>
+              <option value="Narcotics & Controlled Substances">Narcotics & Controlled Substances</option>
+              <option value="Homicide & Violent Crime">Homicide & Violent Crime</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Case Title / Investigation Heading:</label>
+          <input type="text" id="case-title-input" required placeholder="e.g. State v. Cyber Nexus Syndicate" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Lead Investigating Agency:</label>
+            <select id="case-agency-input" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500">
+              <option value="police">Cyber Crime Investigation Cell (CCIC-HQ)</option>
+              <option value="forensics">Central Forensic Science Lab (CFSL)</option>
+              <option value="prosecution">District Attorney & State Prosecution</option>
+              <option value="court">Metropolitan High Judicial Registry</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Court Jurisdiction:</label>
+            <input type="text" id="case-court-input" value="Metropolitan High Judicial Registry (Courtroom 4)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Case Description & Incident Summary:</label>
+          <textarea id="case-description-input" rows="3" placeholder="Brief factual summary of the criminal investigation..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500"></textarea>
+        </div>
+
+        <div class="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+          <button type="button" onclick="window.DEISApp.closeModal('create-case-modal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg shadow-lg shadow-cyan-600/20 transition cursor-pointer">
+            Create Case File
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. INSPECT EVIDENCE MODAL -->
+  <div id="inspect-modal" class="no-print fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="cyber-card p-6 rounded-xl border border-slate-700 w-full max-w-lg space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-white text-base">Forensic Evidence Metadata Inspector</h3>
+        <button onclick="window.DEISApp.closeModal('inspect-modal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="inspect-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- 3. INITIATE TRANSFER MODAL -->
+  <div id="initiate-transfer-modal" class="no-print fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="cyber-card p-6 rounded-xl border border-slate-700 w-full max-w-lg space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="send" class="w-5 h-5 text-cyan-400"></i>
+          <h3 class="font-bold text-white text-base">Initiate Dual-Party Custody Transfer</h3>
+        </div>
+        <button onclick="window.DEISApp.closeModal('initiate-transfer-modal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form onsubmit="window.DEISApp.submitInitiateTransfer(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block text-slate-400 mb-1">Select Evidence Artifact:</label>
+          <select id="transfer-evidence-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500"></select>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Designated Recipient Body:</label>
+          <select id="transfer-to-agency-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500"></select>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Transfer Transport Channel / Transit Mode:</label>
+          <select id="transfer-mode-select" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500">
+            <option value="Encrypted High-Security Tunnel (AES-256-GCM)">Encrypted High-Security Tunnel (AES-256-GCM)</option>
+            <option value="Air-Gapped Hardware Vault + Tamper Seals">Air-Gapped Hardware Vault + Tamper Seals</option>
+            <option value="Judicial Discovery Secure Portal">Judicial Discovery Secure Portal</option>
+            <option value="Physical Secure Courier with Faraday Enclosure">Physical Secure Courier with Faraday Enclosure</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Originating Officer (Signer):</label>
+            <input type="text" id="transfer-sender-officer" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Designated Recipient Officer:</label>
+            <input type="text" id="transfer-recipient-officer" placeholder="e.g. Dr. Aris Thorne" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Custody Mandate & Purpose of Transfer:</label>
+          <textarea id="transfer-purpose" required rows="2" placeholder="e.g. Deep forensic memory carve & malware analysis." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500"></textarea>
+        </div>
+
+        <div class="p-2.5 rounded-lg bg-navy-950 border border-slate-800 text-[10px] text-slate-400 font-mono">
+          <i data-lucide="lock" class="w-3 h-3 text-cyan-400 inline mr-1"></i>
+          Submitting will generate a 6-digit cryptographic TOTP handoff PIN & commit a dispatch block to the custody ledger.
+        </div>
+
+        <div class="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+          <button type="button" onclick="window.DEISApp.closeModal('initiate-transfer-modal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg shadow-lg shadow-cyan-600/20 transition">
+            Sign & Dispatch Package
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. ACCEPT TRANSFER MODAL -->
+  <div id="accept-modal" class="no-print fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="cyber-card p-6 rounded-xl border border-slate-700 w-full max-w-md space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-white text-base">Dual-Party Custody Handoff Acceptance</h3>
+        <button onclick="window.DEISApp.closeModal('accept-modal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="accept-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- 5. QR CODE MODAL -->
+  <div id="qr-modal" class="no-print fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="cyber-card p-6 rounded-xl border border-slate-700 w-full max-w-sm space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="font-bold text-white text-sm">Transfer Handoff Token & QR</h3>
+        <button onclick="window.DEISApp.closeModal('qr-modal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="qr-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- 6. CREATE USER MODAL (ADMIN ONLY) -->
+  <div id="create-user-modal" class="no-print fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div class="cyber-card p-6 rounded-xl border border-slate-700 w-full max-w-lg space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2">
+          <i data-lucide="user-plus" class="w-5 h-5 text-cyan-400"></i>
+          <h3 class="font-bold text-white text-base">Provision New Department Personnel</h3>
+        </div>
+        <button onclick="window.DEISApp.closeModal('create-user-modal')" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="create-user-form" onsubmit="UserManagementView.handleCreateUserSubmit(event)" class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Full Name & Rank:</label>
+            <input type="text" id="new-user-name" required placeholder="e.g. Det. Insp. John Miller" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Badge ID / Personnel ID:</label>
+            <input type="text" id="new-user-badge" required placeholder="e.g. CCIC-5501" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 font-mono uppercase text-cyan-300 focus:outline-none focus:border-cyan-500" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Operating Body / Agency:</label>
+            <select id="new-user-agency" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500">
+              <option value="police">👮 Cyber Crime Cell (Police CCIC)</option>
+              <option value="forensics">🔬 Central Forensic Science Lab (CFSL)</option>
+              <option value="prosecution">⚖️ District Attorney / Prosecution (ODA)</option>
+              <option value="court">🏛️ High Judicial Registry (Court)</option>
+              <option value="defense">🛡️ Criminal Defense Coalition (Bar)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Security Clearance Level:</label>
+            <select id="new-user-clearance" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500">
+              <option value="LEVEL 3 — OPERATIONAL CLEARANCE">LEVEL 3 — Operational</option>
+              <option value="LEVEL 4 — TOP SECRET (FIPS-140)">LEVEL 4 — Top Secret</option>
+              <option value="LEVEL 5 — SCIENTIFIC & CRYPTOGRAPHIC">LEVEL 5 — SCI & Forensics</option>
+              <option value="LEVEL 5 — SUPREME BENCH JURISDICTION">LEVEL 5 — Judicial Bench</option>
+              <option value="CONSTITUTIONAL DISCOVERY ACCESS">Constitutional Discovery (Defense)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Official Job Title / Functional Role:</label>
+          <input type="text" id="new-user-title" required placeholder="e.g. Lead Digital Forensics Carving Specialist" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-400 mb-1">Institutional Email:</label>
+            <input type="email" id="new-user-email" placeholder="e.g. jmiller@police.gov" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+          </div>
+          <div>
+            <label class="block text-slate-400 mb-1">Initial Password:</label>
+            <input type="text" id="new-user-password" required placeholder="Default: password123" value="password123" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 font-mono text-slate-200 focus:outline-none focus:border-cyan-500" />
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
+          <button type="button" onclick="window.DEISApp.closeModal('create-user-modal')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg shadow-lg shadow-cyan-600/20 transition">
+            Register & Issue Credentials
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Standalone Core Scripts (100% Offline, Zero Network Calls) -->
+  <script src="js/icons.js"></script>
+  <script src="js/offline-helpers.js"></script>
+  <script src="js/crypto.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/db.js"></script>
+  <script src="js/views/loginView.js"></script>
+  <script src="js/views/userManagementView.js"></script>
+  <script src="js/views/dashboardView.js"></script>
+  <script src="js/views/evidenceView.js"></script>
+  <script src="js/views/transferView.js"></script>
+  <script src="js/views/chainView.js"></script>
+  <script src="js/views/verifierView.js"></script>
+  <script src="js/views/certificateView.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

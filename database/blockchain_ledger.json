@@ -1,0 +1,18 @@
+[
+  {
+    "blockHeight": 0,
+    "blockHash": "00000a941f82938475629102837465019283746501928374650192837465a1b2",
+    "previousHash": "0000000000000000000000000000000000000000000000000000000000000000",
+    "timestamp": "2026-10-24 03:15:22 UTC",
+    "eventType": "GENESIS_SEIZURE",
+    "evidenceId": "EVD-2026-0941",
+    "caseId": "CR-2026-8831",
+    "agency": "police",
+    "officer": "Authorized Seizing Officer",
+    "actionDescription": "Primary physical seizure and volatile RAM dump acquisition under warrant #WR-9921.",
+    "evidenceHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "merkleRoot": "d892837465019283746501928374650192837465019283746501928374650192",
+    "signature": "0x7F2A90C1B4DE8834AA7712C9010FEE67B9A148902A3CDEF4901847192837465A",
+    "tampered": false
+  }
+]
