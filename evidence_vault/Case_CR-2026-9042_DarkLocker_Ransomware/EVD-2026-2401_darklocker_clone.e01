@@ -1,0 +1,10 @@
+# DEIS Digital Evidence File
+# Evidence UID: EVD-2026-2401
+# Case ID: CR-2026-9042
+# Case Title: Operation DarkLocker Ransomware
+# Acquired By: Cyber Crime Investigation Cell (Police CCIC)
+# Device: Samsung Enterprise PM9A3 NVMe SSD (Serial: S63NNE0T501982)
+# SHA-256 Hash: 4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b
+# Digital Seal: SEAL-2026-2401-VALID
+# Notes: Complete bitstream physical disk clone acquired using Tableau Forensic Write-Blocker T8u.
+[EXPERT WITNESS FORENSIC DISK IMAGE (.E01) - ENCRYPTED AND STORED IN VAULT]

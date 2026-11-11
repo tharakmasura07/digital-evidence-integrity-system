@@ -1,0 +1,21 @@
+[
+  {
+    "id": "usr_admin_0001",
+    "badgeId": "ADMIN-0001",
+    "name": "System Security Administrator",
+    "email": "admin@deis.sec.gov",
+    "agencyId": "admin",
+    "agencyName": "DEIS Root Access & Identity Control Authority",
+    "jobTitle": "Chief Security Officer & Access Governance Lead",
+    "clearanceLevel": "LEVEL 6 — ROOT SECURITY & ACCESS CONTROL",
+    "initials": "AD",
+    "color": "cyan",
+    "icon": "shield-check",
+    "password": "admin@0001",
+    "department": "Judicial Information Security Command",
+    "securityToken": "TOKEN-ROOT-0001-FIPS",
+    "isAdmin": true,
+    "createdAt": "2026-10-28 00:00:00 UTC",
+    "lastLogin": "2026-10-29 10:00:00 UTC"
+  }
+]

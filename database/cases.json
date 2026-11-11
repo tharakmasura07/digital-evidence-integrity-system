@@ -1,0 +1,30 @@
+[
+  {
+    "id": "CASE-CR-2026-8831",
+    "caseNumber": "CR-2026-8831",
+    "title": "State v. Apex Infrastructure Breach",
+    "category": "Cyber Terrorism & Ransomware",
+    "leadAgency": "police",
+    "leadAgencyName": "Cyber Crime Investigation Cell (CCIC)",
+    "investigatingOfficer": "System Security Administrator (ADMIN-0001)",
+    "courtJurisdiction": "Metropolitan High Judicial Registry (Courtroom 4)",
+    "status": "ACTIVE_INVESTIGATION",
+    "openedDate": "2026-10-24 02:00:00 UTC",
+    "storageFolder": "evidence_vault/Case_CR-2026-8831_Apex_Breach/",
+    "description": "Criminal investigation into state infrastructure infiltration, unauthorized root access acquisition, and volatile memory malware deployment."
+  },
+  {
+    "id": "CASE-CR-2026-9042",
+    "caseNumber": "CR-2026-9042",
+    "title": "Operation DarkLocker Ransomware",
+    "category": "Financial Extortion & Malware",
+    "leadAgency": "police",
+    "leadAgencyName": "Cyber Crime Investigation Cell (CCIC)",
+    "investigatingOfficer": "System Security Administrator (ADMIN-0001)",
+    "courtJurisdiction": "Metropolitan High Judicial Registry (Courtroom 4)",
+    "status": "ACTIVE_INVESTIGATION",
+    "openedDate": "2026-10-26 09:30:00 UTC",
+    "storageFolder": "evidence_vault/Case_CR-2026-9042_DarkLocker_Ransomware/",
+    "description": "Cross-border extortion ring targeting financial servers, seizing database storage arrays and deploying RSA-4096 ransomware payloads."
+  }
+]

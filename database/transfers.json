@@ -1,0 +1,21 @@
+[
+  {
+    "transferId": "TRF-8891B",
+    "evidenceId": "EVD-2026-0941",
+    "evidenceTitle": "Volatile RAM Memory Dump (C2 Command Node)",
+    "fromAgency": "police",
+    "toAgency": "forensics",
+    "initiatorOfficer": "Authorized Seizing Officer",
+    "recipientOfficer": "Authorized Forensic Specialist",
+    "purpose": "Deep memory forensic extraction, rootkit carving & malware reverse engineering.",
+    "transferMode": "Air-Gapped Hardware Vault + Dual Verification Token",
+    "handoffToken": "849201",
+    "senderSignature": "0x5b3a98c019284756291048572910485729104857291048572910485729104857",
+    "recipientSignature": "0x83B19904CD76AA4410984DE1942055610034AC91B4920049458902341786EF34",
+    "status": "ACCEPTED",
+    "dispatchTime": "2026-10-24 10:15:00 UTC",
+    "acceptedTime": "2026-10-24 11:42:15 UTC",
+    "integrityVerified": true,
+    "transferManifestHash": "8f434346648f6b96df89dda901c5176b10e6d0ceec3e6a81e2dd4f0476074646"
+  }
+]

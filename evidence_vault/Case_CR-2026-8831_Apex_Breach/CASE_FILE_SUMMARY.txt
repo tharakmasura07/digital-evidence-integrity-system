@@ -1,0 +1,26 @@
+========================================================================
+             DEIS LEGAL CASE FILE DOSSIER: CR-2026-8831
+========================================================================
+Case Title:           State v. Apex Infrastructure Breach
+Crime Classification: Cyber Terrorism & State Infrastructure Infiltration
+Lead Agency:          Cyber Crime Investigation Cell (CCIC-HQ)
+Investigating Officer:System Security Administrator (ADMIN-0001)
+Court of Jurisdiction:Metropolitan High Judicial Registry (Courtroom 4)
+Case Status:          ACTIVE INVESTIGATION & SECURED CUSTODY
+Date Opened:          2026-10-24 02:00:00 UTC
+Storage Folder:       evidence_vault\Case_CR-2026-8831_Apex_Breach\
+
+EVIDENCE ARTIFACTS STORED IN THIS CASE FILE:
+------------------------------------------------------------------------
+1. [EVD-2026-0941] Volatile RAM Memory Dump (C2 Command Node)
+   - File: EVD-2026-0941_memory_dump.raw
+   - SHA-256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+   - Current Custodian: CFSL-CYBER (Forensic Science Lab)
+   - Status: UNDER_ANALYSIS
+
+2. [EVD-2026-1182] High-Res 4K CCTV Data Vault Optical Disk Extract
+   - File: EVD-2026-1182_surveillance_feed.mp4
+   - SHA-256: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+   - Current Custodian: CCIC-HQ (Police Cyber Cell)
+   - Status: IN_VAULT
+========================================================================

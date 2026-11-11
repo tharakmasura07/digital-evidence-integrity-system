@@ -1,0 +1,20 @@
+========================================================================
+             DEIS LEGAL CASE FILE DOSSIER: CR-2026-9042
+========================================================================
+Case Title:           Operation DarkLocker Ransomware
+Crime Classification: Financial Extortion & Malware Deployment
+Lead Agency:          Cyber Crime Investigation Cell (CCIC-HQ)
+Investigating Officer:System Security Administrator (ADMIN-0001)
+Court of Jurisdiction:Metropolitan High Judicial Registry (Courtroom 4)
+Case Status:          ACTIVE INVESTIGATION & SECURED CUSTODY
+Date Opened:          2026-10-26 09:30:00 UTC
+Storage Folder:       evidence_vault\Case_CR-2026-9042_DarkLocker_Ransomware\
+
+EVIDENCE ARTIFACTS STORED IN THIS CASE FILE:
+------------------------------------------------------------------------
+1. [EVD-2026-2401] Forensic Bitstream Clone of Banking Database SSD
+   - File: EVD-2026-2401_darklocker_clone.e01
+   - SHA-256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945
+   - Current Custodian: CCIC-HQ (Police Cyber Cell)
+   - Status: IN_VAULT
+========================================================================

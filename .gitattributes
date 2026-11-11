@@ -1,0 +1,32 @@
+# =============================================================================
+# Digital Evidence Integrity System (DEIS) — .gitattributes
+# =============================================================================
+
+# Auto-detect text files and normalize line endings to LF on commit
+* text=auto eol=lf
+
+# Windows Batch scripts MUST have CRLF line endings to run properly on Windows
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Source Code & Markup
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.sql text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+
+# Digital Evidence Binary Artifacts (Prevent Git from corrupting bitstreams)
+*.raw binary
+*.mp4 binary
+*.e01 binary
+*.dmp binary
+*.bin binary
+*.iso binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.pdf binary
