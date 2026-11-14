@@ -213,7 +213,13 @@ const TransferView = {
             </div>
           </div>
 
-          <div class="flex items-center gap-2 self-end sm:self-center">
+          <div class="flex items-center gap-2 self-end sm:self-center flex-wrap justify-end">
+            ${t.fromAgency === t.toAgency ? `
+              <span class="cyber-badge bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[9px]">
+                <i data-lucide="users" class="w-3 h-3 inline mr-1"></i>
+                INTRA-DEPARTMENT
+              </span>
+            ` : ''}
             ${isPending ? `
               <span class="cyber-badge bg-amber-500/20 text-amber-300 border border-amber-500/40">
                 <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>

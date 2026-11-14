@@ -799,7 +799,7 @@ class DEISApplication {
     const officerInput = document.getElementById('transfer-sender-officer');
 
     if (officerInput) {
-      officerInput.value = currentUser ? currentUser.name : (currentAgency.officers[0] || 'Investigating Officer');
+      officerInput.value = currentUser ? `${currentUser.name} (${currentUser.badgeId})` : (currentAgency.officers[0] || 'Investigating Officer');
     }
 
     if (selectEl) {
@@ -811,17 +811,55 @@ class DEISApplication {
     }
 
     if (toAgencySelect) {
+      // Allow intra-department transfers (e.g. Police to Police, Forensics to Forensics)
       toAgencySelect.innerHTML = Object.values(agencies)
-        .filter(a => a.id !== currentAgency.id)
-        .map(a => `
-          <option value="${a.id}">
-            ${a.name} (${a.badge})
-          </option>
-        `).join('');
+        .map(a => {
+          const isSameAgency = a.id === currentAgency.id;
+          return `
+            <option value="${a.id}" ${isSameAgency ? 'selected' : ''}>
+              ${isSameAgency ? `🏢 Internal / Same Department: ${a.name} (${a.badge})` : `${a.name} (${a.badge})`}
+            </option>
+          `;
+        }).join('');
+
+      toAgencySelect.onchange = () => this.updateRecipientOfficerDatalist(toAgencySelect.value);
+      this.updateRecipientOfficerDatalist(toAgencySelect.value);
     }
 
     this.openModal('initiate-transfer-modal');
     safeCreateIcons();
+  }
+
+  updateRecipientOfficerDatalist(targetAgencyId) {
+    const store = window.DEISStore;
+    const datalist = document.getElementById('recipient-officers-datalist');
+    const recipientInput = document.getElementById('transfer-recipient-officer');
+    const modeSelect = document.getElementById('transfer-mode-select');
+    const currentUser = store.getCurrentUser();
+    if (!datalist) return;
+
+    const users = (store.getUsers() || []).filter(u => u.agencyId === targetAgencyId && (!currentUser || u.id !== currentUser.id));
+
+    datalist.innerHTML = users.map(u => `
+      <option value="${u.name} (${u.badgeId})">${u.jobTitle || u.name}</option>
+    `).join('');
+
+    if (recipientInput) {
+      if (users.length > 0) {
+        recipientInput.value = `${users[0].name} (${users[0].badgeId})`;
+      } else {
+        const agency = store.state.agencies[targetAgencyId];
+        recipientInput.value = agency ? `Authorized Custodian (${agency.badge})` : '';
+      }
+    }
+
+    if (modeSelect && currentUser) {
+      if (targetAgencyId === currentUser.agencyId) {
+        modeSelect.value = 'Intra-Department Internal Custody Handover';
+      } else {
+        modeSelect.value = 'Encrypted High-Security Tunnel (AES-256-GCM)';
+      }
+    }
   }
 
   async submitInitiateTransfer(event) {

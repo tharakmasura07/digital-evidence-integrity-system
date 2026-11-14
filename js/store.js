@@ -116,6 +116,25 @@ const INITIAL_USERS = [
     lastLogin: '2026-10-28 12:40:00 UTC'
   },
   {
+    id: 'usr_police_7702',
+    name: 'Sub-Insp. Priya Sharma',
+    badgeId: 'CCIC-7702',
+    email: 'priya@ccic.gov',
+    agencyId: 'police',
+    agencyName: 'Cyber Crime Investigation Cell (CCIC)',
+    jobTitle: 'Cyber Forensics & Evidence Custodian',
+    clearanceLevel: 'LEVEL 3 — OPERATIONAL CLEARANCE',
+    initials: 'PS',
+    color: 'cyan',
+    icon: 'shield-alert',
+    password: 'police@123',
+    department: 'Cyber Crime Investigation Cell (CCIC)',
+    securityToken: 'TOKEN-CCIC-7702-SEC',
+    isAdmin: false,
+    createdAt: '2026-10-28 00:00:00 UTC',
+    lastLogin: '2026-10-28 12:40:00 UTC'
+  },
+  {
     id: 'usr_forensics_4402',
     name: 'Dr. Aris Thorne',
     badgeId: 'CFSL-4402',
@@ -130,6 +149,25 @@ const INITIAL_USERS = [
     password: 'forensics@123',
     department: 'Central Forensic Science Laboratory (CFSL)',
     securityToken: 'TOKEN-CFSL-4402-SEC',
+    isAdmin: false,
+    createdAt: '2026-10-28 00:00:00 UTC',
+    lastLogin: '2026-10-28 12:40:00 UTC'
+  },
+  {
+    id: 'usr_forensics_4403',
+    name: 'Dr. Meera Nair',
+    badgeId: 'CFSL-4403',
+    email: 'nair@cfsl.gov',
+    agencyId: 'forensics',
+    agencyName: 'Central Forensic Science Laboratory (CFSL)',
+    jobTitle: 'Senior Forensic Analyst & Cryptographic Examiner',
+    clearanceLevel: 'LEVEL 5 — SCIENTIFIC & CRYPTOGRAPHIC',
+    initials: 'MN',
+    color: 'emerald',
+    icon: 'microscope',
+    password: 'forensics@123',
+    department: 'Central Forensic Science Laboratory (CFSL)',
+    securityToken: 'TOKEN-CFSL-4403-SEC',
     isAdmin: false,
     createdAt: '2026-10-28 00:00:00 UTC',
     lastLogin: '2026-10-28 12:40:00 UTC'
@@ -173,6 +211,25 @@ const INITIAL_USERS = [
     lastLogin: '2026-10-28 12:40:00 UTC'
   },
   {
+    id: 'usr_prosecution_8832',
+    name: 'Adv. Siddharth Rao',
+    badgeId: 'ODA-8832',
+    email: 'rao@oda.gov',
+    agencyId: 'prosecution',
+    agencyName: 'Office of the District Attorney & State Prosecution',
+    jobTitle: 'Assistant District Attorney & Custody Officer',
+    clearanceLevel: 'LEVEL 4 — LEGAL CUSTODY & TRIAL',
+    initials: 'SR',
+    color: 'amber',
+    icon: 'briefcase',
+    password: 'prosecution@123',
+    department: 'Office of the District Attorney',
+    securityToken: 'TOKEN-ODA-8832-SEC',
+    isAdmin: false,
+    createdAt: '2026-10-28 00:00:00 UTC',
+    lastLogin: '2026-10-28 12:40:00 UTC'
+  },
+  {
     id: 'usr_defense_5519',
     name: 'Adv. Marcus Sterling',
     badgeId: 'BAR-5519',
@@ -187,6 +244,25 @@ const INITIAL_USERS = [
     password: 'defense@123',
     department: 'Bar Association Criminal Defense Coalition',
     securityToken: 'TOKEN-BAR-5519-SEC',
+    isAdmin: false,
+    createdAt: '2026-10-28 00:00:00 UTC',
+    lastLogin: '2026-10-28 12:40:00 UTC'
+  },
+  {
+    id: 'usr_defense_5520',
+    name: 'Adv. Ananya Sen',
+    badgeId: 'BAR-5520',
+    email: 'sen@barcouncil.org',
+    agencyId: 'defense',
+    agencyName: 'Bar Association Criminal Defense Coalition',
+    jobTitle: 'Associate Criminal Defense Counsel',
+    clearanceLevel: 'CONSTITUTIONAL DISCOVERY ACCESS',
+    initials: 'AS',
+    color: 'rose',
+    icon: 'user-check',
+    password: 'defense@123',
+    department: 'Bar Association Criminal Defense Coalition',
+    securityToken: 'TOKEN-BAR-5520-SEC',
     isAdmin: false,
     createdAt: '2026-10-28 00:00:00 UTC',
     lastLogin: '2026-10-28 12:40:00 UTC'
@@ -1006,7 +1082,9 @@ class DEISStore {
       caseId: evidence.caseNumber,
       agency: originatingAgency.id,
       officer: activeOfficer,
-      actionDescription: `Custody handoff dispatched from ${originatingAgency.name} to ${this.state.agencies[transferParams.toAgency].name}. Transit Mode: ${transferParams.transferMode}. Handoff Pin issued.`,
+      actionDescription: (originatingAgency.id === transferParams.toAgency)
+        ? `Internal departmental custody handoff within ${originatingAgency.name} from ${activeOfficer} to ${transferParams.recipientOfficer || 'Colleague Officer'}. Transit Mode: ${transferParams.transferMode}. Handoff Pin issued.`
+        : `Custody handoff dispatched from ${originatingAgency.name} to ${this.state.agencies[transferParams.toAgency].name}. Transit Mode: ${transferParams.transferMode}. Handoff Pin issued.`,
       evidenceHash: evidence.sha256,
       merkleRoot: await CryptoEngine.computeMerkleRoot([manifestHash, blockHash]),
       signature: senderSig.signature,
@@ -1046,6 +1124,9 @@ class DEISStore {
       evidence.status = recipientAgency.id === 'court' ? 'ADMITTED_IN_COURT' : 'IN_VAULT';
       evidence.custodianAgency = recipientAgency.id;
       evidence.currentCustodian = recipientAgency.badge;
+      if (activeOfficer) {
+        evidence.assignedOfficer = activeOfficer;
+      }
     }
 
     const lastBlock = this.state.chainBlocks[this.state.chainBlocks.length - 1];
@@ -1072,7 +1153,9 @@ class DEISStore {
       caseId: evidence ? evidence.caseNumber : 'CR-CASE',
       agency: recipientAgency.id,
       officer: activeOfficer,
-      actionDescription: `Evidence received and accepted by ${recipientAgency.name}. Dual-PIN authenticated. Bitstream hash re-verified (100% SHA-256 match).`,
+      actionDescription: (transfer.fromAgency === recipientAgency.id)
+        ? `Evidence custody accepted by colleague officer ${activeOfficer} (${recipientAgency.name}). Dual-PIN authenticated. Bitstream hash re-verified (100% SHA-256 match).`
+        : `Evidence received and accepted by ${recipientAgency.name}. Dual-PIN authenticated. Bitstream hash re-verified (100% SHA-256 match).`,
       evidenceHash: evidence ? evidence.sha256 : 'UNKNOWN_HASH',
       merkleRoot: await CryptoEngine.computeMerkleRoot([transfer.transferManifestHash, blockHash]),
       signature: recipientSig.signature,
