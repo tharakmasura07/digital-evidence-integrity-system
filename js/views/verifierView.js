@@ -89,11 +89,11 @@ const VerifierView = {
               <div class="text-[11px] text-slate-400 font-mono flex items-center justify-between pt-1">
                 <span>Total registered artifacts: ${evidenceList.length}</span>
                 <button 
-                  onclick="VerifierView.testSampleFile('${this.selectedEvidenceId}', false)"
+                  onclick="VerifierView.testSampleFile('${this.selectedEvidenceId}')"
                   class="text-cyan-400 hover:underline cursor-pointer font-semibold"
-                  title="Simulate verifying genuine file"
+                  title="Verify with registered evidence bitstream"
                 >
-                  ⚡ Test with Genuine Bitstream
+                  ⚡ Verify Registered Bitstream
                 </button>
               </div>
             </div>
@@ -115,7 +115,7 @@ const VerifierView = {
                 </div>
               </div>
 
-              <div class="pt-2 flex items-center justify-center gap-2">
+              <div class="pt-2 flex items-center justify-center">
                 <button 
                   type="button"
                   onclick="document.getElementById('target-file-input').click()"
@@ -123,15 +123,6 @@ const VerifierView = {
                 >
                   <i data-lucide="folder-open" class="w-3.5 h-3.5"></i>
                   <span>Browse File</span>
-                </button>
-
-                <button 
-                  type="button"
-                  onclick="VerifierView.testSampleFile('${this.selectedEvidenceId}', true)"
-                  class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-rose-300 border border-rose-500/40 rounded-lg text-xs font-medium transition cursor-pointer"
-                  title="Simulate verifying modified/tampered file"
-                >
-                  ⚠️ Test Tampered
                 </button>
               </div>
             </div>
@@ -234,32 +225,21 @@ const VerifierView = {
     }
   },
 
-  testSampleFile(evidenceId, isTampered = false) {
+  testSampleFile(evidenceId) {
     const targetEv = window.DEISStore.getEvidenceById(evidenceId || this.selectedEvidenceId);
     if (!targetEv) return;
 
     this.selectedEvidenceId = targetEv.id;
 
-    if (isTampered) {
-      const corruptSha256 = 'deadbeef' + targetEv.sha256.substring(8);
-      this.targetComparisonResult = {
-        fileName: `${targetEv.fileName || targetEv.id}_tampered_copy.raw`,
-        fileSize: targetEv.fileSize || '16.4 GB',
-        liveSha256: corruptSha256,
-        liveSha512: 'ffff' + (targetEv.sha512 ? targetEv.sha512.substring(4) : '')
-      };
-      window.DEISApp.showToast('Simulated tampered file loaded: Hash mismatch triggered!', 'error');
-    } else {
-      this.targetComparisonResult = {
-        fileName: targetEv.fileName || `${targetEv.id}_artifact.raw`,
-        fileSize: targetEv.fileSize || '16.4 GB',
-        liveSha256: targetEv.sha256,
-        liveSha512: targetEv.sha512 || 'cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e'
-      };
-      window.DEISApp.showToast(`Genuine bitstream for [${targetEv.id}] verified!`, 'success');
-      if (window.confetti) {
-        window.confetti({ particleCount: 70, spread: 70, origin: { y: 0.7 } });
-      }
+    this.targetComparisonResult = {
+      fileName: targetEv.fileName || `${targetEv.id}_artifact.raw`,
+      fileSize: targetEv.fileSize || '16.4 GB',
+      liveSha256: targetEv.sha256,
+      liveSha512: targetEv.sha512 || 'cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e'
+    };
+    window.DEISApp.showToast(`Registered bitstream for [${targetEv.id}] verified!`, 'success');
+    if (window.confetti) {
+      window.confetti({ particleCount: 70, spread: 70, origin: { y: 0.7 } });
     }
 
     const select = document.getElementById('target-evidence-select');

@@ -920,26 +920,6 @@ class DEISStore {
     return entry;
   }
 
-  simulateTampering(blockHeight, alteredDescription = 'MALICIOUS CORRUPTION: Evidence payload modified by unauthorized adversary.') {
-    const block = this.state.chainBlocks.find(b => b.blockHeight === blockHeight);
-    if (!block) return;
-
-    block.tampered = true;
-    block.actionDescription = alteredDescription;
-    block.blockHash = '00000DEAD' + block.blockHash.substring(9);
-    if (block.evidenceHash) {
-      block.evidenceHash = 'deadbeef' + block.evidenceHash.substring(8);
-    }
-    this.state.tamperAlertActive = true;
-
-    const evidence = this.getEvidenceById(block.evidenceId);
-    if (evidence) {
-      evidence.status = 'TAMPERED';
-    }
-
-    this.saveState();
-  }
-
   restoreIntegrity() {
     this.state.evidence = JSON.parse(JSON.stringify(INITIAL_EVIDENCE));
     this.state.transfers = JSON.parse(JSON.stringify(INITIAL_TRANSFERS));

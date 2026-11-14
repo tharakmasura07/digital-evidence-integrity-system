@@ -45,8 +45,8 @@ const DashboardView = {
           </div>
           <div class="flex items-center gap-2 shrink-0">
             <button onclick="window.DEISApp.navigate('chain')" class="px-3 py-1.5 bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-              <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
-              <span>Test Tamper Simulator</span>
+              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+              <span>View Evidence Lifecycle</span>
             </button>
           </div>
         </div>
@@ -324,26 +324,6 @@ const DashboardView = {
                   <div class="text-[10px] text-slate-400 uppercase font-mono">Evidence Rule</div>
                   <div class="text-xs font-bold text-slate-200 mt-0.5">FRE Rule 902(14)</div>
                   <div class="text-[10px] text-emerald-400 mt-0.5">Self-Authenticating</div>
-                </div>
-              </div>
-
-              <!-- Tamper Demonstration Simulator -->
-              <div class="mt-5 p-3.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-2">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                    <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
-                    <span>Interactive Tamper Demo</span>
-                  </span>
-                  <span class="text-[10px] text-slate-400 font-mono">Test Chain Integrity</span>
-                </div>
-                <p class="text-[11px] text-slate-400">
-                  Simulate an adversary attempting to alter evidence records to see DEIS's instant cryptographic detection in action.
-                </p>
-                <div class="pt-1 flex items-center gap-2">
-                  <button onclick="window.DEISApp.simulateTamperDemo()" class="w-full py-1.5 px-3 bg-amber-600/30 hover:bg-amber-600/50 border border-amber-500/50 text-amber-300 font-semibold text-xs rounded transition flex items-center justify-center gap-1.5">
-                    <i data-lucide="flame" class="w-3.5 h-3.5"></i>
-                    <span>Simulate Tamper Attack</span>
-                  </button>
                 </div>
               </div>
             </div>

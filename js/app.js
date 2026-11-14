@@ -950,18 +950,6 @@ class DEISApplication {
     this.navigate('chain');
   }
 
-  simulateTamperDemo() {
-    window.DEISStore.simulateTampering(1, 'SIMULATED ATTACK: Malicious adversary modified memory extraction dump payload.');
-    this.showToast('Tamper simulation initiated! Integrity mismatch alert triggered.', 'error');
-    this.navigate('chain');
-  }
-
-  simulateTamperBlock(blockHeight) {
-    window.DEISStore.simulateTampering(blockHeight, `MALICIOUS ATTACK: Block #${blockHeight} payload altered by unauthorized intruder.`);
-    this.showToast(`Block #${blockHeight} compromised! Chain broken.`, 'error');
-    this.renderCurrentView();
-  }
-
   restoreIntegrity() {
     window.DEISStore.restoreIntegrity();
     this.showToast('Cryptographic chain of custody successfully restored to 100% valid state.', 'success');

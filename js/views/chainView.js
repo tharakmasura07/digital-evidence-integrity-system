@@ -267,25 +267,6 @@ const ChainView = {
               <i data-lucide="shield-check" class="w-4 h-4"></i>
               <span>VALIDATE AUDIT CHAIN</span>
             </button>
-
-            ${isSystemTampered ? `
-              <button 
-                onclick="ChainView.restoreIntegrity()" 
-                class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-lg shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition cursor-pointer"
-              >
-                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                <span>Restore Chain Integrity</span>
-              </button>
-            ` : `
-              <button 
-                onclick="ChainView.simulateTamperStressTest()" 
-                class="px-3.5 py-2 bg-slate-800 hover:bg-rose-950/70 text-slate-300 hover:text-rose-300 border border-slate-700 hover:border-rose-500/50 font-semibold text-xs rounded-lg transition flex items-center gap-2 cursor-pointer"
-                title="Test how cryptographic hash-pointers detect tampering"
-              >
-                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
-                <span>Simulate Tamper Test</span>
-              </button>
-            `}
           </div>
         </div>
 
@@ -779,7 +760,7 @@ const ChainView = {
                   </div>
 
                   <!-- Primary Action: Verify Button -->
-                  <div class="pt-2 flex flex-col gap-2">
+                  <div class="pt-2">
                     <button 
                       onclick="ChainView.verifyEvidenceIntegrity('${selectedEv.id}')"
                       class="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs rounded-lg shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 transition cursor-pointer"
@@ -787,24 +768,6 @@ const ChainView = {
                       <i data-lucide="shield-check" class="w-4 h-4"></i>
                       <span>VERIFY EVIDENCE INTEGRITY</span>
                     </button>
-
-                    <div class="flex items-center gap-2">
-                      <button 
-                        onclick="ChainView.simulateFileTampering('${selectedEv.id}')"
-                        class="flex-1 py-1.5 px-3 bg-slate-800 hover:bg-rose-950/60 text-slate-400 hover:text-rose-300 border border-slate-700 hover:border-rose-500/40 rounded text-xs transition cursor-pointer"
-                        title="Simulate modifying 1 byte in the file to test detection"
-                      >
-                        ⚡ Simulate File Tampering
-                      </button>
-
-                      <button 
-                        onclick="ChainView.restoreIntegrity()"
-                        class="py-1.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded text-xs transition cursor-pointer"
-                        title="Reset to pristine 100% verified state"
-                      >
-                        Reset File
-                      </button>
-                    </div>
                   </div>
                 </div>
 
@@ -1245,28 +1208,6 @@ const ChainView = {
     } else {
       window.DEISApp.showToast(`Audit Chain Failed: Broken link detected at Block #${failureDetail.firstInvalidBlockHeight}!`, 'error');
     }
-  },
-
-  /**
-   * Tamper Testing Engine for Auditors
-   */
-  simulateFileTampering(evidenceId) {
-    const store = window.DEISStore;
-    const ev = store.getEvidenceById(evidenceId);
-    if (!ev) return;
-
-    ev.status = 'TAMPERED';
-    store.state.tamperAlertActive = true;
-    store.saveState();
-
-    window.DEISApp.showToast(`Simulated bit-flip attack on "${ev.id}". Click VERIFY EVIDENCE INTEGRITY to test detection!`, 'error');
-    this.render(document.getElementById('view-container'));
-  },
-
-  simulateTamperStressTest() {
-    window.DEISStore.simulateTampering(1, 'SIMULATED ATTACK: Historical memory extraction block altered post-mining.');
-    window.DEISApp.showToast('Tamper simulation initiated! Audit chain broken.', 'error');
-    this.runAuditValidation();
   },
 
   restoreIntegrity() {
