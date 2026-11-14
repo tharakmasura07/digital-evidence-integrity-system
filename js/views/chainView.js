@@ -270,8 +270,8 @@ const ChainView = {
           </div>
         </div>
 
-        <!-- SECTION A: EVIDENCE STATISTICS (5 COMPACT CARDS) -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        <!-- SECTION A: EVIDENCE STATISTICS (4 COMPACT CARDS) -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
           <!-- Card 1: Total Evidence Records -->
           <div class="cyber-card p-4 rounded-xl border border-slate-800 space-y-1">
             <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider flex items-center justify-between">
@@ -308,22 +308,8 @@ const ChainView = {
             <div class="text-[10px] text-emerald-400 font-mono">100% Bitstream Intact</div>
           </div>
 
-          <!-- Card 4: Compromised Evidence -->
-          <div class="cyber-card p-4 rounded-xl border ${compromisedCount > 0 ? 'border-rose-500/80 bg-rose-950/20' : 'border-slate-800'} space-y-1">
-            <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider flex items-center justify-between">
-              <span>Compromised</span>
-              <i data-lucide="alert-triangle" class="w-3.5 h-3.5 ${compromisedCount > 0 ? 'text-rose-400 animate-pulse' : 'text-slate-500'}"></i>
-            </div>
-            <div class="text-2xl font-bold font-mono ${compromisedCount > 0 ? 'text-rose-400' : 'text-slate-400'}">
-              ${compromisedCount} <span class="text-xs text-slate-400 font-sans font-normal">alerts</span>
-            </div>
-            <div class="text-[10px] ${compromisedCount > 0 ? 'text-rose-400' : 'text-slate-500'} font-mono">
-              ${compromisedCount > 0 ? 'Tamper Detected!' : 'Zero Deviations'}
-            </div>
-          </div>
-
-          <!-- Card 5: Blockchain Anchored Records -->
-          <div class="cyber-card p-4 rounded-xl border border-slate-800 space-y-1 col-span-2 sm:col-span-1">
+          <!-- Card 4: Blockchain Anchored Records -->
+          <div class="cyber-card p-4 rounded-xl border border-slate-800 space-y-1">
             <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider flex items-center justify-between">
               <span>Anchored Blocks</span>
               <i data-lucide="blocks" class="w-3.5 h-3.5 text-purple-400"></i>
