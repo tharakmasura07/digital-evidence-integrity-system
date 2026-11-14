@@ -194,26 +194,34 @@ const TransferView = {
     const toAg = store.state.agencies[t.toAgency];
     const isPending = t.status === 'PENDING_ACCEPTANCE';
     const canAccept = mode === 'incoming' && isPending;
+    const isReportTransfer = t.itemType === 'FORENSIC_REPORT' || !!t.reportId;
+    const reportObj = isReportTransfer ? (store.getForensicReportById(t.reportId) || store.getForensicReportByEvidenceId(t.evidenceId)) : null;
 
     return `
       <div class="cyber-card p-5 rounded-xl border ${isPending ? 'border-amber-500/40 bg-amber-950/10' : 'border-slate-800'} space-y-4">
         <!-- Top Status & IDs -->
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-lg ${isPending ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30'} flex items-center justify-center shrink-0">
-              <i data-lucide="${isPending ? 'arrow-left-right' : 'check-circle-2'}" class="w-5 h-5"></i>
+            <div class="w-10 h-10 rounded-lg ${isReportTransfer ? 'bg-purple-500/10 text-purple-400 border border-purple-500/30' : (isPending ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30')} flex items-center justify-center shrink-0">
+              <i data-lucide="${isReportTransfer ? 'file-text' : (isPending ? 'arrow-left-right' : 'check-circle-2')}" class="w-5 h-5"></i>
             </div>
             <div>
               <div class="flex items-center gap-2">
                 <span class="font-mono text-xs font-bold text-cyan-400">${t.transferId}</span>
                 <span class="inline-block w-1 h-1 rounded-full bg-slate-600"></span>
-                <span class="font-mono text-xs text-slate-400">${t.evidenceId}</span>
+                <span class="font-mono text-xs text-slate-400">${isReportTransfer ? (t.reportId || t.evidenceId) : t.evidenceId}</span>
               </div>
-              <h4 class="text-sm font-bold text-white mt-0.5">${t.evidenceTitle}</h4>
+              <h4 class="text-sm font-bold text-white mt-0.5">${t.evidenceTitle || t.reportTitle || 'Transfer Package'}</h4>
             </div>
           </div>
 
           <div class="flex items-center gap-2 self-end sm:self-center flex-wrap justify-end">
+            ${isReportTransfer ? `
+              <span class="cyber-badge bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[9px]">
+                <i data-lucide="file-text" class="w-3 h-3 inline mr-1"></i>
+                FORENSIC REPORT
+              </span>
+            ` : ''}
             ${t.fromAgency === t.toAgency ? `
               <span class="cyber-badge bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[9px]">
                 <i data-lucide="users" class="w-3 h-3 inline mr-1"></i>
@@ -286,7 +294,18 @@ const TransferView = {
             </button>
           </div>
 
-          <div class="flex items-center gap-2 justify-end">
+          <div class="flex items-center gap-2 justify-end flex-wrap">
+            ${(isReportTransfer || store.getForensicReportByEvidenceId(t.evidenceId)) ? `
+              <button 
+                onclick="window.DEISApp.viewForensicReport('${t.reportId || t.evidenceId}')" 
+                class="px-3 py-1.5 bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/30 text-xs rounded-lg flex items-center gap-1.5 transition cursor-pointer"
+                title="View full signed forensic laboratory examination dossier"
+              >
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                <span>View Forensic Report</span>
+              </button>
+            ` : ''}
+
             ${canAccept ? `
               <button onclick="window.DEISApp.openAcceptTransferModal('${t.transferId}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition animate-pulse">
                 <i data-lucide="shield-check" class="w-4 h-4"></i>

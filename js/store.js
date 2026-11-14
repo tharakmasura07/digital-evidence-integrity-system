@@ -1043,8 +1043,27 @@ class DEISStore {
       throw new Error('UNAUTHORIZED: Judicial officers (Judge) hold review jurisdiction and cannot initiate evidence transfers.');
     }
 
-    const evidence = this.getEvidenceById(transferParams.evidenceId);
-    if (!evidence) throw new Error('Evidence item not found');
+    const isReportTransfer = transferParams.itemType === 'FORENSIC_REPORT' || !!transferParams.reportId;
+    let evidence = null;
+    let forensicReport = null;
+    let targetId = '';
+    let targetTitle = '';
+    let targetHash = '';
+
+    if (isReportTransfer) {
+      forensicReport = this.getForensicReportById(transferParams.reportId) || (transferParams.evidenceId && this.getForensicReportByEvidenceId(transferParams.evidenceId));
+      if (!forensicReport) throw new Error('Forensic examination report not found');
+      evidence = this.getEvidenceById(forensicReport.evidenceId);
+      targetId = forensicReport.reportId;
+      targetTitle = forensicReport.title || `Forensic Report for ${forensicReport.evidenceId}`;
+      targetHash = forensicReport.signature || (evidence ? evidence.sha256 : 'CFSL_SIGNED_REPORT');
+    } else {
+      evidence = this.getEvidenceById(transferParams.evidenceId);
+      if (!evidence) throw new Error('Evidence item not found');
+      targetId = evidence.id;
+      targetTitle = evidence.title;
+      targetHash = evidence.sha256;
+    }
 
     const transferId = CryptoEngine.generateTransferID();
     const handoffToken = CryptoEngine.generateHandoffToken();
@@ -1054,8 +1073,10 @@ class DEISStore {
 
     const manifestPayload = {
       transferId,
-      evidenceId: evidence.id,
-      evidenceHash: evidence.sha256,
+      itemType: isReportTransfer ? 'FORENSIC_REPORT' : 'EVIDENCE_ARTIFACT',
+      reportId: isReportTransfer ? forensicReport.reportId : null,
+      evidenceId: evidence ? evidence.id : (forensicReport ? forensicReport.evidenceId : targetId),
+      evidenceHash: targetHash,
       fromAgency: originatingAgency.id,
       toAgency: transferParams.toAgency,
       purpose: transferParams.purpose,
@@ -1068,8 +1089,11 @@ class DEISStore {
 
     const newTransfer = {
       transferId,
-      evidenceId: evidence.id,
-      evidenceTitle: evidence.title,
+      itemType: isReportTransfer ? 'FORENSIC_REPORT' : 'EVIDENCE_ARTIFACT',
+      reportId: isReportTransfer ? forensicReport.reportId : null,
+      reportTitle: isReportTransfer ? forensicReport.title : null,
+      evidenceId: evidence ? evidence.id : (forensicReport ? forensicReport.evidenceId : 'EVD-GEN'),
+      evidenceTitle: isReportTransfer ? `[Forensic Report] ${targetTitle}` : targetTitle,
       fromAgency: originatingAgency.id,
       toAgency: transferParams.toAgency,
       initiatorOfficer: activeOfficer,
@@ -1086,7 +1110,15 @@ class DEISStore {
       transferManifestHash: manifestHash
     };
 
-    evidence.status = 'IN_TRANSIT';
+    if (isReportTransfer && forensicReport) {
+      forensicReport.transferStatus = 'IN_TRANSIT';
+      forensicReport.transferredToAgency = transferParams.toAgency;
+      forensicReport.transferredToOfficer = transferParams.recipientOfficer || 'Designated Examiner';
+      forensicReport.activeTransferId = transferId;
+    } else if (evidence) {
+      evidence.status = 'IN_TRANSIT';
+    }
+
     this.state.transfers.unshift(newTransfer);
 
     // Commit dispatch block to Chain of Custody
@@ -1096,29 +1128,37 @@ class DEISStore {
       height: newBlockHeight,
       prevHash: lastBlock ? lastBlock.blockHash : '0000000000000000000000000000000000000000000000000000000000000000',
       timestamp,
-      eventType: 'TRANSFER_DISPATCHED',
+      eventType: isReportTransfer ? 'REPORT_DISPATCHED' : 'TRANSFER_DISPATCHED',
       transferId,
-      evidenceId: evidence.id,
+      itemType: isReportTransfer ? 'FORENSIC_REPORT' : 'EVIDENCE_ARTIFACT',
+      reportId: isReportTransfer ? forensicReport.reportId : null,
+      evidenceId: evidence ? evidence.id : (forensicReport ? forensicReport.evidenceId : 'EVD-GEN'),
       fromAgency: originatingAgency.id,
       toAgency: transferParams.toAgency
     };
 
     const blockHash = await CryptoEngine.sha256(JSON.stringify(blockPayload));
 
+    const actionDesc = isReportTransfer
+      ? ((originatingAgency.id === transferParams.toAgency)
+          ? `Internal handoff of Forensic Examination Report [${forensicReport.reportId}] for Exhibit ${evidence ? evidence.id : forensicReport.evidenceId} within ${originatingAgency.name} to ${transferParams.recipientOfficer || 'Colleague Officer'}. Transit Mode: ${transferParams.transferMode}. Handoff PIN issued.`
+          : `Forensic Examination Report [${forensicReport.reportId}] for Exhibit ${evidence ? evidence.id : forensicReport.evidenceId} dispatched from ${originatingAgency.name} to ${this.state.agencies[transferParams.toAgency]?.name || transferParams.toAgency}. Transit Mode: ${transferParams.transferMode}. Handoff PIN issued.`)
+      : ((originatingAgency.id === transferParams.toAgency)
+          ? `Internal departmental custody handoff within ${originatingAgency.name} from ${activeOfficer} to ${transferParams.recipientOfficer || 'Colleague Officer'}. Transit Mode: ${transferParams.transferMode}. Handoff Pin issued.`
+          : `Custody handoff dispatched from ${originatingAgency.name} to ${this.state.agencies[transferParams.toAgency]?.name || transferParams.toAgency}. Transit Mode: ${transferParams.transferMode}. Handoff Pin issued.`);
+
     this.state.chainBlocks.push({
       blockHeight: newBlockHeight,
       blockHash: '00000' + blockHash.substring(5),
       previousHash: blockPayload.prevHash,
       timestamp,
-      eventType: 'TRANSFER_DISPATCHED',
-      evidenceId: evidence.id,
-      caseId: evidence.caseNumber,
+      eventType: isReportTransfer ? 'REPORT_DISPATCHED' : 'TRANSFER_DISPATCHED',
+      evidenceId: evidence ? evidence.id : (forensicReport ? forensicReport.evidenceId : 'EVD-GEN'),
+      caseId: evidence ? evidence.caseNumber : (forensicReport ? forensicReport.caseNumber : 'CR-CASE'),
       agency: originatingAgency.id,
       officer: activeOfficer,
-      actionDescription: (originatingAgency.id === transferParams.toAgency)
-        ? `Internal departmental custody handoff within ${originatingAgency.name} from ${activeOfficer} to ${transferParams.recipientOfficer || 'Colleague Officer'}. Transit Mode: ${transferParams.transferMode}. Handoff Pin issued.`
-        : `Custody handoff dispatched from ${originatingAgency.name} to ${this.state.agencies[transferParams.toAgency].name}. Transit Mode: ${transferParams.transferMode}. Handoff Pin issued.`,
-      evidenceHash: evidence.sha256,
+      actionDescription: actionDesc,
+      evidenceHash: targetHash,
       merkleRoot: await CryptoEngine.computeMerkleRoot([manifestHash, blockHash]),
       signature: senderSig.signature,
       tampered: false
@@ -1138,7 +1178,11 @@ class DEISStore {
 
     const recipientAgency = this.getCurrentAgency();
     const activeOfficer = verifyingOfficer || (this.currentUser ? `${this.currentUser.name} (${this.currentUser.badgeId})` : 'Authorized Custodian');
+    const isReportTransfer = transfer.itemType === 'FORENSIC_REPORT' || !!transfer.reportId;
     const evidence = this.getEvidenceById(transfer.evidenceId);
+    const forensicReport = isReportTransfer 
+      ? (this.getForensicReportById(transfer.reportId) || this.getForensicReportByEvidenceId(transfer.evidenceId))
+      : null;
 
     const timestamp = new Date().toISOString();
     const recipientSig = await CryptoEngine.sign(
@@ -1153,7 +1197,29 @@ class DEISStore {
     transfer.recipientSignature = recipientSig.signature;
     transfer.integrityVerified = true;
 
-    if (evidence) {
+    if (isReportTransfer && forensicReport) {
+      forensicReport.transferStatus = 'ACCEPTED';
+      forensicReport.transferredToAgency = recipientAgency.id;
+      forensicReport.recipientOfficer = activeOfficer;
+      forensicReport.acceptedTime = timestamp;
+      if (recipientAgency.id === 'court') {
+        forensicReport.status = 'ADMITTED_IN_COURT';
+      }
+      if (!Array.isArray(forensicReport.transferHistory)) {
+        forensicReport.transferHistory = [];
+      }
+      forensicReport.transferHistory.push({
+        transferId: transfer.transferId,
+        fromAgency: transfer.fromAgency,
+        toAgency: recipientAgency.id,
+        fromOfficer: transfer.initiatorOfficer,
+        toOfficer: activeOfficer,
+        timestamp,
+        manifestHash: transfer.transferManifestHash
+      });
+    }
+
+    if (evidence && !isReportTransfer) {
       evidence.status = recipientAgency.id === 'court' ? 'ADMITTED_IN_COURT' : 'IN_VAULT';
       evidence.custodianAgency = recipientAgency.id;
       evidence.currentCustodian = recipientAgency.badge;
@@ -1168,32 +1234,43 @@ class DEISStore {
       height: newBlockHeight,
       prevHash: lastBlock ? lastBlock.blockHash : '0000000000000000000000000000000000000000000000000000000000000000',
       timestamp,
-      eventType: 'TRANSFER_ACCEPTED_VERIFIED',
+      eventType: isReportTransfer ? 'REPORT_ACCEPTED_VERIFIED' : 'TRANSFER_ACCEPTED_VERIFIED',
       transferId,
+      reportId: isReportTransfer ? (forensicReport ? forensicReport.reportId : transfer.reportId) : null,
       evidenceId: transfer.evidenceId,
       acceptedBy: recipientAgency.id
     };
 
     const blockHash = await CryptoEngine.sha256(JSON.stringify(blockPayload));
 
+    const acceptActionDesc = isReportTransfer
+      ? ((transfer.fromAgency === recipientAgency.id)
+          ? `Forensic Examination Report [${transfer.reportId || (forensicReport ? forensicReport.reportId : 'RPT')}] custody accepted by colleague officer ${activeOfficer} (${recipientAgency.name}). Dual-PIN authenticated. Cryptographic signature verified.`
+          : `Forensic Examination Report [${transfer.reportId || (forensicReport ? forensicReport.reportId : 'RPT')}] received and custody accepted by ${recipientAgency.name} (${activeOfficer}). Dual-PIN authenticated. Digital signature verified.`)
+      : ((transfer.fromAgency === recipientAgency.id)
+          ? `Evidence custody accepted by colleague officer ${activeOfficer} (${recipientAgency.name}). Dual-PIN authenticated. Bitstream hash re-verified (100% SHA-256 match).`
+          : `Evidence received and accepted by ${recipientAgency.name}. Dual-PIN authenticated. Bitstream hash re-verified (100% SHA-256 match).`);
+
     this.state.chainBlocks.push({
       blockHeight: newBlockHeight,
       blockHash: '00000' + blockHash.substring(5),
       previousHash: blockPayload.prevHash,
       timestamp,
-      eventType: 'TRANSFER_ACCEPTED_VERIFIED',
+      eventType: isReportTransfer ? 'REPORT_ACCEPTED_VERIFIED' : 'TRANSFER_ACCEPTED_VERIFIED',
       evidenceId: transfer.evidenceId,
-      caseId: evidence ? evidence.caseNumber : 'CR-CASE',
+      caseId: evidence ? evidence.caseNumber : (forensicReport ? forensicReport.caseNumber : 'CR-CASE'),
       agency: recipientAgency.id,
       officer: activeOfficer,
-      actionDescription: (transfer.fromAgency === recipientAgency.id)
-        ? `Evidence custody accepted by colleague officer ${activeOfficer} (${recipientAgency.name}). Dual-PIN authenticated. Bitstream hash re-verified (100% SHA-256 match).`
-        : `Evidence received and accepted by ${recipientAgency.name}. Dual-PIN authenticated. Bitstream hash re-verified (100% SHA-256 match).`,
-      evidenceHash: evidence ? evidence.sha256 : 'UNKNOWN_HASH',
+      actionDescription: acceptActionDesc,
+      evidenceHash: isReportTransfer ? (forensicReport ? forensicReport.signature : (evidence ? evidence.sha256 : 'REPORT_SIG')) : (evidence ? evidence.sha256 : 'UNKNOWN_HASH'),
       merkleRoot: await CryptoEngine.computeMerkleRoot([transfer.transferManifestHash, blockHash]),
       signature: recipientSig.signature,
       tampered: false
     });
+
+    this.saveState();
+    return transfer;
+  }
 
     this.saveState();
     return transfer;
@@ -1241,6 +1318,32 @@ class DEISStore {
       this.state.forensicReports = [];
     }
     return this.state.forensicReports;
+  }
+
+  getForensicReportsForCurrentUser() {
+    const user = this.getCurrentUser();
+    if (!user) return [];
+    if (user.isAdmin || user.agencyId === 'defense') {
+      return [...this.getForensicReports()];
+    }
+    const userEvidences = this.getEvidencesForCurrentUser();
+    const accessibleEvidenceIds = new Set(userEvidences.map(e => e.id));
+
+    return this.getForensicReports().filter(r => {
+      if (!r) return false;
+      // Authored by user agency
+      if (r.authorAgencyId === user.agencyId) return true;
+      // Transferred to user agency
+      if (r.transferredToAgency === user.agencyId) return true;
+      // Transferred via transferHistory
+      if (Array.isArray(r.transferHistory) && r.transferHistory.some(th => th.toAgency === user.agencyId)) return true;
+      // Matches an evidence item assigned to user
+      if (accessibleEvidenceIds.has(r.evidenceId)) return true;
+      // Check transfers log for any transfer to user agency
+      const transfers = this.getTransfers();
+      if (transfers.some(t => (t.reportId === r.reportId || t.evidenceId === r.evidenceId) && t.toAgency === user.agencyId)) return true;
+      return false;
+    });
   }
 
   getForensicReportByEvidenceId(evidenceId) {

@@ -221,41 +221,40 @@ const ForensicReportView = {
     window.print();
   },
 
+  openReportTransferModal(reportId) {
+    if (window.DEISApp && typeof window.DEISApp.openInitiateTransferModalForReport === 'function') {
+      window.DEISApp.openInitiateTransferModalForReport(reportId);
+    }
+  },
+
+  previewReportById(reportId) {
+    const store = window.DEISStore;
+    const rpt = store.getForensicReportById(reportId) || store.getForensicReportByEvidenceId(reportId);
+    if (rpt) {
+      this.selectedEvidenceId = rpt.evidenceId;
+      this.currentMode = 'view';
+    }
+  },
+
   render(container) {
     if (!container) return;
 
     const store = window.DEISStore;
     const currentUser = store.getCurrentUser();
+    const isAuthoringOfficer = currentUser && (currentUser.agencyId === 'forensics' || currentUser.isAdmin);
 
-    // Security Gate: Enforce Forensic Officer or Root Admin
-    if (!currentUser || (currentUser.agencyId !== 'forensics' && !currentUser.isAdmin)) {
-      container.innerHTML = `
-        <div class="cyber-card p-8 rounded-xl border border-rose-500/40 bg-rose-950/20 text-center max-w-xl mx-auto space-y-4 my-8">
-          <div class="w-14 h-14 mx-auto rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 flex items-center justify-center">
-            <i data-lucide="shield-alert" class="w-7 h-7"></i>
-          </div>
-          <h3 class="text-base font-bold text-white tracking-wide">Access Restricted: Forensic Science Clearance Required</h3>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            The Forensic Report module is restricted to authorized Central Forensic Science Laboratory (CFSL) examiners. Your current role (${currentUser ? currentUser.agencyName : 'Unauthenticated'}) does not have report authoring privileges.
-          </p>
-          <div class="pt-2">
-            <button onclick="window.DEISApp.navigate('dashboard')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-lg transition">
-              Return to Dashboard
-            </button>
-          </div>
-        </div>
-      `;
-      if (window.lucide && typeof window.lucide.createIcons === 'function') {
-        try { window.lucide.createIcons(); } catch (e) {}
-      }
-      return;
+    // If a non-authoring user attempts to enter 'author' mode, force back to 'view'
+    if (!isAuthoringOfficer && this.currentMode === 'author') {
+      this.currentMode = 'view';
     }
 
     const evidences = this.getForensicEvidences();
-    const savedReports = (typeof store.getForensicReports === 'function') ? store.getForensicReports() : [];
+    const savedReports = (typeof store.getForensicReportsForCurrentUser === 'function') 
+      ? store.getForensicReportsForCurrentUser() 
+      : (store.getForensicReports() || []);
 
-    // Empty state if no evidence assigned to lab
-    if (!evidences || evidences.length === 0) {
+    // Empty state if no reports or evidence available for this user
+    if ((!evidences || evidences.length === 0) && (!savedReports || savedReports.length === 0)) {
       container.innerHTML = `
         <div class="space-y-6">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -274,9 +273,13 @@ const ForensicReportView = {
             <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
               <i data-lucide="microscope" class="w-8 h-8"></i>
             </div>
-            <h3 class="text-base font-bold text-slate-200">No Evidence Assigned to Forensic Laboratory</h3>
+            <h3 class="text-base font-bold text-slate-200">
+              ${isAuthoringOfficer ? 'No Evidence Assigned to Forensic Laboratory' : 'No Transferred Forensic Reports on File'}
+            </h3>
             <p class="text-xs text-slate-400 leading-relaxed">
-              There are currently no digital evidence exhibits assigned to CFSL custody for your examination. When Police transfer an exhibit to CFSL, you can write and sign comprehensive forensic reports here.
+              ${isAuthoringOfficer 
+                ? 'There are currently no digital evidence exhibits assigned to CFSL custody for your examination. When Police transfer an exhibit to CFSL, you can write and sign comprehensive forensic reports here.'
+                : 'No official forensic reports have been transferred to your department yet. When a Forensic Officer completes and dispatches a report, it will appear here for judicial review.'}
             </p>
             <div class="pt-2">
               <button onclick="window.DEISApp.navigate('transfers')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-lg text-xs font-semibold transition cursor-pointer">
@@ -294,10 +297,19 @@ const ForensicReportView = {
 
     // Default active evidence
     if (!this.selectedEvidenceId || !evidences.some(e => e.id === this.selectedEvidenceId)) {
-      this.selectedEvidenceId = evidences[0].id;
+      if (evidences.length > 0) {
+        this.selectedEvidenceId = evidences[0].id;
+      } else if (savedReports.length > 0) {
+        this.selectedEvidenceId = savedReports[0].evidenceId;
+      }
     }
 
-    const activeEvidence = evidences.find(e => e.id === this.selectedEvidenceId) || evidences[0];
+    const activeEvidence = (evidences.find(e => e.id === this.selectedEvidenceId)) || store.getEvidenceById(this.selectedEvidenceId) || (savedReports.length > 0 ? store.getEvidenceById(savedReports[0].evidenceId) : null) || {
+      id: 'EVD-2026-0941',
+      title: 'Volatile RAM Memory Dump',
+      caseNumber: 'CR-2026-8831',
+      sha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'
+    };
     const caseObj = store.getCaseById(activeEvidence.caseId || activeEvidence.caseNumber) || {
       id: activeEvidence.caseId || 'CASE-CR-2026',
       caseNumber: activeEvidence.caseNumber || 'CR-2026',
@@ -362,20 +374,27 @@ const ForensicReportView = {
                 <span>View & Print Report</span>
               </button>
 
-              <button 
-                onclick="ForensicReportView.switchMode('author')" 
-                class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${this.currentMode === 'author' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}"
-              >
-                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-                <span>Write / Edit Report</span>
-              </button>
+              ${isAuthoringOfficer ? `
+                <button 
+                  onclick="ForensicReportView.switchMode('author')" 
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${this.currentMode === 'author' ? 'bg-cyan-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}"
+                >
+                  <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                  <span>Write / Edit Report</span>
+                </button>
+              ` : `
+                <span class="px-2.5 py-1 text-[11px] font-mono text-slate-400 flex items-center gap-1 border border-slate-800 rounded bg-slate-900/60">
+                  <i data-lucide="scale" class="w-3 h-3 text-purple-400"></i>
+                  <span>Judicial Review</span>
+                </span>
+              `}
 
               <button 
                 onclick="ForensicReportView.switchMode('archive')" 
                 class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${this.currentMode === 'archive' ? 'bg-purple-600 text-white shadow' : 'text-slate-400 hover:text-slate-200'}"
               >
                 <i data-lucide="archive" class="w-3.5 h-3.5"></i>
-                <span>Saved Reports (${savedReports.length})</span>
+                <span>${isAuthoringOfficer ? 'Saved Reports' : 'Available Reports'} (${savedReports.length})</span>
               </button>
             </div>
           </div>
@@ -719,12 +738,24 @@ const ForensicReportView = {
                       >
                         View & Print
                       </button>
-                      <button 
-                        onclick="ForensicReportView.switchMode('author', '${rpt.evidenceId}')" 
-                        class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[10px] transition"
-                      >
-                        Edit
-                      </button>
+                      ${currentUser?.agencyId === 'court' ? '' : `
+                        <button 
+                          onclick="ForensicReportView.openReportTransferModal('${rpt.reportId}')" 
+                          class="px-2.5 py-1 bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/30 rounded text-[10px] font-semibold transition flex items-center gap-1 cursor-pointer"
+                          title="Transfer report to another operating body"
+                        >
+                          <i data-lucide="send" class="w-3 h-3"></i>
+                          <span>Transfer</span>
+                        </button>
+                      `}
+                      ${isAuthoringOfficer ? `
+                        <button 
+                          onclick="ForensicReportView.switchMode('author', '${rpt.evidenceId}')" 
+                          class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[10px] transition"
+                        >
+                          Edit
+                        </button>
+                      ` : ''}
                     </div>
                   </td>
                 </tr>
@@ -771,21 +802,35 @@ const ForensicReportView = {
           </div>
 
           <div class="flex items-center gap-2">
-            <!-- Edit Report Button -->
-            <button 
-              onclick="ForensicReportView.switchMode('author', '${activeEvidence.id}')" 
-              class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
-              title="Edit the officer findings and written notes"
-            >
-              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-              <span>Edit Written Report</span>
-            </button>
+            <!-- Transfer Report Button -->
+            ${currentUser?.agencyId === 'court' ? '' : `
+              <button 
+                onclick="ForensicReportView.openReportTransferModal('${reportId}')" 
+                class="px-3.5 py-1.5 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-xs rounded-lg shadow-lg shadow-cyan-600/20 flex items-center gap-1.5 transition cursor-pointer"
+                title="Transfer or dispatch this forensic report to Court, Prosecution, Police, or Colleague"
+              >
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                <span>Transfer Report</span>
+              </button>
+            `}
+
+            <!-- Edit Report Button (Forensic Officers & Admin only) -->
+            ${(currentUser?.agencyId === 'forensics' || currentUser?.isAdmin) ? `
+              <button 
+                onclick="ForensicReportView.switchMode('author', '${activeEvidence.id}')" 
+                class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                title="Edit the officer findings and written notes"
+              >
+                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                <span>Edit Written Report</span>
+              </button>
+            ` : ''}
 
             <!-- Re-verify live hash -->
             <button 
               id="btn-verify-live-report"
               onclick="ForensicReportView.runLiveVerification('${activeEvidence.id}')" 
-              class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
+              class="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
               title="Execute live bitstream hash calculation"
             >
               <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
@@ -795,7 +840,7 @@ const ForensicReportView = {
             <!-- Print / Save as PDF Button -->
             <button 
               onclick="ForensicReportView.printReport()" 
-              class="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs rounded-lg shadow-lg flex items-center gap-1.5 transition"
+              class="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold text-xs rounded-lg shadow-lg flex items-center gap-1.5 transition cursor-pointer"
               title="Print or Save official PDF document"
             >
               <i data-lucide="printer" class="w-3.5 h-3.5"></i>

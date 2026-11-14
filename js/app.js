@@ -103,9 +103,6 @@ class DEISApplication {
     } else if (this.currentRoute === 'transfers' && currentUser.agencyId === 'court') {
       this.currentRoute = 'dashboard';
       this.showToast('Judicial Registry review mode: Transfer feature is not available for the Judge.', 'info');
-    } else if (this.currentRoute === 'forensic-reports' && currentUser.agencyId !== 'forensics' && !currentUser.isAdmin) {
-      this.currentRoute = 'dashboard';
-      this.showToast('Access restricted: Forensic Officer clearance required.', 'error');
     }
 
     this.renderCurrentView();
@@ -160,16 +157,8 @@ class DEISApplication {
           window.TransferView.render(container);
           break;
         case 'forensic-reports':
-          {
-            const u = window.DEISStore.getCurrentUser();
-            if (!u || (u.agencyId !== 'forensics' && !u.isAdmin)) {
-              this.showToast('Access restricted: Forensic Officer clearance required.', 'error');
-              this.navigate('dashboard');
-              return;
-            }
-            if (window.ForensicReportView && typeof window.ForensicReportView.render === 'function') {
-              window.ForensicReportView.render(container);
-            }
+          if (window.ForensicReportView && typeof window.ForensicReportView.render === 'function') {
+            window.ForensicReportView.render(container);
           }
           break;
         case 'chain':
@@ -781,7 +770,61 @@ class DEISApplication {
     this.openInitiateTransferModal(evidenceId);
   }
 
-  openInitiateTransferModal(preselectedEvidenceId = null) {
+  openInitiateTransferModalForReport(reportId) {
+    this.openInitiateTransferModal(null, reportId);
+  }
+
+  viewForensicReport(reportIdOrEvidenceId) {
+    if (!reportIdOrEvidenceId) return;
+    const store = window.DEISStore;
+    const report = store.getForensicReportById(reportIdOrEvidenceId) || store.getForensicReportByEvidenceId(reportIdOrEvidenceId);
+    if (!report) {
+      this.showToast('No forensic examination report found for this item.', 'info');
+      return;
+    }
+    if (window.ForensicReportView) {
+      window.ForensicReportView.previewReportById(report.reportId);
+    }
+    this.navigate('forensic-reports');
+  }
+
+  toggleTransferType(type) {
+    const evContainer = document.getElementById('transfer-evidence-container');
+    const rptContainer = document.getElementById('transfer-report-container');
+    const purposeInput = document.getElementById('transfer-purpose');
+    const rptSelect = document.getElementById('transfer-report-select');
+    const evRadio = document.querySelector('input[name="transfer-type-choice"][value="evidence"]');
+    const rptRadio = document.querySelector('input[name="transfer-type-choice"][value="report"]');
+
+    if (type === 'report') {
+      if (evContainer) evContainer.classList.add('hidden');
+      if (rptContainer) rptContainer.classList.remove('hidden');
+      if (rptRadio) rptRadio.checked = true;
+      if (rptSelect && rptSelect.value) {
+        this.handleTransferReportSelected(rptSelect.value);
+      } else if (purposeInput) {
+        purposeInput.value = 'Formal transmission of Forensic Examination Report for judicial inquiry and evidence admissibility.';
+      }
+    } else {
+      if (evContainer) evContainer.classList.remove('hidden');
+      if (rptContainer) rptContainer.classList.add('hidden');
+      if (evRadio) evRadio.checked = true;
+      if (purposeInput && purposeInput.value.includes('Forensic')) {
+        purposeInput.value = 'Custody handoff of physical evidence exhibit artifact for analysis / court presentation.';
+      }
+    }
+  }
+
+  handleTransferReportSelected(reportId) {
+    const store = window.DEISStore;
+    const rpt = store.getForensicReportById(reportId);
+    const purposeInput = document.getElementById('transfer-purpose');
+    if (rpt && purposeInput) {
+      purposeInput.value = `Formal transmittal of Forensic Laboratory Report [${rpt.reportId}] for Exhibit ${rpt.evidenceId} (Case ${rpt.caseNumber}) pursuant to judicial scrutiny.`;
+    }
+  }
+
+  openInitiateTransferModal(preselectedEvidenceId = null, preselectedReportId = null) {
     const store = window.DEISStore;
     const currentAgency = store.getCurrentAgency();
     const currentUser = store.getCurrentUser();
@@ -792,9 +835,13 @@ class DEISApplication {
     }
 
     const evidenceList = store.getEvidencesForCurrentUser();
+    const reportsList = (typeof store.getForensicReportsForCurrentUser === 'function') 
+      ? store.getForensicReportsForCurrentUser() 
+      : (store.getForensicReports() || []);
     const agencies = store.state.agencies;
 
     const selectEl = document.getElementById('transfer-evidence-select');
+    const reportSelectEl = document.getElementById('transfer-report-select');
     const toAgencySelect = document.getElementById('transfer-to-agency-select');
     const officerInput = document.getElementById('transfer-sender-officer');
 
@@ -808,6 +855,18 @@ class DEISApplication {
           ${ev.id} — ${ev.title} (${ev.currentCustodian})
         </option>
       `).join('');
+    }
+
+    if (reportSelectEl) {
+      if (reportsList.length === 0) {
+        reportSelectEl.innerHTML = `<option value="">No completed forensic reports available to transfer</option>`;
+      } else {
+        reportSelectEl.innerHTML = reportsList.map(rpt => `
+          <option value="${rpt.reportId}" ${rpt.reportId === preselectedReportId ? 'selected' : ''}>
+            [${rpt.reportId}] ${rpt.title || rpt.evidenceId} (Case: ${rpt.caseNumber})
+          </option>
+        `).join('');
+      }
     }
 
     if (toAgencySelect) {
@@ -824,6 +883,19 @@ class DEISApplication {
 
       toAgencySelect.onchange = () => this.updateRecipientOfficerDatalist(toAgencySelect.value);
       this.updateRecipientOfficerDatalist(toAgencySelect.value);
+    }
+
+    // Toggle mode based on whether a report is being preselected
+    if (preselectedReportId) {
+      this.toggleTransferType('report');
+      if (reportSelectEl) reportSelectEl.value = preselectedReportId;
+      this.handleTransferReportSelected(preselectedReportId);
+    } else {
+      this.toggleTransferType('evidence');
+      const purposeInput = document.getElementById('transfer-purpose');
+      if (purposeInput && (!purposeInput.value || purposeInput.value.includes('Forensic'))) {
+        purposeInput.value = 'Deep forensic memory carve & malware analysis.';
+      }
     }
 
     this.openModal('initiate-transfer-modal');
@@ -864,16 +936,27 @@ class DEISApplication {
 
   async submitInitiateTransfer(event) {
     event.preventDefault();
-    const evidenceId = document.getElementById('transfer-evidence-select').value;
+    const typeChoice = document.querySelector('input[name="transfer-type-choice"]:checked')?.value || 'evidence';
+    const isReport = (typeChoice === 'report');
+
+    const evidenceId = document.getElementById('transfer-evidence-select')?.value;
+    const reportId = document.getElementById('transfer-report-select')?.value;
     const toAgency = document.getElementById('transfer-to-agency-select').value;
     const transferMode = document.getElementById('transfer-mode-select').value;
     const initiatorOfficer = document.getElementById('transfer-sender-officer').value.trim();
     const recipientOfficer = document.getElementById('transfer-recipient-officer').value.trim();
     const purpose = document.getElementById('transfer-purpose').value.trim();
 
+    if (isReport && !reportId) {
+      this.showToast('Please select a signed forensic report to transfer.', 'error');
+      return;
+    }
+
     try {
       const transfer = await window.DEISStore.initiateTransfer({
-        evidenceId,
+        itemType: isReport ? 'FORENSIC_REPORT' : 'EVIDENCE_ARTIFACT',
+        evidenceId: isReport ? null : evidenceId,
+        reportId: isReport ? reportId : null,
         toAgency,
         transferMode,
         initiatorOfficer,
@@ -882,7 +965,7 @@ class DEISApplication {
       });
 
       this.closeModal('initiate-transfer-modal');
-      this.showToast(`Transfer dispatched! Issued Handoff PIN: ${transfer.handoffToken}`, 'success');
+      this.showToast(`${isReport ? 'Forensic Report' : 'Evidence'} transfer dispatched! Issued Handoff PIN: ${transfer.handoffToken}`, 'success');
       this.navigate('transfers');
       this.showTransferToken(transfer.transferId);
     } catch (e) {

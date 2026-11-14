@@ -589,7 +589,17 @@ const EvidenceView = {
 
                         <!-- Actions -->
                         <td class="py-3 px-3 text-right">
-                          <div class="flex items-center justify-end gap-1.5">
+                          <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                            ${(window.DEISStore.getForensicReportByEvidenceId && window.DEISStore.getForensicReportByEvidenceId(item.id)) ? `
+                              <button 
+                                onclick="window.DEISApp.viewForensicReport('${item.id}')"
+                                class="px-2.5 py-1 bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/30 rounded text-[11px] font-semibold transition cursor-pointer flex items-center gap-1"
+                                title="View authored Forensic Laboratory Examination Report"
+                              >
+                                <i data-lucide="file-text" class="w-3 h-3"></i>
+                                <span>Report</span>
+                              </button>
+                            ` : ''}
                             <button 
                               onclick="window.DEISApp.verifyEvidence('${item.id}')"
                               class="px-2.5 py-1 bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 rounded text-[11px] font-semibold transition cursor-pointer"
