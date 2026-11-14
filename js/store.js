@@ -512,6 +512,30 @@ const INITIAL_CHAIN_BLOCKS = [
   }
 ];
 
+const INITIAL_FORENSIC_REPORTS = [
+  {
+    reportId: 'CFSL-RPT-2026-0941',
+    caseId: 'CASE-CR-2026-8831',
+    caseNumber: 'CR-2026-8831',
+    evidenceId: 'EVD-2026-0941',
+    title: 'Volatile RAM Memory Dump & Cobalt Strike C2 Infiltration Analysis',
+    authorOfficerName: 'Dr. Aris Thorne',
+    authorBadgeId: 'CFSL-4402',
+    authorAgencyId: 'forensics',
+    authorDepartment: 'Central Forensic Science Laboratory (CFSL)',
+    createdDate: '2026-10-24 14:15:00 UTC',
+    status: 'COMPLETED_SIGNED',
+    examinationScope: 'Extract active process memory, inspect thread injection, verify socket endpoints, and determine persistence mechanisms in memory dump EVD-2026-0941.',
+    toolsHardware: 'Tableau T8u Hardware Write-Blocker, Volatility 3 (v2.5.0), Ghidra v11.0.3, LiME Kernel Acquisition Module, YARA v4.3.',
+    methodology: 'Bitstream acquisition executed using LiME hardware write-blocker protocol. FIPS 180-4 SHA-256 genesis hash verified. Extracted memory pages analyzed via Volatility windows.pslist, netscan, and malfind plugins without altering the source image file.',
+    findingsSummary: 'Process inspection revealed rogue svchost.exe (PID 4192) executing out of memory address 0x7FFE0000 with unbacked executable memory pages (PAGE_EXECUTE_READWRITE). Active TCP socket connection established to foreign C2 endpoint 198.51.100.24:443. Extracted reflective DLL contains Cobalt Strike 4.8 beacon configuration.',
+    indicatorsOfCompromise: 'C2 IP: 198.51.100.24 (Port 443)\nInjected Process: svchost.exe (PID 4192, Parent PID 1024)\nCarved Payload SHA-256: 7f3a88c019284756291048572910485729104857291048572910485729104857\nMutex Identified: Global\\MSWin-NetworkTelemetry-Session0',
+    expertConclusion: 'Physical bitstream integrity of Exhibit EVD-2026-0941 is verified with zero hash deviations. Scientific analysis confirms an advanced persistent threat (APT) beacon payload was actively running in memory at the time of system seizure.',
+    evidenceDisposition: 'Exhibit remains preserved in CFSL secure cold vault. Digital examination report submitted to State Prosecution for judicial admissibility review.',
+    signature: '0x83B19904CD76AA4410984DE1942055610034AC91B4920049458902341786EF34'
+  }
+];
+
 class DEISStore {
   constructor() {
     this.state = this.loadState();
@@ -585,6 +609,13 @@ class DEISStore {
         });
         loadedBlocks.sort((a, b) => a.blockHeight - b.blockHeight);
 
+        let loadedReports = (parsed && Array.isArray(parsed.forensicReports)) ? parsed.forensicReports : [...INITIAL_FORENSIC_REPORTS];
+        INITIAL_FORENSIC_REPORTS.forEach(initRpt => {
+          if (!loadedReports.some(r => r && r.reportId === initRpt.reportId)) {
+            loadedReports.push(initRpt);
+          }
+        });
+
         return {
           currentAgencyId: (parsed && parsed.currentAgencyId) || 'admin',
           agencies: mergedAgencies,
@@ -593,6 +624,7 @@ class DEISStore {
           evidence: loadedEvidence,
           transfers: (parsed && Array.isArray(parsed.transfers)) ? parsed.transfers : INITIAL_TRANSFERS,
           chainBlocks: loadedBlocks,
+          forensicReports: loadedReports,
           tamperAlertActive: (parsed && parsed.tamperAlertActive) || false,
           auditLogs: (parsed && Array.isArray(parsed.auditLogs)) ? parsed.auditLogs : []
         };
@@ -609,6 +641,7 @@ class DEISStore {
       evidence: INITIAL_EVIDENCE,
       transfers: INITIAL_TRANSFERS,
       chainBlocks: INITIAL_CHAIN_BLOCKS,
+      forensicReports: [...INITIAL_FORENSIC_REPORTS],
       tamperAlertActive: false,
       auditLogs: []
     };
@@ -1200,6 +1233,70 @@ class DEISStore {
     }
     this.saveState();
     return entry;
+  }
+
+  // --- Forensic Lab Reports (Authoring & State Persistence) ---
+  getForensicReports() {
+    if (!Array.isArray(this.state.forensicReports)) {
+      this.state.forensicReports = [];
+    }
+    return this.state.forensicReports;
+  }
+
+  getForensicReportByEvidenceId(evidenceId) {
+    if (!evidenceId) return null;
+    return (this.state.forensicReports || []).find(r => r.evidenceId === evidenceId);
+  }
+
+  getForensicReportById(reportId) {
+    if (!reportId) return null;
+    return (this.state.forensicReports || []).find(r => r.reportId === reportId);
+  }
+
+  saveForensicReport(reportData) {
+    const user = this.getCurrentUser();
+    if (!user || (user.agencyId !== 'forensics' && !user.isAdmin)) {
+      throw new Error('UNAUTHORIZED: Only authorized Central Forensic Science Laboratory officers can write and submit forensic reports.');
+    }
+
+    if (!Array.isArray(this.state.forensicReports)) {
+      this.state.forensicReports = [];
+    }
+
+    const reportId = reportData.reportId || `CFSL-RPT-2026-${(reportData.evidenceId || 'GEN').replace('EVD-', '')}`;
+    const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+
+    const existingIndex = this.state.forensicReports.findIndex(r => r.reportId === reportId || r.evidenceId === reportData.evidenceId);
+
+    const fullReport = {
+      ...reportData,
+      reportId,
+      authorOfficerName: reportData.authorOfficerName || user.name,
+      authorBadgeId: reportData.authorBadgeId || user.badgeId,
+      authorAgencyId: user.agencyId || 'forensics',
+      authorDepartment: user.department || 'Central Forensic Science Laboratory (CFSL)',
+      createdDate: reportData.createdDate || timestamp,
+      lastModified: timestamp,
+      status: reportData.status || 'COMPLETED_SIGNED',
+      signature: reportData.signature || `0x${Date.now().toString(16)}CFSL${user.badgeId.replace(/[^A-Z0-9]/gi, '')}`
+    };
+
+    if (existingIndex >= 0) {
+      this.state.forensicReports[existingIndex] = fullReport;
+    } else {
+      this.state.forensicReports.unshift(fullReport);
+    }
+
+    // Record forensic audit log
+    this.addAuditLog(
+      'FORENSIC_REPORT_AUTHORED',
+      fullReport.evidenceId,
+      'EVIDENCE_ARTIFACT',
+      `Forensic Officer ${user.name} (${user.badgeId}) authored and signed forensic report ${reportId} for Case ${fullReport.caseNumber}.`
+    );
+
+    this.saveState();
+    return fullReport;
   }
 
   restoreIntegrity() {
