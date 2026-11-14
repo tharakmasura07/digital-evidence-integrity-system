@@ -197,142 +197,105 @@ const DashboardView = {
           </div>
         </div>
 
-        <!-- Middle Section: Transfer Pipeline Visualizer & Quick Actions -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Transfer Pipeline Tracker -->
-          <div class="cyber-card p-5 rounded-xl lg:col-span-2 space-y-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <i data-lucide="git-commit" class="w-5 h-5 text-cyan-400"></i>
-                <h3 class="font-bold text-slate-100 text-sm tracking-wide">Evidence Journey: From Crime Scene to Court</h3>
+        <!-- Middle Section: Transfer Pipeline Visualizer & Active Evidence -->
+        <div class="cyber-card p-5 rounded-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="git-commit" class="w-5 h-5 text-cyan-400"></i>
+              <h3 class="font-bold text-slate-100 text-sm tracking-wide">Evidence Journey: From Crime Scene to Court</h3>
+            </div>
+            <span class="text-xs text-slate-400 font-mono">Standard 4-Step Chain</span>
+          </div>
+
+          <!-- Pipeline stages graphic -->
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-2">
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 relative">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">1. Police Seizure</span>
+                <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
               </div>
-              <span class="text-xs text-slate-400 font-mono">Standard 4-Step Chain</span>
+              <p class="text-xs text-slate-300 font-semibold">Collected & Fingerprinted</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Seized at crime scene and locked with SHA-256 hash</p>
             </div>
 
-            <!-- Pipeline stages graphic -->
-            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-2">
-              <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 relative">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">1. Police Seizure</span>
-                  <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-                </div>
-                <p class="text-xs text-slate-300 font-semibold">Collected & Fingerprinted</p>
-                <p class="text-[10px] text-slate-500 mt-0.5">Seized at crime scene and locked with SHA-256 hash</p>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 relative">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">2. Forensic Lab</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
               </div>
-
-              <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 relative">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">2. Forensic Lab</span>
-                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                </div>
-                <p class="text-xs text-slate-300 font-semibold">Analyzed by Scientists</p>
-                <p class="text-[10px] text-slate-500 mt-0.5">Examined without touching or altering the master copy</p>
-              </div>
-
-              <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 relative">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">3. Prosecution</span>
-                  <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                </div>
-                <p class="text-xs text-slate-300 font-semibold">Legal Case Prep</p>
-                <p class="text-[10px] text-slate-500 mt-0.5">Shared with defense lawyers and legal prosecution</p>
-              </div>
-
-              <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 relative">
-                <div class="flex items-center justify-between mb-1.5">
-                  <span class="text-[11px] font-bold text-purple-400 uppercase tracking-wider">4. Courtroom</span>
-                  <span class="w-2 h-2 rounded-full bg-purple-400"></span>
-                </div>
-                <p class="text-xs text-slate-300 font-semibold">Trial & Final Verdict</p>
-                <p class="text-[10px] text-slate-500 mt-0.5">Admitted in court with full printable legal certificate</p>
-              </div>
+              <p class="text-xs text-slate-300 font-semibold">Analyzed by Scientists</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Examined without touching or altering the master copy</p>
             </div>
 
-            <!-- Active Evidence Table Preview -->
-            <div class="pt-3">
-              <div class="flex items-center justify-between mb-3">
-                <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Key Active Evidence Items</h4>
-                <button onclick="window.DEISApp.navigate('evidence')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition">
-                  <span>View All in Vault</span>
-                  <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                </button>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 relative">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">3. Prosecution</span>
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
               </div>
+              <p class="text-xs text-slate-300 font-semibold">Legal Case Prep</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Shared with defense lawyers and legal prosecution</p>
+            </div>
 
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs text-slate-300 border-collapse">
-                  <thead>
-                    <tr class="border-b border-slate-800 text-slate-400 font-mono text-[11px]">
-                      <th class="py-2.5 px-3">EVIDENCE ID</th>
-                      <th class="py-2.5 px-3">TITLE & CATEGORY</th>
-                      <th class="py-2.5 px-3">SHA-256 INTEGRITY HASH</th>
-                      <th class="py-2.5 px-3">CURRENT CUSTODIAN</th>
-                      <th class="py-2.5 px-3">STATUS</th>
-                      <th class="py-2.5 px-3 text-right">ACTION</th>
-                    </tr>
-                  </thead>
-                  <tbody class="divide-y divide-slate-800/60 font-sans">
-                    ${evidenceList.slice(0, 3).map(ev => `
-                      <tr class="hover:bg-slate-800/40 transition">
-                        <td class="py-2.5 px-3 font-mono font-semibold text-cyan-300">${ev.id}</td>
-                        <td class="py-2.5 px-3">
-                          <div class="font-medium text-slate-100">${ev.title}</div>
-                          <div class="text-[10px] text-slate-500">${ev.category} • ${ev.fileSize}</div>
-                        </td>
-                        <td class="py-2.5 px-3 font-mono text-[11px] text-slate-400">
-                          <span title="${ev.sha256}" class="bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">
-                            ${CryptoEngine.shortenHash(ev.sha256, 6)}
-                          </span>
-                        </td>
-                        <td class="py-2.5 px-3 font-mono text-[11px] text-slate-300">
-                          <span class="cyber-badge bg-slate-800 text-slate-200 border border-slate-700">${ev.currentCustodian}</span>
-                        </td>
-                        <td class="py-2.5 px-3">
-                          ${renderStatusBadge(ev.status)}
-                        </td>
-                        <td class="py-2.5 px-3 text-right">
-                          <button onclick="window.DEISApp.inspectEvidence('${ev.id}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition">
-                            Inspect
-                          </button>
-                        </td>
-                      </tr>
-                    `).join('')}
-                  </tbody>
-                </table>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 relative">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] font-bold text-purple-400 uppercase tracking-wider">4. Courtroom</span>
+                <span class="w-2 h-2 rounded-full bg-purple-400"></span>
               </div>
+              <p class="text-xs text-slate-300 font-semibold">Trial & Final Verdict</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Admitted in court with full printable legal certificate</p>
             </div>
           </div>
 
-          <!-- Quick Transfer & Integrity Tool Card -->
-          <div class="cyber-card p-5 rounded-xl space-y-4 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center gap-2 mb-3">
-                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400"></i>
-                <h3 class="font-bold text-slate-100 text-sm">Security & Compliance Center</h3>
-              </div>
-              <p class="text-xs text-slate-400 leading-relaxed">
-                DEIS enforces dual-party cryptographic non-repudiation. Transfers require originating officer signature, ephemeral TOTP handoff PIN, and recipient bitstream re-verification.
-              </p>
-
-              <!-- Quick Compliance badges -->
-              <div class="grid grid-cols-2 gap-2 mt-4">
-                <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
-                  <div class="text-[10px] text-slate-400 uppercase font-mono">Standard</div>
-                  <div class="text-xs font-bold text-slate-200 mt-0.5">ISO/IEC 27037</div>
-                  <div class="text-[10px] text-emerald-400 mt-0.5">Compliant</div>
-                </div>
-                <div class="p-2.5 rounded-lg bg-slate-900/90 border border-slate-800">
-                  <div class="text-[10px] text-slate-400 uppercase font-mono">Evidence Rule</div>
-                  <div class="text-xs font-bold text-slate-200 mt-0.5">FRE Rule 902(14)</div>
-                  <div class="text-[10px] text-emerald-400 mt-0.5">Self-Authenticating</div>
-                </div>
-              </div>
+          <!-- Active Evidence Table Preview -->
+          <div class="pt-3">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Key Active Evidence Items</h4>
+              <button onclick="window.DEISApp.navigate('evidence')" class="text-xs text-cyan-400 hover:text-cyan-300 font-medium flex items-center gap-1 transition">
+                <span>View All in Vault</span>
+                <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+              </button>
             </div>
 
-            <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span>Web Crypto Engine</span>
-              <span class="text-emerald-400 font-mono flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-emerald-400"></span> SubtleCrypto Ready
-              </span>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-300 border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 font-mono text-[11px]">
+                    <th class="py-2.5 px-3">EVIDENCE ID</th>
+                    <th class="py-2.5 px-3">TITLE & CATEGORY</th>
+                    <th class="py-2.5 px-3">SHA-256 INTEGRITY HASH</th>
+                    <th class="py-2.5 px-3">CURRENT CUSTODIAN</th>
+                    <th class="py-2.5 px-3">STATUS</th>
+                    <th class="py-2.5 px-3 text-right">ACTION</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 font-sans">
+                  ${evidenceList.slice(0, 3).map(ev => `
+                    <tr class="hover:bg-slate-800/40 transition">
+                      <td class="py-2.5 px-3 font-mono font-semibold text-cyan-300">${ev.id}</td>
+                      <td class="py-2.5 px-3">
+                        <div class="font-medium text-slate-100">${ev.title}</div>
+                        <div class="text-[10px] text-slate-500">${ev.category} • ${ev.fileSize}</div>
+                      </td>
+                      <td class="py-2.5 px-3 font-mono text-[11px] text-slate-400">
+                        <span title="${ev.sha256}" class="bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">
+                          ${CryptoEngine.shortenHash(ev.sha256, 6)}
+                        </span>
+                      </td>
+                      <td class="py-2.5 px-3 font-mono text-[11px] text-slate-300">
+                        <span class="cyber-badge bg-slate-800 text-slate-200 border border-slate-700">${ev.currentCustodian}</span>
+                      </td>
+                      <td class="py-2.5 px-3">
+                        ${renderStatusBadge(ev.status)}
+                      </td>
+                      <td class="py-2.5 px-3 text-right">
+                        <button onclick="window.DEISApp.inspectEvidence('${ev.id}')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition">
+                          Inspect
+                        </button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

@@ -170,19 +170,10 @@ const CertificateView = {
               </div>
             </div>
 
-            <!-- QR Code Verification & Legal Sign-off -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6 border-t-2 border-slate-700">
-              <!-- QR Token -->
-              <div class="flex flex-col items-center justify-center p-4 bg-slate-900 rounded-lg border border-slate-800 text-center">
-                <div id="cert-qr-container" class="w-24 h-24 bg-white p-1 rounded-md flex items-center justify-center">
-                  <!-- Canvas QR rendered here -->
-                </div>
-                <div class="text-[10px] font-mono text-slate-400 mt-2">SCAN TO AUDIT INTEGRITY</div>
-                <div class="text-[9px] text-slate-500">Public Verification Node</div>
-              </div>
-
+            <!-- Legal Sign-off & Judicial Certifications -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t-2 border-slate-700">
               <!-- Forensic Officer Certification -->
-              <div class="flex flex-col justify-between p-3 rounded-lg bg-slate-900/40 border border-slate-800">
+              <div class="flex flex-col justify-between p-4 rounded-lg bg-slate-900/40 border border-slate-800">
                 <div class="space-y-1">
                   <span class="text-[10px] text-slate-500 uppercase font-mono">Certified Forensic Examiner:</span>
                   <div class="font-bold text-slate-200 text-xs mt-1">Dr. Aris Thorne</div>
@@ -195,7 +186,7 @@ const CertificateView = {
               </div>
 
               <!-- Judicial / Custodial Officer Seal -->
-              <div class="flex flex-col justify-between p-3 rounded-lg bg-slate-900/40 border border-slate-800">
+              <div class="flex flex-col justify-between p-4 rounded-lg bg-slate-900/40 border border-slate-800">
                 <div class="space-y-1">
                   <span class="text-[10px] text-slate-500 uppercase font-mono">Judicial Registry / Receiving Clerk:</span>
                   <div class="font-bold text-slate-200 text-xs mt-1">Hon. Samuel Wright</div>
@@ -217,34 +208,11 @@ const CertificateView = {
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
       try { window.lucide.createIcons(); } catch (e) {}
     }
-    this.renderQRCode(currentEv);
   },
 
   changeEvidence(evId) {
     this.selectedEvidenceId = evId;
     this.render(document.getElementById('view-container'));
-  },
-
-  renderQRCode(evidence) {
-    if (!evidence) return;
-    const qrContainer = document.getElementById('cert-qr-container');
-    if (!qrContainer) return;
-
-    if (window.QRCode) {
-      qrContainer.innerHTML = '';
-      const payload = JSON.stringify({
-        system: 'DEIS',
-        evidenceId: evidence.id,
-        sha256: evidence.sha256,
-        custodian: evidence.currentCustodian,
-        verified: true
-      });
-      QRCode.toCanvas(payload, { width: 90, margin: 1 }, (err, canvas) => {
-        if (!err && canvas) {
-          qrContainer.appendChild(canvas);
-        }
-      });
-    }
   }
 };
 
