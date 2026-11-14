@@ -15,7 +15,8 @@ const DashboardView = {
       icon: 'shield-check',
       publicKey: '0x000000000000000000000000000000000000000000000000000000000000ADMIN'
     };
-    const evidenceList = store.getEvidenceList() || [];
+    const currentUser = store.getCurrentUser();
+    const evidenceList = (store && typeof store.getEvidencesForCurrentUser === 'function') ? store.getEvidencesForCurrentUser() : (store.getEvidenceList() || []);
     const transfers = store.getTransfers() || [];
     const chainBlocks = store.getChainBlocks() || [];
     const tamperAlert = (store.state && store.state.tamperAlertActive) || false;
@@ -91,18 +92,22 @@ const DashboardView = {
             </div>
 
             <div class="flex items-center gap-2.5 w-full md:w-auto flex-wrap">
-              <button onclick="window.DEISApp.openModal('create-case-modal')" class="flex-1 md:flex-initial px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-medium text-xs sm:text-sm rounded-lg flex items-center justify-center gap-2 transition cursor-pointer">
-                <i data-lucide="folder-plus" class="w-4 h-4 text-cyan-400"></i>
-                <span>+ Case File</span>
-              </button>
-              <button onclick="window.DEISApp.openModal('ingest-modal')" class="flex-1 md:flex-initial px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs sm:text-sm rounded-lg shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition cursor-pointer">
-                <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                <span>Add Evidence</span>
-              </button>
-              <button onclick="window.DEISApp.navigate('transfers')" class="flex-1 md:flex-initial px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs sm:text-sm rounded-lg border border-slate-700 flex items-center justify-center gap-2 transition cursor-pointer">
-                <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
-                <span>Transfer File</span>
-              </button>
+              ${(currentUser?.isAdmin || currentUser?.agencyId === 'police') ? `
+                <button onclick="window.DEISApp.openModal('create-case-modal')" class="flex-1 md:flex-initial px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-medium text-xs sm:text-sm rounded-lg flex items-center justify-center gap-2 transition cursor-pointer">
+                  <i data-lucide="folder-plus" class="w-4 h-4 text-cyan-400"></i>
+                  <span>+ Case File</span>
+                </button>
+                <button onclick="window.DEISApp.openModal('ingest-modal')" class="flex-1 md:flex-initial px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs sm:text-sm rounded-lg shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition cursor-pointer">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>Add Evidence</span>
+                </button>
+              ` : ''}
+              ${currentUser?.agencyId === 'court' ? '' : `
+                <button onclick="window.DEISApp.navigate('transfers')" class="flex-1 md:flex-initial px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs sm:text-sm rounded-lg border border-slate-700 flex items-center justify-center gap-2 transition cursor-pointer">
+                  <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+                  <span>Transfer File</span>
+                </button>
+              `}
             </div>
           </div>
         `}

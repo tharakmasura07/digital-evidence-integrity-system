@@ -66,7 +66,7 @@
             <span>Evidence Files</span>
           </a>
 
-          <a href="#transfers" data-route="transfers" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+          <a href="#transfers" id="nav-transfers-link" data-route="transfers" class="nav-link flex items-center justify-between px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
             <div class="flex items-center gap-3">
               <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
               <span>Transfer Evidence</span>
@@ -74,6 +74,12 @@
             <span id="nav-transfer-badge" class="hidden px-1.5 py-0.5 rounded-full bg-amber-500 text-navy-950 font-bold text-[10px] animate-pulse">
               0
             </span>
+          </a>
+
+          <!-- Forensic Officer Only: Forensic Reports -->
+          <a href="#forensic-reports" id="nav-forensic-reports-link" data-route="forensic-reports" class="nav-link hidden flex items-center gap-3 px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            <span>Forensic Reports</span>
           </a>
 
           <a href="#chain" data-route="chain" class="nav-link flex items-center gap-3 px-3.5 py-2.5 rounded-lg border text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
@@ -597,6 +603,7 @@
   <script src="js/views/chainView.js"></script>
   <script src="js/views/verifierView.js"></script>
   <script src="js/views/certificateView.js"></script>
+  <script src="js/views/forensicReportView.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

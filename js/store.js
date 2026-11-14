@@ -75,7 +75,7 @@ const INITIAL_AGENCIES = {
   }
 };
 
-// ONLY Administrator exists initially. All other users must be created by Admin!
+// Initial Department Officers (1 officer per agency for instant 1-click access)
 const INITIAL_USERS = [
   {
     id: 'usr_admin_0001',
@@ -93,6 +93,101 @@ const INITIAL_USERS = [
     department: 'Judicial Information Security Command',
     securityToken: 'TOKEN-ROOT-0001-FIPS',
     isAdmin: true,
+    createdAt: '2026-10-28 00:00:00 UTC',
+    lastLogin: '2026-10-28 12:40:00 UTC'
+  },
+  {
+    id: 'usr_police_7701',
+    name: 'Insp. Vikram Singh Rathod',
+    badgeId: 'CCIC-7701',
+    email: 'rathod@ccic.gov',
+    agencyId: 'police',
+    agencyName: 'Cyber Crime Investigation Cell (CCIC)',
+    jobTitle: 'Lead Cyber Investigator & Seizing Officer',
+    clearanceLevel: 'LEVEL 3 — OPERATIONAL CLEARANCE',
+    initials: 'VR',
+    color: 'cyan',
+    icon: 'shield-alert',
+    password: 'police@123',
+    department: 'Cyber Crime Investigation Cell (CCIC)',
+    securityToken: 'TOKEN-CCIC-7701-SEC',
+    isAdmin: false,
+    createdAt: '2026-10-28 00:00:00 UTC',
+    lastLogin: '2026-10-28 12:40:00 UTC'
+  },
+  {
+    id: 'usr_forensics_4402',
+    name: 'Dr. Aris Thorne',
+    badgeId: 'CFSL-4402',
+    email: 'thorne@cfsl.gov',
+    agencyId: 'forensics',
+    agencyName: 'Central Forensic Science Laboratory (CFSL)',
+    jobTitle: 'Chief Digital Forensic Examiner',
+    clearanceLevel: 'LEVEL 5 — SCIENTIFIC & CRYPTOGRAPHIC',
+    initials: 'AT',
+    color: 'emerald',
+    icon: 'microscope',
+    password: 'forensics@123',
+    department: 'Central Forensic Science Laboratory (CFSL)',
+    securityToken: 'TOKEN-CFSL-4402-SEC',
+    isAdmin: false,
+    createdAt: '2026-10-28 00:00:00 UTC',
+    lastLogin: '2026-10-28 12:40:00 UTC'
+  },
+  {
+    id: 'usr_court_1004',
+    name: 'Hon. Samuel Wright',
+    badgeId: 'JUD-1004',
+    email: 'wright@court.gov',
+    agencyId: 'court',
+    agencyName: 'Metropolitan High Judicial Registry (Courtroom 4)',
+    jobTitle: 'Presiding Judge & Magistrate',
+    clearanceLevel: 'LEVEL 5 — SUPREME BENCH JURISDICTION',
+    initials: 'SW',
+    color: 'purple',
+    icon: 'scale',
+    password: 'court@123',
+    department: 'Metropolitan High Judicial Registry',
+    securityToken: 'TOKEN-JUD-1004-SEC',
+    isAdmin: false,
+    createdAt: '2026-10-28 00:00:00 UTC',
+    lastLogin: '2026-10-28 12:40:00 UTC'
+  },
+  {
+    id: 'usr_prosecution_8831',
+    name: 'Adv. Elena Vance',
+    badgeId: 'ODA-8831',
+    email: 'vance@oda.gov',
+    agencyId: 'prosecution',
+    agencyName: 'Office of the District Attorney & State Prosecution',
+    jobTitle: 'Special Public Prosecutor',
+    clearanceLevel: 'LEVEL 4 — LEGAL CUSTODY & TRIAL',
+    initials: 'EV',
+    color: 'amber',
+    icon: 'briefcase',
+    password: 'prosecution@123',
+    department: 'Office of the District Attorney',
+    securityToken: 'TOKEN-ODA-8831-SEC',
+    isAdmin: false,
+    createdAt: '2026-10-28 00:00:00 UTC',
+    lastLogin: '2026-10-28 12:40:00 UTC'
+  },
+  {
+    id: 'usr_defense_5519',
+    name: 'Adv. Marcus Sterling',
+    badgeId: 'BAR-5519',
+    email: 'sterling@barcouncil.org',
+    agencyId: 'defense',
+    agencyName: 'Bar Association Criminal Defense Coalition',
+    jobTitle: 'Bar Council Defense Advocate',
+    clearanceLevel: 'CONSTITUTIONAL DISCOVERY ACCESS',
+    initials: 'MS',
+    color: 'rose',
+    icon: 'user-check',
+    password: 'defense@123',
+    department: 'Bar Association Criminal Defense Coalition',
+    securityToken: 'TOKEN-BAR-5519-SEC',
+    isAdmin: false,
     createdAt: '2026-10-28 00:00:00 UTC',
     lastLogin: '2026-10-28 12:40:00 UTC'
   }
@@ -201,6 +296,54 @@ const INITIAL_EVIDENCE = [
     classification: 'TOP-SECRET-FINANCIAL',
     tags: ['DarkLocker', 'NVMe', 'Financial Records', 'Extortion'],
     notes: 'Bit-by-bit physical cloning verified via Tableau forensic write-blocker T8u.'
+  },
+  {
+    id: 'EVD-2026-3391',
+    caseId: 'CASE-CR-2026-8831',
+    caseNumber: 'CR-2026-8831',
+    caseTitle: 'State v. Apex Infrastructure Breach',
+    title: 'Subpoenaed Encrypted Transaction Ledger (Exhibit C)',
+    category: 'Encrypted Archive',
+    fileType: 'encrypted-database (.sql.enc)',
+    fileSize: '1.2 GB',
+    fileName: 'EVD-2026-3391_offshore_ledger.enc',
+    storedFilePath: 'evidence_vault/Case_CR-2026-8831_Apex_Breach/EVD-2026-3391_offshore_ledger.enc',
+    seizureDate: '2026-10-24 16:30:00 UTC',
+    seizureLocation: 'Offshore Server Hosting Hub, Rack 12',
+    sourceDevice: 'Supermicro 1U Server (Asset #SM-9021)',
+    currentCustodian: 'ODA-LEGAL',
+    custodianAgency: 'prosecution',
+    status: 'IN_VAULT',
+    sha256: 'b2a15f8e91cd88a03f44e135912a781298c47f88410294719283746501928374',
+    sha512: '7b39c0498a7291048572910485729104857291048572910485729104857291048572910485729104857291048572910485729104857291048572910485729104',
+    digitalSeal: 'SEAL-2026-3391-VALID',
+    classification: 'RESTRICTED-LEGAL',
+    tags: ['Prosecution', 'Financial Ledger', 'Subpoena'],
+    notes: 'Cryptographic snapshot seized under court subpoena sub-clause 4A. Hash verified.'
+  },
+  {
+    id: 'EVD-2026-4402',
+    caseId: 'CASE-CR-2026-8831',
+    caseNumber: 'CR-2026-8831',
+    caseTitle: 'State v. Apex Infrastructure Breach',
+    title: 'Admitted Judicial Exhibit - Keylogger Binary & Assembly Dump',
+    category: 'Memory Dump',
+    fileType: 'pe-binary (.bin)',
+    fileSize: '48.2 MB',
+    fileName: 'EVD-2026-4402_apex_keylogger.bin',
+    storedFilePath: 'evidence_vault/Case_CR-2026-8831_Apex_Breach/EVD-2026-4402_apex_keylogger.bin',
+    seizureDate: '2026-10-25 11:00:00 UTC',
+    seizureLocation: 'Metropolitan Judicial Courtroom 4 Evidentiary Safe',
+    sourceDevice: 'SanDisk Extreme Pro USB 3.2 (Serial: SDCZ880-128G)',
+    currentCustodian: 'JUDICIAL-REG',
+    custodianAgency: 'court',
+    status: 'ADMITTED_IN_COURT',
+    sha256: 'c5d28a9103e48172938475619283746501928374650192837465019283746501',
+    sha512: '6a48d103948572910485729104857291048572910485729104857291048572910485729104857291048572910485729104857291048572910485729104857291',
+    digitalSeal: 'SEAL-2026-4402-VALID',
+    classification: 'JUDICIAL-CONFIDENTIAL',
+    tags: ['Court-Admitted', 'Judicial Vault', 'Exhibit-1'],
+    notes: 'Formally marked and entered into judicial record by presiding magistrate.'
   }
 ];
 
@@ -328,17 +471,15 @@ class DEISStore {
         loadedUsers = loadedUsers.filter(u => 
           u && 
           u.badgeId && 
-          !legacyDummyBadges.includes(u.badgeId) &&
-          !String(u.id || '').startsWith('usr_police') &&
-          !String(u.id || '').startsWith('usr_forensics') &&
-          !String(u.id || '').startsWith('usr_court') &&
-          !String(u.id || '').startsWith('usr_prosecution') &&
-          !String(u.id || '').startsWith('usr_defense')
+          !legacyDummyBadges.includes(u.badgeId)
         );
 
-        if (!loadedUsers.some(u => u && u.badgeId === 'ADMIN-0001')) {
-          loadedUsers.unshift(INITIAL_USERS[0]);
-        }
+        // Ensure all official default departmental officers are present
+        INITIAL_USERS.forEach(initUser => {
+          if (!loadedUsers.some(u => u && u.badgeId === initUser.badgeId)) {
+            loadedUsers.push(initUser);
+          }
+        });
 
         // Merge agencies so newly introduced agencies (like admin) are always present
         const mergedAgencies = {
@@ -569,6 +710,24 @@ class DEISStore {
     return this.state.cases || [];
   }
 
+  getCasesForCurrentUser() {
+    const user = this.getCurrentUser();
+    if (!user) return [];
+    // Bar Council (defense) and Root Admin have access to ALL cases
+    if (user.isAdmin || user.agencyId === 'defense') {
+      return [...(this.state.cases || [])];
+    }
+    const userEvidences = this.getEvidencesForCurrentUser();
+    const caseIdsFromEvidence = new Set(userEvidences.map(e => (e.caseId || e.caseNumber || '').toUpperCase()));
+
+    return (this.state.cases || []).filter(c => {
+      if (!c) return false;
+      if (c.leadAgency === user.agencyId) return true;
+      if (caseIdsFromEvidence.has((c.id || '').toUpperCase()) || caseIdsFromEvidence.has((c.caseNumber || '').toUpperCase())) return true;
+      return false;
+    });
+  }
+
   getCaseById(caseIdOrNumber) {
     if (!caseIdOrNumber) return null;
     const clean = String(caseIdOrNumber).trim().toUpperCase();
@@ -580,6 +739,11 @@ class DEISStore {
   }
 
   createCase(caseData) {
+    // Role-based Access Control: Only Police (CCIC) and Root Admin can create case files
+    if (this.currentUser && !this.currentUser.isAdmin && this.currentUser.agencyId !== 'police') {
+      throw new Error('UNAUTHORIZED: Only Cyber Crime Investigation Cell (Police) officers have authority to open and register new Case Files.');
+    }
+
     const cleanNumber = (caseData.caseNumber || '').trim().toUpperCase();
     if (!cleanNumber) throw new Error('Case Number / Identifier is required (e.g. CR-2026-9042).');
 
@@ -638,6 +802,31 @@ class DEISStore {
     return this.state.evidence;
   }
 
+  getEvidencesForCurrentUser() {
+    const user = this.getCurrentUser();
+    if (!user) return [];
+    // Bar Council (defense) and Root Admin have access to ALL evidences
+    if (user.isAdmin || user.agencyId === 'defense') {
+      return [...(this.state.evidence || [])];
+    }
+    const agency = this.state.agencies[user.agencyId];
+    const badgePrefix = agency ? (agency.badge || '').toUpperCase() : '';
+    const userBadge = (user.badgeId || '').toUpperCase();
+    const userName = (user.name || '').toLowerCase();
+
+    return (this.state.evidence || []).filter(e => {
+      if (!e) return false;
+      // Matching custodian agency
+      if (e.custodianAgency === user.agencyId) return true;
+      // Matching currentCustodian string
+      if (e.currentCustodian && badgePrefix && e.currentCustodian.toUpperCase().includes(badgePrefix)) return true;
+      // Matching officer badge/name
+      if (e.assignedOfficer && (e.assignedOfficer.toUpperCase().includes(userBadge) || e.assignedOfficer.toLowerCase().includes(userName))) return true;
+      if (e.seizingOfficer && (e.seizingOfficer.toUpperCase().includes(userBadge) || e.seizingOfficer.toLowerCase().includes(userName))) return true;
+      return false;
+    });
+  }
+
   getEvidenceById(id) {
     return this.state.evidence.find(e => e.id === id);
   }
@@ -652,6 +841,11 @@ class DEISStore {
   }
 
   async addEvidence(evidenceData) {
+    // Role-based Access Control: Only Police (CCIC) and Root Admin can ingest evidence
+    if (this.currentUser && !this.currentUser.isAdmin && this.currentUser.agencyId !== 'police') {
+      throw new Error('UNAUTHORIZED: Only Cyber Crime Investigation Cell (Police) officers have authority to register and ingest new evidence artifacts.');
+    }
+
     const activeOfficer = this.currentUser ? `${this.currentUser.name} (${this.currentUser.badgeId})` : 'Authorized Seizing Officer';
     
     // Resolve associated Case File
@@ -735,6 +929,11 @@ class DEISStore {
   }
 
   async initiateTransfer(transferParams) {
+    // Role-based Access Control: Judicial officers (Judge) cannot transfer evidence files
+    if (this.currentUser && this.currentUser.agencyId === 'court') {
+      throw new Error('UNAUTHORIZED: Judicial officers (Judge) hold review jurisdiction and cannot initiate evidence transfers.');
+    }
+
     const evidence = this.getEvidenceById(transferParams.evidenceId);
     if (!evidence) throw new Error('Evidence item not found');
 

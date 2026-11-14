@@ -8,7 +8,9 @@ const CertificateView = {
 
   render(container) {
     const store = window.DEISStore;
-    const evidenceList = store.getEvidenceList();
+    const evidenceList = (store && typeof store.getEvidencesForCurrentUser === 'function') 
+      ? store.getEvidencesForCurrentUser() 
+      : (store.getEvidenceList() || []);
     
     if (!this.selectedEvidenceId && evidenceList.length > 0) {
       this.selectedEvidenceId = evidenceList[0].id;

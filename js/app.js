@@ -8,7 +8,7 @@ class DEISApplication {
     this.currentRoute = 'dashboard';
     // Support direct route from URL hash if present
     const initialHash = (window.location.hash || '').replace('#', '').trim();
-    if (initialHash && ['dashboard', 'evidence', 'transfers', 'chain', 'verifier', 'certificate', 'users'].includes(initialHash)) {
+    if (initialHash && ['dashboard', 'evidence', 'transfers', 'forensic-reports', 'chain', 'verifier', 'certificate', 'users'].includes(initialHash)) {
       this.currentRoute = initialHash;
     }
     this.init();
@@ -24,7 +24,7 @@ class DEISApplication {
     // Support browser back/forward and hash clicks
     window.addEventListener('hashchange', () => {
       const hash = (window.location.hash || '').replace('#', '').trim();
-      if (hash && ['dashboard', 'evidence', 'transfers', 'chain', 'verifier', 'certificate', 'users'].includes(hash)) {
+      if (hash && ['dashboard', 'evidence', 'transfers', 'forensic-reports', 'chain', 'verifier', 'certificate', 'users'].includes(hash)) {
         if (hash !== this.currentRoute) {
           this.navigate(hash);
         }
@@ -97,9 +97,15 @@ class DEISApplication {
       container.classList.remove('p-0');
     }
 
-    // Role-based route guard: if on admin route but not admin, switch to dashboard
+    // Role-based route guard
     if (this.currentRoute === 'users' && !currentUser.isAdmin) {
       this.currentRoute = 'dashboard';
+    } else if (this.currentRoute === 'transfers' && currentUser.agencyId === 'court') {
+      this.currentRoute = 'dashboard';
+      this.showToast('Judicial Registry review mode: Transfer feature is not available for the Judge.', 'info');
+    } else if (this.currentRoute === 'forensic-reports' && currentUser.agencyId !== 'forensics' && !currentUser.isAdmin) {
+      this.currentRoute = 'dashboard';
+      this.showToast('Access restricted: Forensic Officer clearance required.', 'error');
     }
 
     this.renderCurrentView();
@@ -146,7 +152,25 @@ class DEISApplication {
           window.EvidenceView.render(container);
           break;
         case 'transfers':
+          if (window.DEISStore.getCurrentUser()?.agencyId === 'court') {
+            this.showToast('Judicial Registry review mode: Transfer feature is not available for the Judge.', 'info');
+            this.navigate('dashboard');
+            return;
+          }
           window.TransferView.render(container);
+          break;
+        case 'forensic-reports':
+          {
+            const u = window.DEISStore.getCurrentUser();
+            if (!u || (u.agencyId !== 'forensics' && !u.isAdmin)) {
+              this.showToast('Access restricted: Forensic Officer clearance required.', 'error');
+              this.navigate('dashboard');
+              return;
+            }
+            if (window.ForensicReportView && typeof window.ForensicReportView.render === 'function') {
+              window.ForensicReportView.render(container);
+            }
+          }
           break;
         case 'chain':
           window.ChainView.render(container);
@@ -225,6 +249,26 @@ class DEISApplication {
       }
     }
 
+    // Toggle Transfers Link (Hidden for Court/Judge role)
+    const navTransfersLink = document.getElementById('nav-transfers-link');
+    if (navTransfersLink) {
+      if (user.agencyId === 'court') {
+        navTransfersLink.classList.add('hidden');
+      } else {
+        navTransfersLink.classList.remove('hidden');
+      }
+    }
+
+    // Toggle Forensic Reports Link (Visible only for Forensic Officer role & Admin)
+    const navReportsLink = document.getElementById('nav-forensic-reports-link');
+    if (navReportsLink) {
+      if (user.agencyId === 'forensics' || user.isAdmin) {
+        navReportsLink.classList.remove('hidden');
+      } else {
+        navReportsLink.classList.add('hidden');
+      }
+    }
+
     // Dynamic Switch User Dropdown
     const userSelect = document.getElementById('role-switcher-select');
     if (userSelect) {
@@ -280,6 +324,17 @@ class DEISApplication {
 
   // --- Modal Helpers ---
   openModal(modalId, options = {}) {
+    const currentUser = window.DEISStore.getCurrentUser();
+    if ((modalId === 'ingest-modal' || modalId === 'create-case-modal') && currentUser && !currentUser.isAdmin && currentUser.agencyId !== 'police') {
+      this.showToast('Access Denied: Only Cyber Crime Investigation Cell (Police) can create cases or add evidence.', 'error');
+      return;
+    }
+
+    if (modalId === 'initiate-transfer-modal' && currentUser && currentUser.agencyId === 'court') {
+      this.showToast('Judicial Registry review mode: Transfer feature is not available for the Judge.', 'info');
+      return;
+    }
+
     if (modalId === 'ingest-modal') {
       this.populateCaseDropdown(options.caseId || options.caseNumber);
     }
@@ -702,10 +757,12 @@ class DEISApplication {
             <span>View Legal Certificate</span>
           </button>
 
-          <button onclick="window.DEISApp.closeModal('inspect-modal'); window.DEISApp.startTransferForEvidence('${ev.id}')" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg flex items-center gap-1.5 transition">
-            <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
-            <span>Initiate Transfer</span>
-          </button>
+          ${window.DEISStore.getCurrentUser()?.agencyId === 'court' ? '' : `
+            <button onclick="window.DEISApp.closeModal('inspect-modal'); window.DEISApp.startTransferForEvidence('${ev.id}')" class="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded-lg flex items-center gap-1.5 transition">
+              <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+              <span>Initiate Transfer</span>
+            </button>
+          `}
         </div>
       </div>
     `;
@@ -728,7 +785,13 @@ class DEISApplication {
     const store = window.DEISStore;
     const currentAgency = store.getCurrentAgency();
     const currentUser = store.getCurrentUser();
-    const evidenceList = store.getEvidenceList();
+
+    if (currentUser && currentUser.agencyId === 'court') {
+      this.showToast('Judicial Registry review mode: Transfer feature is not available for the Judge.', 'info');
+      return;
+    }
+
+    const evidenceList = store.getEvidencesForCurrentUser();
     const agencies = store.state.agencies;
 
     const selectEl = document.getElementById('transfer-evidence-select');

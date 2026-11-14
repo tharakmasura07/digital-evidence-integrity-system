@@ -18,8 +18,8 @@ const EvidenceView = {
 
   getCasesAndEvidence() {
     const store = window.DEISStore;
-    const cases = (store && typeof store.getCases === 'function') ? [...store.getCases()] : [];
-    const evidenceList = (store && typeof store.getEvidenceList === 'function') ? store.getEvidenceList() : [];
+    const cases = (store && typeof store.getCasesForCurrentUser === 'function') ? [...store.getCasesForCurrentUser()] : ((store && typeof store.getCases === 'function') ? [...store.getCases()] : []);
+    const evidenceList = (store && typeof store.getEvidencesForCurrentUser === 'function') ? store.getEvidencesForCurrentUser() : ((store && typeof store.getEvidenceList === 'function') ? store.getEvidenceList() : []);
 
     // Ensure all cases referenced by evidence exist in case registry
     const registeredCaseNumbers = new Set(cases.map(c => (c.caseNumber || '').trim().toUpperCase()));
@@ -119,18 +119,25 @@ const EvidenceView = {
             </p>
           </div>
 
-          <!-- Action Buttons -->
-          <div class="flex items-center gap-2.5 flex-wrap">
-            <button onclick="window.DEISApp.openModal('create-case-modal')" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-semibold text-xs rounded-lg transition flex items-center gap-2 shadow cursor-pointer">
-              <i data-lucide="folder-plus" class="w-4 h-4 text-cyan-400"></i>
-              <span>+ Open New Case File</span>
-            </button>
+          <!-- Action Buttons (Exclusive to Police & Root Admin) -->
+          ${(window.DEISStore.getCurrentUser()?.isAdmin || window.DEISStore.getCurrentUser()?.agencyId === 'police') ? `
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <button onclick="window.DEISApp.openModal('create-case-modal')" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-semibold text-xs rounded-lg transition flex items-center gap-2 shadow cursor-pointer">
+                <i data-lucide="folder-plus" class="w-4 h-4 text-cyan-400"></i>
+                <span>+ Open New Case File</span>
+              </button>
 
-            <button onclick="window.DEISApp.openModal('ingest-modal')" class="px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-semibold text-xs rounded-lg shadow-lg shadow-cyan-600/20 flex items-center gap-2 transition cursor-pointer">
-              <i data-lucide="plus-circle" class="w-4 h-4"></i>
-              <span>+ Ingest Evidence Artifact</span>
-            </button>
-          </div>
+              <button onclick="window.DEISApp.openModal('ingest-modal')" class="px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-semibold text-xs rounded-lg shadow-lg shadow-cyan-600/20 flex items-center gap-2 transition cursor-pointer">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>+ Ingest Evidence Artifact</span>
+              </button>
+            </div>
+          ` : `
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-[11px] text-slate-400 font-mono">
+              <i data-lucide="shield" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>EVIDENTIARY REVIEW ACCESS</span>
+            </div>
+          `}
         </div>
 
         <!-- Metric Summary Cards (Matches Screenshot) -->
@@ -392,14 +399,16 @@ const EvidenceView = {
               `;
             }).join('')}
 
-            <!-- Chrome Style '+' New Tab Button (Fixed width, never shrinks) -->
-            <button 
-              onclick="window.DEISApp.openModal('create-case-modal')" 
-              class="w-7 h-7 mb-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-cyan-300 border border-slate-800 flex items-center justify-center transition cursor-pointer shadow-sm shrink-0 ml-1"
-              title="Open a new Case File dossier"
-            >
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            </button>
+            <!-- Chrome Style '+' New Tab Button (Police & Admin Only) -->
+            ${(window.DEISStore.getCurrentUser()?.isAdmin || window.DEISStore.getCurrentUser()?.agencyId === 'police') ? `
+              <button 
+                onclick="window.DEISApp.openModal('create-case-modal')" 
+                class="w-7 h-7 mb-1 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-cyan-300 border border-slate-800 flex items-center justify-center transition cursor-pointer shadow-sm shrink-0 ml-1"
+                title="Open a new Case File dossier"
+              >
+                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              </button>
+            ` : ''}
           </div>
         </div>
 
@@ -432,17 +441,19 @@ const EvidenceView = {
               </div>
             </div>
 
-            <!-- Store Evidence Button into this specific Active Case -->
-            <div class="flex items-center gap-2 shrink-0 self-stretch sm:self-auto justify-end">
-              <button 
-                onclick="window.DEISApp.openStoreEvidenceModal('${activeCase.caseNumber}')" 
-                class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold text-xs rounded-lg shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition cursor-pointer"
-                title="Store and register a digital evidence artifact into Case ${activeCase.caseNumber}"
-              >
-                <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                <span>+ Store Evidence in this Case</span>
-              </button>
-            </div>
+            <!-- Store Evidence Button into this specific Active Case (Police & Admin Only) -->
+            ${(window.DEISStore.getCurrentUser()?.isAdmin || window.DEISStore.getCurrentUser()?.agencyId === 'police') ? `
+              <div class="flex items-center gap-2 shrink-0 self-stretch sm:self-auto justify-end">
+                <button 
+                  onclick="window.DEISApp.openStoreEvidenceModal('${activeCase.caseNumber}')" 
+                  class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white font-bold text-xs rounded-lg shadow-lg shadow-cyan-600/20 flex items-center justify-center gap-2 transition cursor-pointer"
+                  title="Store and register a digital evidence artifact into Case ${activeCase.caseNumber}"
+                >
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>+ Store Evidence in this Case</span>
+                </button>
+              </div>
+            ` : ''}
           </div>
 
           <!-- Active Case Metadata Strip -->
@@ -499,9 +510,11 @@ const EvidenceView = {
                       Reset Filters
                     </button>
                   ` : ''}
-                  <button onclick="window.DEISApp.openStoreEvidenceModal('${activeCase.caseNumber}')" class="px-3.5 py-1.5 bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 border border-cyan-500/40 rounded-lg text-xs font-semibold transition cursor-pointer">
-                    + Store First Evidence in Case ${activeCase.caseNumber}
-                  </button>
+                  ${(window.DEISStore.getCurrentUser()?.isAdmin || window.DEISStore.getCurrentUser()?.agencyId === 'police') ? `
+                    <button onclick="window.DEISApp.openStoreEvidenceModal('${activeCase.caseNumber}')" class="px-3.5 py-1.5 bg-cyan-600/30 hover:bg-cyan-600/50 text-cyan-300 border border-cyan-500/40 rounded-lg text-xs font-semibold transition cursor-pointer">
+                      + Store First Evidence in Case ${activeCase.caseNumber}
+                    </button>
+                  ` : ''}
                 </div>
               </div>
             ` : `
@@ -584,13 +597,15 @@ const EvidenceView = {
                             >
                               Verify
                             </button>
-                            <button 
-                              onclick="window.DEISApp.initiateTransfer('${item.id}')"
-                              class="px-2.5 py-1 bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/30 rounded text-[11px] font-semibold transition cursor-pointer"
-                              title="Initiate custody transfer to another operating body"
-                            >
-                              Transfer
-                            </button>
+                            ${window.DEISStore.getCurrentUser()?.agencyId === 'court' ? '' : `
+                              <button 
+                                onclick="window.DEISApp.initiateTransfer('${item.id}')"
+                                class="px-2.5 py-1 bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/30 rounded text-[11px] font-semibold transition cursor-pointer"
+                                title="Initiate custody transfer to another operating body"
+                              >
+                                Transfer
+                              </button>
+                            `}
                             <button 
                               onclick="window.DEISApp.inspectEvidence('${item.id}')"
                               class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] transition cursor-pointer"

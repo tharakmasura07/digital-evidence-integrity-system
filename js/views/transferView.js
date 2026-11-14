@@ -8,6 +8,32 @@ const TransferView = {
 
   render(container) {
     const store = window.DEISStore;
+    const currentUser = store.getCurrentUser();
+
+    // Judicial officer (Judge) restriction: court holds review jurisdiction and cannot transfer
+    if (currentUser && currentUser.agencyId === 'court') {
+      container.innerHTML = `
+        <div class="cyber-card p-8 rounded-xl border border-slate-800 text-center max-w-xl mx-auto space-y-4 my-8">
+          <div class="w-14 h-14 mx-auto rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center">
+            <i data-lucide="scale" class="w-7 h-7"></i>
+          </div>
+          <h3 class="text-base font-bold text-white tracking-wide">Judicial Registry — Evidentiary Review Mode</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            In accordance with judicial procedure, presiding magistrates hold evidentiary review and admission jurisdiction. Transfer issuance is restricted for the Judge role.
+          </p>
+          <div class="pt-2">
+            <button onclick="window.DEISApp.navigate('evidence')" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs rounded-lg transition">
+              View Admitted Evidence Files
+            </button>
+          </div>
+        </div>
+      `;
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        try { window.lucide.createIcons(); } catch (e) {}
+      }
+      return;
+    }
+
     const currentAgency = store.getCurrentAgency();
     const incoming = store.getIncomingTransfersForCurrentAgency();
     const outgoing = store.getOutgoingTransfersForCurrentAgency();
