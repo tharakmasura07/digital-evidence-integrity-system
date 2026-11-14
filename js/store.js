@@ -1272,10 +1272,6 @@ class DEISStore {
     return transfer;
   }
 
-    this.saveState();
-    return transfer;
-  }
-
   // --- Chain of Custody & Tamper Engine ---
   getChainBlocks() {
     return this.state.chainBlocks;
