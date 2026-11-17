@@ -279,49 +279,47 @@ const TransferView = {
         </div>
 
         <!-- Cryptographic Handoff Token & Acceptance Desk -->
-        ${(mode !== 'history' || canAccept || isReportTransfer || store.getForensicReportByEvidenceId(t.evidenceId)) ? `
-          <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-slate-800/80">
+        <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-slate-800/80">
+          <div class="flex items-center gap-2">
             ${mode !== 'history' ? `
-              <div class="flex items-center gap-2">
-                <div class="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 flex items-center gap-2">
-                  <i data-lucide="key" class="w-3.5 h-3.5 text-cyan-400"></i>
-                  <span>Handoff Token (PIN):</span>
-                  <strong class="text-cyan-400 tracking-wider text-sm select-all">${t.handoffToken}</strong>
-                </div>
-
-                <button onclick="window.DEISApp.showTransferToken('${t.transferId}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs flex items-center gap-1.5 transition cursor-pointer" title="View Handoff Token Details">
-                  <i data-lucide="eye" class="w-3.5 h-3.5 text-cyan-400"></i>
-                  <span>View PIN</span>
-                </button>
+              <div class="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 flex items-center gap-2">
+                <i data-lucide="key" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span>Handoff Token (PIN):</span>
+                <strong class="text-cyan-400 tracking-wider text-sm select-all">${t.handoffToken}</strong>
               </div>
-            ` : '<div></div>'}
+            ` : ''}
 
-            <div class="flex items-center gap-2 justify-end flex-wrap">
-              ${(isReportTransfer || store.getForensicReportByEvidenceId(t.evidenceId)) ? `
-                <button 
-                  onclick="window.DEISApp.viewForensicReport('${t.reportId || t.evidenceId}')" 
-                  class="px-3 py-1.5 bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/30 text-xs rounded-lg flex items-center gap-1.5 transition cursor-pointer"
-                  title="View full signed forensic laboratory examination dossier"
-                >
-                  <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                  <span>View Forensic Report</span>
-                </button>
-              ` : ''}
-
-              ${canAccept ? `
-                <button onclick="window.DEISApp.openAcceptTransferModal('${t.transferId}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition animate-pulse">
-                  <i data-lucide="shield-check" class="w-4 h-4"></i>
-                  <span>Verify & Accept Handoff</span>
-                </button>
-              ` : (mode !== 'history' ? `
-                <button onclick="window.DEISApp.printTransferReceipt('${t.transferId}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 flex items-center gap-1.5 transition">
-                  <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                  <span>Transfer Receipt</span>
-                </button>
-              ` : '')}
-            </div>
+            <button onclick="window.DEISApp.showTransferToken('${t.transferId}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs flex items-center gap-1.5 transition cursor-pointer" title="View Handoff Token Details">
+              <i data-lucide="eye" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>View PIN</span>
+            </button>
           </div>
-        ` : ''}
+
+          <div class="flex items-center gap-2 justify-end flex-wrap">
+            ${(isReportTransfer || store.getForensicReportByEvidenceId(t.evidenceId)) ? `
+              <button 
+                onclick="window.DEISApp.viewForensicReport('${t.reportId || t.evidenceId}')" 
+                class="px-3 py-1.5 bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/30 text-xs rounded-lg flex items-center gap-1.5 transition cursor-pointer"
+                title="View full signed forensic laboratory examination dossier"
+              >
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                <span>View Forensic Report</span>
+              </button>
+            ` : ''}
+
+            ${canAccept ? `
+              <button onclick="window.DEISApp.openAcceptTransferModal('${t.transferId}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition animate-pulse">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span>Verify & Accept Handoff</span>
+              </button>
+            ` : (mode !== 'history' ? `
+              <button onclick="window.DEISApp.printTransferReceipt('${t.transferId}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 flex items-center gap-1.5 transition">
+                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+                <span>Transfer Receipt</span>
+              </button>
+            ` : '')}
+          </div>
+        </div>
       </div>
     `;
   }
