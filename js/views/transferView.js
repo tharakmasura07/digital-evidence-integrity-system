@@ -281,14 +281,6 @@ const TransferView = {
         <!-- Cryptographic Handoff Token & Acceptance Desk -->
         <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-slate-800/80">
           <div class="flex items-center gap-2">
-            ${mode !== 'history' ? `
-              <div class="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 flex items-center gap-2">
-                <i data-lucide="key" class="w-3.5 h-3.5 text-cyan-400"></i>
-                <span>Handoff Token (PIN):</span>
-                <strong class="text-cyan-400 tracking-wider text-sm select-all">${t.handoffToken}</strong>
-              </div>
-            ` : ''}
-
             <button onclick="window.DEISApp.showTransferToken('${t.transferId}')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-xs flex items-center gap-1.5 transition cursor-pointer" title="View Handoff Token Details">
               <i data-lucide="eye" class="w-3.5 h-3.5 text-cyan-400"></i>
               <span>View PIN</span>
