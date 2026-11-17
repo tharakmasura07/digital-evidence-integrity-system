@@ -253,7 +253,14 @@ const DashboardView = {
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/60 font-sans">
-                  ${evidenceList.slice(0, 3).map(ev => `
+                  ${evidenceList.length === 0 ? `
+                    <tr>
+                      <td colspan="6" class="py-8 text-center text-slate-500 font-mono text-xs">
+                        <i data-lucide="inbox" class="w-6 h-6 mx-auto mb-2 text-slate-600"></i>
+                        No registered evidence exhibits found in the cryptographic vault.
+                      </td>
+                    </tr>
+                  ` : evidenceList.slice(0, 3).map(ev => `
                     <tr class="hover:bg-slate-800/40 transition">
                       <td class="py-2.5 px-3 font-mono font-semibold text-cyan-300">${ev.id}</td>
                       <td class="py-2.5 px-3">

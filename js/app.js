@@ -1020,7 +1020,7 @@ class DEISApplication {
     if (filtered.length === 0) {
       container.innerHTML = `
         <div class="py-6 text-center text-slate-500 font-mono text-xs">
-          No evidence artifacts match "${query}"
+          ${q ? `No evidence artifacts match "${query}"` : 'No evidence exhibits available in vault to transfer.'}
         </div>
       `;
       return;

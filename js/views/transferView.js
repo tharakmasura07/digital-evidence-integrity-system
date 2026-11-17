@@ -181,6 +181,20 @@ const TransferView = {
     }
 
     // All Transfers History
+    if (allTransfers.length === 0) {
+      return `
+        <div class="cyber-card p-12 text-center rounded-xl space-y-3">
+          <div class="w-12 h-12 mx-auto rounded-full bg-slate-800 text-slate-500 flex items-center justify-center">
+            <i data-lucide="inbox" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-slate-300 font-bold text-sm">No Transfer Records Logged</h3>
+          <p class="text-xs text-slate-500 max-w-sm mx-auto">
+            All cross-departmental evidence and forensic report transfers will be recorded and logged here.
+          </p>
+        </div>
+      `;
+    }
+
     return `
       <div class="space-y-4">
         ${allTransfers.map(t => this.renderTransferCard(t, 'history')).join('')}

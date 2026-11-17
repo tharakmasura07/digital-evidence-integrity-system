@@ -269,7 +269,7 @@ const VerifierView = {
     if (filtered.length === 0) {
       container.innerHTML = `
         <div class="py-6 text-center text-slate-500 font-mono text-xs">
-          No evidence artifacts match "${query}"
+          ${q ? `No evidence artifacts match "${query}"` : 'No registered evidence exhibits found in the vault.'}
         </div>
       `;
       return;
