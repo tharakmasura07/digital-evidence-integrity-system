@@ -487,7 +487,7 @@ class DEISApplication {
     const descriptionInput = document.getElementById('case-description-input');
     const caseNumber = (caseNumberInput ? caseNumberInput.value : '').trim().toUpperCase();
     const title = (titleInput ? titleInput.value : '').trim();
-    const category = document.getElementById('case-category-input').value;
+    const category = (document.getElementById('case-category-input')?.value || '').trim() || 'General Criminal Investigation';
     const leadAgency = document.getElementById('case-agency-input').value;
     const courtJurisdiction = document.getElementById('case-court-input').value.trim();
     const description = (descriptionInput ? descriptionInput.value : '').trim();
@@ -665,7 +665,7 @@ class DEISApplication {
     event.preventDefault();
     const title = document.getElementById('ingest-title').value.trim();
     const caseNumber = document.getElementById('ingest-case').value.trim();
-    const category = document.getElementById('ingest-category').value;
+    const category = (document.getElementById('ingest-category')?.value || '').trim() || 'General Forensics';
     const location = document.getElementById('ingest-location').value.trim() || 'Central Evidence Locker';
     const device = document.getElementById('ingest-device').value.trim() || 'Digital Storage Medium';
     const notes = document.getElementById('ingest-notes').value.trim() || 'Ingested via DEIS Web Console.';

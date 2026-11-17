@@ -45,3 +45,7 @@ node_modules/
 .env
 .env.local
 .env.*.local
+
+# Physical Evidence Vault Files (keep local disk files private and out of git)
+evidence_vault/*
+!evidence_vault/README.md
