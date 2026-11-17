@@ -40,6 +40,20 @@ class DEISApplication {
       });
     });
 
+    // Global listener to close evidence dropdown when clicking outside or pressing Escape
+    document.addEventListener('click', (e) => {
+      const container = document.getElementById('transfer-evidence-container');
+      if (container && !container.contains(e.target)) {
+        this.closeEvidenceDropdown();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.closeEvidenceDropdown();
+      }
+    });
+
     // Initial render
     this.checkAuthAndRender();
     this.updateHeaderAndUserProfile();
@@ -350,6 +364,9 @@ class DEISApplication {
     if (modalId === 'create-case-modal') {
       const errorBox = document.getElementById('create-case-error');
       if (errorBox) errorBox.classList.add('hidden');
+    }
+    if (modalId === 'initiate-transfer-modal') {
+      this.closeEvidenceDropdown();
     }
   }
 
@@ -849,13 +866,21 @@ class DEISApplication {
       officerInput.value = currentUser ? `${currentUser.name} (${currentUser.badgeId})` : (currentAgency.officers[0] || 'Investigating Officer');
     }
 
-    if (selectEl) {
-      selectEl.innerHTML = evidenceList.map(ev => `
-        <option value="${ev.id}" ${ev.id === preselectedEvidenceId ? 'selected' : ''}>
-          ${ev.id} — ${ev.title} (${ev.currentCustodian})
-        </option>
-      `).join('');
+    this.currentTransferEvidences = evidenceList || [];
+
+    // Preselect evidence in custom searchable dropdown
+    let chosenEvidenceId = preselectedEvidenceId;
+    if (!chosenEvidenceId && this.currentTransferEvidences.length > 0) {
+      chosenEvidenceId = this.currentTransferEvidences[0].id;
     }
+
+    this.selectEvidenceOption(chosenEvidenceId, false);
+
+    // Reset search query and render clean options list
+    const searchInput = document.getElementById('transfer-evidence-search');
+    if (searchInput) searchInput.value = '';
+    this.renderEvidenceOptions('');
+    this.closeEvidenceDropdown();
 
     if (reportSelectEl) {
       if (reportsList.length === 0) {
@@ -900,6 +925,138 @@ class DEISApplication {
 
     this.openModal('initiate-transfer-modal');
     safeCreateIcons();
+  }
+
+  toggleEvidenceDropdown() {
+    const dropdown = document.getElementById('transfer-evidence-dropdown');
+    if (!dropdown) return;
+    if (dropdown.classList.contains('hidden')) {
+      this.openEvidenceDropdown();
+    } else {
+      this.closeEvidenceDropdown();
+    }
+  }
+
+  openEvidenceDropdown() {
+    const dropdown = document.getElementById('transfer-evidence-dropdown');
+    const chevron = document.getElementById('transfer-evidence-chevron');
+    const searchInput = document.getElementById('transfer-evidence-search');
+    if (!dropdown) return;
+
+    dropdown.classList.remove('hidden');
+    if (chevron) chevron.classList.add('rotate-180');
+
+    this.renderEvidenceOptions(searchInput ? searchInput.value : '');
+
+    if (searchInput) {
+      setTimeout(() => searchInput.focus(), 50);
+    }
+  }
+
+  closeEvidenceDropdown() {
+    const dropdown = document.getElementById('transfer-evidence-dropdown');
+    const chevron = document.getElementById('transfer-evidence-chevron');
+    if (!dropdown) return;
+    dropdown.classList.add('hidden');
+    if (chevron) chevron.classList.remove('rotate-180');
+  }
+
+  filterEvidenceDropdown(val) {
+    this.renderEvidenceOptions(val);
+  }
+
+  clearEvidenceSearch() {
+    const searchInput = document.getElementById('transfer-evidence-search');
+    if (searchInput) {
+      searchInput.value = '';
+      searchInput.focus();
+    }
+    this.renderEvidenceOptions('');
+  }
+
+  renderEvidenceOptions(query = '') {
+    const container = document.getElementById('transfer-evidence-options');
+    if (!container) return;
+
+    const list = this.currentTransferEvidences || [];
+    const q = (query || '').toLowerCase().trim();
+    const selectedId = document.getElementById('transfer-evidence-select')?.value || '';
+
+    const filtered = !q ? list : list.filter(ev => {
+      return (ev.id && ev.id.toLowerCase().includes(q)) ||
+        (ev.title && ev.title.toLowerCase().includes(q)) ||
+        (ev.fileName && ev.fileName.toLowerCase().includes(q)) ||
+        (ev.caseNumber && ev.caseNumber.toLowerCase().includes(q)) ||
+        (ev.currentCustodian && ev.currentCustodian.toLowerCase().includes(q)) ||
+        (ev.fileType && ev.fileType.toLowerCase().includes(q));
+    });
+
+    const clearBtn = document.getElementById('transfer-evidence-clear-btn');
+    if (clearBtn) {
+      clearBtn.classList.toggle('hidden', !q);
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="py-6 text-center text-slate-500 font-mono text-xs">
+          No evidence artifacts match "${query}"
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map(ev => {
+      const isSelected = ev.id === selectedId;
+      return `
+        <div 
+          onclick="window.DEISApp.selectEvidenceOption('${ev.id}')"
+          class="p-2.5 rounded-lg cursor-pointer transition flex items-center justify-between text-xs hover:bg-slate-800/80 ${isSelected ? 'bg-cyan-950/60 border border-cyan-500/50 text-cyan-300' : 'text-slate-300 hover:text-white'}"
+        >
+          <div class="truncate pr-2">
+            <div class="font-bold font-mono ${isSelected ? 'text-cyan-300' : 'text-white'} flex items-center gap-1.5 truncate">
+              <span>${ev.id}</span>
+              <span class="text-slate-500 font-normal">—</span>
+              <span class="truncate font-sans font-medium">${ev.title}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono flex items-center gap-2 mt-0.5">
+              <span>📁 ${ev.caseNumber || 'CR-CASE'}</span>
+              <span>•</span>
+              <span>👤 ${ev.currentCustodian || 'Vault'}</span>
+            </div>
+          </div>
+          ${isSelected ? '<span class="text-cyan-400 font-bold shrink-0 font-mono text-xs">✓</span>' : ''}
+        </div>
+      `;
+    }).join('');
+
+    safeCreateIcons();
+  }
+
+  selectEvidenceOption(evidenceId, shouldClose = true) {
+    const list = this.currentTransferEvidences || [];
+    const ev = list.find(e => e.id === evidenceId);
+    const hiddenInput = document.getElementById('transfer-evidence-select');
+    const triggerText = document.getElementById('transfer-evidence-trigger-text');
+
+    if (hiddenInput) {
+      hiddenInput.value = evidenceId || '';
+    }
+
+    if (triggerText) {
+      if (ev) {
+        triggerText.innerHTML = `<span class="text-cyan-300 font-bold font-mono">${ev.id}</span> <span class="text-slate-400">—</span> <span class="text-white">${ev.title}</span> <span class="text-slate-400 font-normal">(${ev.currentCustodian})</span>`;
+      } else {
+        triggerText.textContent = 'Select an evidence artifact...';
+      }
+    }
+
+    // Refresh option list highlights if open
+    const searchInput = document.getElementById('transfer-evidence-search');
+    this.renderEvidenceOptions(searchInput ? searchInput.value : '');
+
+    if (shouldClose) {
+      this.closeEvidenceDropdown();
+    }
   }
 
   updateRecipientOfficerDatalist(targetAgencyId) {
