@@ -197,22 +197,8 @@ const ChainView = {
     return events.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   },
 
-  render(container) {
-    if (!container) return;
-
+  getFilteredAndPaginatedEvidence() {
     const evidenceList = this.getEvidenceList();
-    const cases = this.getCases();
-    const blocks = this.getChainBlocks();
-    const isSystemTampered = window.DEISStore ? window.DEISStore.state.tamperAlertActive : false;
-
-    // Default selection
-    if (!this.selectedEvidenceId || !evidenceList.some(e => e.id === this.selectedEvidenceId)) {
-      this.selectedEvidenceId = evidenceList.length > 0 ? evidenceList[0].id : '';
-    }
-
-    const selectedEv = evidenceList.find(e => e.id === this.selectedEvidenceId);
-
-    // Filter evidence registry
     const q = (this.searchQuery || '').toLowerCase().trim();
     let filteredEvidence = evidenceList.filter(ev => {
       if (!ev) return false;
@@ -238,7 +224,7 @@ const ChainView = {
       return this.sortOrder === 'NEWEST' ? dateB - dateA : dateA - dateB;
     });
 
-    // Evidence Registry Pagination calculation
+    // Pagination calculations
     const totalEvidenceCount = filteredEvidence.length;
     const totalRegistryPages = Math.max(1, Math.ceil(totalEvidenceCount / this.registryPageSize));
     if (this.registryPage > totalRegistryPages) {
@@ -250,6 +236,41 @@ const ChainView = {
     const startIdx = (this.registryPage - 1) * this.registryPageSize;
     const endIdx = Math.min(startIdx + this.registryPageSize, totalEvidenceCount);
     const paginatedEvidence = filteredEvidence.slice(startIdx, endIdx);
+
+    return {
+      evidenceList,
+      filteredEvidence,
+      totalEvidenceCount,
+      totalRegistryPages,
+      startIdx,
+      endIdx,
+      paginatedEvidence
+    };
+  },
+
+  render(container) {
+    if (!container) return;
+
+    const evidenceList = this.getEvidenceList();
+    const cases = this.getCases();
+    const blocks = this.getChainBlocks();
+    const isSystemTampered = window.DEISStore ? window.DEISStore.state.tamperAlertActive : false;
+
+    // Default selection
+    if (!this.selectedEvidenceId || !evidenceList.some(e => e.id === this.selectedEvidenceId)) {
+      this.selectedEvidenceId = evidenceList.length > 0 ? evidenceList[0].id : '';
+    }
+
+    const selectedEv = evidenceList.find(e => e.id === this.selectedEvidenceId);
+
+    // Filter evidence registry and compute pagination
+    const {
+      totalEvidenceCount,
+      totalRegistryPages,
+      startIdx,
+      endIdx,
+      paginatedEvidence
+    } = this.getFilteredAndPaginatedEvidence();
 
     // Compute 5 Stats Cards
     const totalEvidence = evidenceList.length;
@@ -355,7 +376,7 @@ const ChainView = {
                 Select an evidence artifact to load its complete chronological lifecycle and verify cryptographic custody.
               </p>
             </div>
-            <div class="text-xs font-mono text-slate-400">
+            <div id="chain-registry-count-container" class="text-xs font-mono text-slate-400">
               Showing <span class="text-cyan-400 font-bold">${totalEvidenceCount === 0 ? 0 : startIdx + 1}–${endIdx}</span> of <span class="text-white font-bold">${totalEvidenceCount}</span> exhibits ${totalEvidenceCount !== evidenceList.length ? `<span class="text-slate-500">(${evidenceList.length} total)</span>` : ''}
             </div>
           </div>
@@ -367,6 +388,7 @@ const ChainView = {
               <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
               <input 
                 type="text" 
+                id="chain-registry-search-input"
                 placeholder="Search ID, file name, case, officer, hash..." 
                 value="${this.searchQuery}"
                 oninput="ChainView.handleSearch(this.value)"
@@ -377,6 +399,7 @@ const ChainView = {
             <!-- Case Filter -->
             <div class="md:col-span-3">
               <select 
+                id="chain-registry-case-select"
                 onchange="ChainView.handleCaseFilter(this.value)"
                 class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2 px-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 cursor-pointer font-mono"
               >
@@ -390,6 +413,7 @@ const ChainView = {
             <!-- Status Filter -->
             <div class="md:col-span-3">
               <select 
+                id="chain-registry-status-select"
                 onchange="ChainView.handleStatusFilter(this.value)"
                 class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2 px-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 cursor-pointer"
               >
@@ -405,6 +429,7 @@ const ChainView = {
             <!-- Sort By Date -->
             <div class="md:col-span-2">
               <select 
+                id="chain-registry-sort-select"
                 onchange="ChainView.handleSort(this.value)"
                 class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2 px-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 cursor-pointer"
               >
@@ -414,158 +439,10 @@ const ChainView = {
             </div>
           </div>
 
-          <!-- Registry Table -->
-          <div class="overflow-x-auto rounded-lg border border-slate-800">
-            <table class="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr class="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-mono text-[10px]">
-                  <th class="py-2.5 px-3">EVIDENCE ID</th>
-                  <th class="py-2.5 px-3">FILE NAME</th>
-                  <th class="py-2.5 px-3">CASE ID</th>
-                  <th class="py-2.5 px-3">FILE TYPE</th>
-                  <th class="py-2.5 px-3">UPLOADED BY</th>
-                  <th class="py-2.5 px-3">REGISTERED DATE</th>
-                  <th class="py-2.5 px-3">SHA-256 (TRUNCATED)</th>
-                  <th class="py-2.5 px-3">STATUS</th>
-                  <th class="py-2.5 px-3 text-right">ACTION</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-800/60 font-sans">
-                ${paginatedEvidence.length === 0 ? `
-                  <tr>
-                    <td colspan="9" class="py-8 text-center text-slate-500 font-mono">
-                      No evidence records matched your search or filter criteria.
-                    </td>
-                  </tr>
-                ` : paginatedEvidence.map(item => {
-                  const isSelected = item.id === this.selectedEvidenceId;
-                  return `
-                    <tr 
-                      onclick="ChainView.selectEvidence('${item.id}')"
-                      class="transition cursor-pointer ${isSelected ? 'bg-cyan-950/30 border-l-4 border-cyan-400 text-white' : 'hover:bg-slate-800/40 text-slate-300'}"
-                    >
-                      <td class="py-3 px-3 font-mono font-bold ${isSelected ? 'text-cyan-300' : 'text-slate-200'}">
-                        ${item.id}
-                      </td>
-                      <td class="py-3 px-3 font-medium text-slate-200 max-w-[180px] truncate" title="${item.fileName || item.title}">
-                        ${item.fileName || `${item.id}_artifact.raw`}
-                      </td>
-                      <td class="py-3 px-3 font-mono text-[11px] text-slate-400">
-                        ${item.caseNumber || 'CR-CASE'}
-                      </td>
-                      <td class="py-3 px-3">
-                        <span class="cyber-badge bg-slate-800 text-slate-300 text-[10px] font-mono">
-                          ${item.fileType || item.category || 'raw-image'}
-                        </span>
-                      </td>
-                      <td class="py-3 px-3 text-slate-300 text-[11px]">
-                        ${item.currentCustodian || 'Authorized Seizing Officer'}
-                      </td>
-                      <td class="py-3 px-3 font-mono text-[10px] text-slate-400 whitespace-nowrap">
-                        ${item.seizureDate ? item.seizureDate.substring(0, 16) : '2026-10-24 03:15'}
-                      </td>
-                      <td class="py-3 px-3 font-mono text-[11px] text-cyan-300/90">
-                        <div class="flex items-center gap-1.5">
-                          <span>${item.sha256 ? item.sha256.substring(0, 8) + '...' + item.sha256.substring(item.sha256.length - 6) : 'Pending'}</span>
-                          <button 
-                            type="button"
-                            onclick="event.stopPropagation(); window.DEISApp.copyToClipboard('${item.sha256}', 'SHA-256 copied!')" 
-                            class="text-slate-500 hover:text-white cursor-pointer"
-                            title="Copy full SHA-256"
-                          >
-                            <i data-lucide="copy" class="w-3 h-3"></i>
-                          </button>
-                        </div>
-                      </td>
-                      <td class="py-3 px-3">
-                        ${window.renderStatusBadge ? window.renderStatusBadge(item.status) : `<span class="cyber-badge">${item.status}</span>`}
-                      </td>
-                      <td class="py-3 px-3 text-right">
-                        <button 
-                          type="button"
-                          onclick="event.stopPropagation(); ChainView.selectEvidence('${item.id}')"
-                          class="px-2.5 py-1 rounded text-[11px] font-semibold transition cursor-pointer ${isSelected ? 'bg-cyan-500 text-slate-950 font-bold shadow' : 'bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700'}"
-                        >
-                          ${isSelected ? 'Active ✓' : 'View Lifecycle'}
-                        </button>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
+          <!-- Registry Table & Pagination Container (Updates seamlessly without deselecting search input) -->
+          <div id="chain-registry-table-container">
+            ${this.renderRegistryTableAndPagination(paginatedEvidence, totalEvidenceCount, totalRegistryPages)}
           </div>
-
-          <!-- Registry Pagination Controls -->
-          ${totalEvidenceCount > 0 ? `
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800 text-xs">
-              <div class="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
-                <span>Page <strong class="text-cyan-400 font-mono">${this.registryPage}</strong> of <strong class="text-white font-mono">${totalRegistryPages}</strong></span>
-                <span class="text-slate-700">•</span>
-                <div class="flex items-center gap-1.5">
-                  <span class="text-slate-500">Per page:</span>
-                  <select 
-                    onchange="ChainView.setRegistryPageSize(this.value)" 
-                    class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:border-cyan-500 cursor-pointer font-mono"
-                  >
-                    <option value="5" ${this.registryPageSize === 5 ? 'selected' : ''}>5 exhibits</option>
-                    <option value="10" ${this.registryPageSize === 10 ? 'selected' : ''}>10 exhibits</option>
-                    <option value="20" ${this.registryPageSize === 20 ? 'selected' : ''}>20 exhibits</option>
-                    <option value="30" ${this.registryPageSize === 30 ? 'selected' : ''}>30 exhibits</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Page navigation buttons -->
-              <div class="flex items-center gap-1">
-                <button 
-                  onclick="ChainView.setRegistryPage(1)"
-                  ${this.registryPage === 1 ? 'disabled class="px-2 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed"' : 'class="px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer"'}
-                  title="First Page"
-                >
-                  <i data-lucide="chevrons-left" class="w-3.5 h-3.5"></i>
-                </button>
-                <button 
-                  onclick="ChainView.setRegistryPage(${this.registryPage - 1})"
-                  ${this.registryPage === 1 ? 'disabled class="px-2.5 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed text-xs"' : 'class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer text-xs"'}
-                  title="Previous Page"
-                >
-                  ‹ Prev
-                </button>
-
-                <!-- Page Number Pills -->
-                <div class="flex items-center gap-1 px-1">
-                  ${this.generatePageNumbers(this.registryPage, totalRegistryPages).map(p => `
-                    ${p === '...' ? `
-                      <span class="px-1 text-slate-500 font-mono">...</span>
-                    ` : `
-                      <button 
-                        onclick="ChainView.setRegistryPage(${p})" 
-                        class="w-7 h-7 rounded text-xs font-mono font-semibold transition cursor-pointer ${p === this.registryPage ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20' : 'bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300'}"
-                      >
-                        ${p}
-                      </button>
-                    `}
-                  `).join('')}
-                </div>
-
-                <button 
-                  onclick="ChainView.setRegistryPage(${this.registryPage + 1})"
-                  ${this.registryPage === totalRegistryPages ? 'disabled class="px-2.5 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed text-xs"' : 'class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer text-xs"'}
-                  title="Next Page"
-                >
-                  Next ›
-                </button>
-                <button 
-                  onclick="ChainView.setRegistryPage(${totalRegistryPages})"
-                  ${this.registryPage === totalRegistryPages ? 'disabled class="px-2 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed"' : 'class="px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer"'}
-                  title="Last Page"
-                >
-                  <i data-lucide="chevrons-right" class="w-3.5 h-3.5"></i>
-                </button>
-              </div>
-            </div>
-          ` : ''}
         </div>
 
         ${selectedEv ? `
@@ -901,36 +778,219 @@ const ChainView = {
   handleSearch(val) {
     this.searchQuery = val;
     this.registryPage = 1;
-    this.render(document.getElementById('view-container'));
+    this.renderRegistryContent();
   },
 
   handleCaseFilter(val) {
     this.caseFilter = val;
     this.registryPage = 1;
-    this.render(document.getElementById('view-container'));
+    this.renderRegistryContent();
   },
 
   handleStatusFilter(val) {
     this.statusFilter = val;
     this.registryPage = 1;
-    this.render(document.getElementById('view-container'));
+    this.renderRegistryContent();
   },
 
   handleSort(val) {
     this.sortOrder = val;
     this.registryPage = 1;
-    this.render(document.getElementById('view-container'));
+    this.renderRegistryContent();
   },
 
   setRegistryPage(page) {
     this.registryPage = Math.max(1, parseInt(page, 10) || 1);
-    this.render(document.getElementById('view-container'));
+    this.renderRegistryContent();
   },
 
   setRegistryPageSize(size) {
     this.registryPageSize = Math.max(1, parseInt(size, 10) || 10);
     this.registryPage = 1;
-    this.render(document.getElementById('view-container'));
+    this.renderRegistryContent();
+  },
+
+  renderRegistryContent() {
+    const data = this.getFilteredAndPaginatedEvidence();
+    const countContainer = document.getElementById('chain-registry-count-container');
+    if (countContainer) {
+      countContainer.innerHTML = `Showing <span class="text-cyan-400 font-bold">${data.totalEvidenceCount === 0 ? 0 : data.startIdx + 1}–${data.endIdx}</span> of <span class="text-white font-bold">${data.totalEvidenceCount}</span> exhibits ${data.totalEvidenceCount !== data.evidenceList.length ? `<span class="text-slate-500">(${data.evidenceList.length} total)</span>` : ''}`;
+    }
+    const tableContainer = document.getElementById('chain-registry-table-container');
+    if (tableContainer) {
+      tableContainer.innerHTML = this.renderRegistryTableAndPagination(data.paginatedEvidence, data.totalEvidenceCount, data.totalRegistryPages);
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        try { window.lucide.createIcons(); } catch (e) {}
+      }
+    }
+  },
+
+  renderRegistryTableAndPagination(paginatedEvidence, totalEvidenceCount, totalRegistryPages) {
+    return `
+      <!-- Registry Table -->
+      <div class="overflow-x-auto rounded-lg border border-slate-800">
+        <table class="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr class="bg-slate-950/80 border-b border-slate-800 text-slate-400 font-mono text-[10px]">
+              <th class="py-2.5 px-3">EVIDENCE ID</th>
+              <th class="py-2.5 px-3">FILE NAME</th>
+              <th class="py-2.5 px-3">CASE ID</th>
+              <th class="py-2.5 px-3">FILE TYPE</th>
+              <th class="py-2.5 px-3">UPLOADED BY</th>
+              <th class="py-2.5 px-3">REGISTERED DATE</th>
+              <th class="py-2.5 px-3">SHA-256 (TRUNCATED)</th>
+              <th class="py-2.5 px-3">STATUS</th>
+              <th class="py-2.5 px-3 text-right">ACTION</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-sans">
+            ${paginatedEvidence.length === 0 ? `
+              <tr>
+                <td colspan="9" class="py-8 text-center text-slate-500 font-mono">
+                  No evidence records matched your search or filter criteria.
+                </td>
+              </tr>
+            ` : paginatedEvidence.map(item => {
+              const isSelected = item.id === this.selectedEvidenceId;
+              return `
+                <tr 
+                  onclick="ChainView.selectEvidence('${item.id}')"
+                  class="transition cursor-pointer ${isSelected ? 'bg-cyan-950/30 border-l-4 border-cyan-400 text-white' : 'hover:bg-slate-800/40 text-slate-300'}"
+                >
+                  <td class="py-3 px-3 font-mono font-bold ${isSelected ? 'text-cyan-300' : 'text-slate-200'}">
+                    ${item.id}
+                  </td>
+                  <td class="py-3 px-3 font-medium text-slate-200 max-w-[180px] truncate" title="${item.fileName || item.title}">
+                    ${item.fileName || `${item.id}_artifact.raw`}
+                  </td>
+                  <td class="py-3 px-3 font-mono text-slate-400">
+                    ${item.caseNumber || 'CR-CASE'}
+                  </td>
+                  <td class="py-3 px-3">
+                    <span class="cyber-badge bg-slate-800 text-slate-300 text-[10px] font-mono">
+                      ${(item.fileType || 'BIN').toUpperCase()}
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 font-mono text-slate-400 text-[11px]">
+                    ${item.custodianAgency || 'DEIS-VAULT'}
+                  </td>
+                  <td class="py-3 px-3 font-mono text-slate-400 text-[11px]">
+                    ${(item.seizureDate || '').substring(0, 16).replace('T', ' ')}
+                  </td>
+                  <td class="py-3 px-3 font-mono text-cyan-400/90 text-[11px]">
+                    <span class="inline-flex items-center gap-1">
+                      <code>${item.sha256 ? `${item.sha256.substring(0, 8)}...${item.sha256.substring(item.sha256.length - 6)}` : 'N/A'}</code>
+                      <button 
+                        onclick="event.stopPropagation(); navigator.clipboard.writeText('${item.sha256}'); window.DEISApp.showToast('Full SHA-256 copied to clipboard!', 'info')"
+                        class="text-slate-500 hover:text-cyan-300 transition"
+                        title="Copy full SHA-256"
+                      >
+                        <i data-lucide="copy" class="w-3 h-3"></i>
+                      </button>
+                    </span>
+                  </td>
+                  <td class="py-3 px-3">
+                    <span class="cyber-badge ${
+                      item.status === 'IN_VAULT' ? 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40' :
+                      (item.status === 'UNDER_ANALYSIS' ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40' :
+                      (item.status === 'ADMITTED_IN_COURT' ? 'bg-purple-500/15 text-purple-300 border-purple-500/40' :
+                      (item.status === 'IN_TRANSIT' ? 'bg-amber-500/15 text-amber-300 border-amber-500/40' : 'bg-rose-500/15 text-rose-300 border-rose-500/40')))
+                    } text-[10px] font-mono flex items-center gap-1 w-fit">
+                      <span class="w-1.5 h-1.5 rounded-full ${
+                        item.status === 'IN_VAULT' ? 'bg-cyan-400' :
+                        (item.status === 'UNDER_ANALYSIS' ? 'bg-emerald-400' :
+                        (item.status === 'ADMITTED_IN_COURT' ? 'bg-purple-400' :
+                        (item.status === 'IN_TRANSIT' ? 'bg-amber-400' : 'bg-rose-400')))
+                      }"></span>
+                      ${item.status.replace(/_/g, ' ')}
+                    </span>
+                  </td>
+                  <td class="py-3 px-3 text-right">
+                    <button 
+                      onclick="event.stopPropagation(); ChainView.selectEvidence('${item.id}')"
+                      class="px-2.5 py-1 text-[11px] rounded bg-slate-800 hover:bg-cyan-600 hover:text-white text-slate-300 border border-slate-700 transition"
+                    >
+                      View Lifecycle
+                    </button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Registry Pagination Controls -->
+      ${totalEvidenceCount > 0 ? `
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800 text-xs">
+          <div class="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
+            <span>Page <strong class="text-cyan-400 font-mono">${this.registryPage}</strong> of <strong class="text-white font-mono">${totalRegistryPages}</strong></span>
+            <span class="text-slate-700">•</span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-slate-500">Per page:</span>
+              <select 
+                onchange="ChainView.setRegistryPageSize(this.value)" 
+                class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:border-cyan-500 cursor-pointer font-mono"
+              >
+                <option value="5" ${this.registryPageSize === 5 ? 'selected' : ''}>5 exhibits</option>
+                <option value="10" ${this.registryPageSize === 10 ? 'selected' : ''}>10 exhibits</option>
+                <option value="20" ${this.registryPageSize === 20 ? 'selected' : ''}>20 exhibits</option>
+                <option value="30" ${this.registryPageSize === 30 ? 'selected' : ''}>30 exhibits</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Page navigation buttons -->
+          <div class="flex items-center gap-1">
+            <button 
+              onclick="ChainView.setRegistryPage(1)"
+              ${this.registryPage === 1 ? 'disabled class="px-2 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed"' : 'class="px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer"'}
+              title="First Page"
+            >
+              <i data-lucide="chevrons-left" class="w-3.5 h-3.5"></i>
+            </button>
+            <button 
+              onclick="ChainView.setRegistryPage(${this.registryPage - 1})"
+              ${this.registryPage === 1 ? 'disabled class="px-2.5 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed text-xs"' : 'class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer text-xs"'}
+              title="Previous Page"
+            >
+              ‹ Prev
+            </button>
+
+            <!-- Page Number Pills -->
+            <div class="flex items-center gap-1 px-1">
+              ${this.generatePageNumbers(this.registryPage, totalRegistryPages).map(p => `
+                ${p === '...' ? `
+                  <span class="px-1 text-slate-500 font-mono">...</span>
+                ` : `
+                  <button 
+                    onclick="ChainView.setRegistryPage(${p})" 
+                    class="w-7 h-7 rounded text-xs font-mono font-semibold transition cursor-pointer ${p === this.registryPage ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20' : 'bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300'}"
+                  >
+                    ${p}
+                  </button>
+                `}
+              `).join('')}
+            </div>
+
+            <button 
+              onclick="ChainView.setRegistryPage(${this.registryPage + 1})"
+              ${this.registryPage === totalRegistryPages ? 'disabled class="px-2.5 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed text-xs"' : 'class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer text-xs"'}
+              title="Next Page"
+            >
+              Next ›
+            </button>
+            <button 
+              onclick="ChainView.setRegistryPage(${totalRegistryPages})"
+              ${this.registryPage === totalRegistryPages ? 'disabled class="px-2.5 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed"' : 'class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer"'}
+              title="Last Page"
+            >
+              <i data-lucide="chevrons-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      ` : ''}
+    `;
   },
 
   generatePageNumbers(current, total) {

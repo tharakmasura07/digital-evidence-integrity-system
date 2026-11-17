@@ -71,24 +71,67 @@ const VerifierView = {
           <!-- Step 1 & Step 2 Controls -->
           <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
             <!-- Step 1: Select Target Evidence -->
-            <div class="md:col-span-6 space-y-2 p-4 rounded-xl bg-slate-900/60 border border-slate-800">
+            <div id="target-evidence-container" class="md:col-span-6 space-y-2 p-4 rounded-xl bg-slate-900/60 border border-slate-800 relative">
               <label class="block text-xs font-bold text-slate-200 flex items-center gap-1.5">
                 <span class="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[10px] font-mono flex items-center justify-center">1</span>
                 <span>Select Target Vault Evidence:</span>
               </label>
 
-              <select 
-                id="target-evidence-select" 
-                onchange="VerifierView.handleTargetSelected(this.value)"
-                class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 focus:outline-none focus:border-cyan-500 cursor-pointer font-mono"
-              >
-                ${evidenceList.length === 0 ? '<option value="">No evidence artifacts found in vault</option>' : ''}
-                ${evidenceList.map(ev => `
-                  <option value="${ev.id}" ${this.selectedEvidenceId === ev.id ? 'selected' : ''}>
-                    [${ev.id}] ${ev.title} (${ev.caseNumber || 'Case File'})
-                  </option>
-                `).join('')}
-              </select>
+              <!-- Hidden input for backwards compatibility -->
+              <input type="hidden" id="target-evidence-select" value="${this.selectedEvidenceId || ''}" />
+
+              <!-- Searchable Dropdown Trigger (like Transfer Evidence) -->
+              <div class="relative">
+                <button 
+                  type="button" 
+                  id="target-evidence-trigger"
+                  onclick="VerifierView.toggleTargetDropdown()" 
+                  class="w-full bg-slate-950 border border-slate-700 hover:border-cyan-500/60 rounded-lg p-2.5 text-left text-slate-200 text-xs flex items-center justify-between transition cursor-pointer"
+                >
+                  <div class="flex items-center gap-2 truncate pr-2">
+                    <i data-lucide="database" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+                    <span id="target-evidence-trigger-text" class="truncate font-mono">
+                      ${(() => {
+                        const sel = evidenceList.find(e => e.id === this.selectedEvidenceId);
+                        if (sel) {
+                          return `<span class="text-cyan-300 font-bold font-mono">${sel.id}</span> <span class="text-slate-400">—</span> <span class="text-white">${sel.title}</span> <span class="text-slate-400 font-normal">(${sel.caseNumber || 'Case File'})</span>`;
+                        }
+                        return 'Select an evidence artifact...';
+                      })()}
+                    </span>
+                  </div>
+                  <i data-lucide="chevron-down" id="target-evidence-chevron" class="w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200"></i>
+                </button>
+
+                <!-- Searchable Dropdown Overlay -->
+                <div 
+                  id="target-evidence-dropdown" 
+                  class="hidden absolute left-0 right-0 top-full mt-1.5 z-50 bg-slate-950 border border-cyan-500/40 rounded-xl shadow-2xl p-2.5 space-y-2 backdrop-blur-md"
+                >
+                  <!-- Search Bar inside Dropdown -->
+                  <div class="relative">
+                    <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <input 
+                      type="text" 
+                      id="target-evidence-search" 
+                      placeholder="Search ID, title, case, or officer..." 
+                      oninput="VerifierView.filterTargetDropdown(this.value)"
+                      class="w-full bg-slate-900 border border-slate-700 rounded-lg pl-8 pr-7 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 font-mono"
+                    />
+                    <button 
+                      type="button" 
+                      id="target-evidence-clear-btn"
+                      onclick="VerifierView.clearTargetSearch()" 
+                      class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 text-xs font-mono"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <!-- Scrollable Options List -->
+                  <div id="target-evidence-options" class="max-h-60 overflow-y-auto space-y-1 pr-1"></div>
+                </div>
+              </div>
 
               <div class="text-[11px] text-slate-400 font-mono flex items-center justify-between pt-1">
                 <span>Total registered artifacts: ${evidenceList.length}</span>
@@ -147,9 +190,159 @@ const VerifierView = {
   },
 
   selectTargetEvidence(evidenceId) {
+    this.selectTargetOption(evidenceId);
+  },
+
+  toggleTargetDropdown() {
+    const dropdown = document.getElementById('target-evidence-dropdown');
+    if (!dropdown) return;
+    if (dropdown.classList.contains('hidden')) {
+      this.openTargetDropdown();
+    } else {
+      this.closeTargetDropdown();
+    }
+  },
+
+  openTargetDropdown() {
+    const dropdown = document.getElementById('target-evidence-dropdown');
+    const chevron = document.getElementById('target-evidence-chevron');
+    const searchInput = document.getElementById('target-evidence-search');
+    if (!dropdown) return;
+
+    dropdown.classList.remove('hidden');
+    if (chevron) chevron.classList.add('rotate-180');
+
+    this.renderTargetOptions(searchInput ? searchInput.value : '');
+
+    if (searchInput) {
+      setTimeout(() => searchInput.focus(), 50);
+    }
+  },
+
+  closeTargetDropdown() {
+    const dropdown = document.getElementById('target-evidence-dropdown');
+    const chevron = document.getElementById('target-evidence-chevron');
+    if (!dropdown) return;
+    dropdown.classList.add('hidden');
+    if (chevron) chevron.classList.remove('rotate-180');
+  },
+
+  filterTargetDropdown(val) {
+    this.renderTargetOptions(val);
+  },
+
+  clearTargetSearch() {
+    const searchInput = document.getElementById('target-evidence-search');
+    if (searchInput) {
+      searchInput.value = '';
+      searchInput.focus();
+    }
+    this.renderTargetOptions('');
+  },
+
+  renderTargetOptions(query = '') {
+    const container = document.getElementById('target-evidence-options');
+    if (!container) return;
+
+    const store = window.DEISStore;
+    const list = (store && typeof store.getEvidencesForCurrentUser === 'function') 
+      ? store.getEvidencesForCurrentUser() 
+      : ((store && typeof store.getEvidenceList === 'function') ? store.getEvidenceList() : []);
+
+    const q = (query || '').toLowerCase().trim();
+    const selectedId = this.selectedEvidenceId || '';
+
+    const filtered = !q ? list : list.filter(ev => {
+      return (ev.id && ev.id.toLowerCase().includes(q)) ||
+        (ev.title && ev.title.toLowerCase().includes(q)) ||
+        (ev.fileName && ev.fileName.toLowerCase().includes(q)) ||
+        (ev.caseNumber && ev.caseNumber.toLowerCase().includes(q)) ||
+        (ev.currentCustodian && ev.currentCustodian.toLowerCase().includes(q)) ||
+        (ev.fileType && ev.fileType.toLowerCase().includes(q));
+    });
+
+    const clearBtn = document.getElementById('target-evidence-clear-btn');
+    if (clearBtn) {
+      clearBtn.classList.toggle('hidden', !q);
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="py-6 text-center text-slate-500 font-mono text-xs">
+          No evidence artifacts match "${query}"
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map(ev => {
+      const isSelected = ev.id === selectedId;
+      return `
+        <div 
+          onclick="VerifierView.selectTargetOption('${ev.id}')"
+          class="p-2.5 rounded-lg cursor-pointer transition flex items-center justify-between text-xs hover:bg-slate-800/80 ${isSelected ? 'bg-cyan-950/60 border border-cyan-500/50 text-cyan-300' : 'text-slate-300 hover:text-white'}"
+        >
+          <div class="truncate pr-2">
+            <div class="font-bold font-mono ${isSelected ? 'text-cyan-300' : 'text-white'} flex items-center gap-1.5 truncate">
+              <span>${ev.id}</span>
+              <span class="text-slate-500 font-normal">—</span>
+              <span class="truncate font-sans font-medium">${ev.title}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 font-mono flex items-center gap-2 mt-0.5">
+              <span>📁 ${ev.caseNumber || 'CR-CASE'}</span>
+              <span>•</span>
+              <span>👤 ${ev.currentCustodian || 'Vault'}</span>
+            </div>
+          </div>
+          ${isSelected ? '<span class="text-cyan-400 font-bold shrink-0 font-mono text-xs">✓</span>' : ''}
+        </div>
+      `;
+    }).join('');
+
+    if (window.lucide && typeof window.lucide.createIcons === 'function') {
+      try { window.lucide.createIcons(); } catch (e) {}
+    }
+  },
+
+  selectTargetOption(evidenceId, shouldClose = true) {
     this.selectedEvidenceId = evidenceId;
     this.targetComparisonResult = null;
-    this.render(document.getElementById('view-container'));
+
+    const hiddenInput = document.getElementById('target-evidence-select');
+    if (hiddenInput) {
+      hiddenInput.value = evidenceId || '';
+    }
+
+    const store = window.DEISStore;
+    const evidenceList = (store && typeof store.getEvidencesForCurrentUser === 'function') 
+      ? store.getEvidencesForCurrentUser() 
+      : ((store && typeof store.getEvidenceList === 'function') ? store.getEvidenceList() : []);
+    const ev = evidenceList.find(e => e.id === evidenceId);
+
+    const triggerText = document.getElementById('target-evidence-trigger-text');
+    if (triggerText) {
+      if (ev) {
+        triggerText.innerHTML = `<span class="text-cyan-300 font-bold font-mono">${ev.id}</span> <span class="text-slate-400">—</span> <span class="text-white">${ev.title}</span> <span class="text-slate-400 font-normal">(${ev.caseNumber || 'Case File'})</span>`;
+      } else {
+        triggerText.textContent = 'Select an evidence artifact...';
+      }
+    }
+
+    // Refresh option list highlights if open
+    const searchInput = document.getElementById('target-evidence-search');
+    this.renderTargetOptions(searchInput ? searchInput.value : '');
+
+    if (shouldClose) {
+      this.closeTargetDropdown();
+    }
+
+    const container = document.getElementById('target-results-container');
+    if (container) {
+      container.innerHTML = this.renderTargetComparison();
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        try { window.lucide.createIcons(); } catch (e) {}
+      }
+    }
   },
 
   setupDragAndDrop() {
@@ -248,6 +441,11 @@ const VerifierView = {
 
     const select = document.getElementById('target-evidence-select');
     if (select) select.value = targetEv.id;
+
+    const triggerText = document.getElementById('target-evidence-trigger-text');
+    if (triggerText) {
+      triggerText.innerHTML = `<span class="text-cyan-300 font-bold font-mono">${targetEv.id}</span> <span class="text-slate-400">—</span> <span class="text-white">${targetEv.title}</span> <span class="text-slate-400 font-normal">(${targetEv.caseNumber || 'Case File'})</span>`;
+    }
 
     const container = document.getElementById('target-results-container');
     if (container) {

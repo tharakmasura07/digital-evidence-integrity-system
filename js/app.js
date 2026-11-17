@@ -40,17 +40,26 @@ class DEISApplication {
       });
     });
 
-    // Global listener to close evidence dropdown when clicking outside or pressing Escape
+    // Global listener to close evidence dropdowns when clicking outside or pressing Escape
     document.addEventListener('click', (e) => {
       const container = document.getElementById('transfer-evidence-container');
       if (container && !container.contains(e.target)) {
         this.closeEvidenceDropdown();
+      }
+      const targetContainer = document.getElementById('target-evidence-container');
+      if (targetContainer && !targetContainer.contains(e.target)) {
+        if (window.VerifierView && typeof window.VerifierView.closeTargetDropdown === 'function') {
+          window.VerifierView.closeTargetDropdown();
+        }
       }
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         this.closeEvidenceDropdown();
+        if (window.VerifierView && typeof window.VerifierView.closeTargetDropdown === 'function') {
+          window.VerifierView.closeTargetDropdown();
+        }
       }
     });
 

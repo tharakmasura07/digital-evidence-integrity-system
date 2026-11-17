@@ -304,12 +304,7 @@ const TransferView = {
                 <i data-lucide="shield-check" class="w-4 h-4"></i>
                 <span>Verify & Accept Handoff</span>
               </button>
-            ` : (mode !== 'history' ? `
-              <button onclick="window.DEISApp.printTransferReceipt('${t.transferId}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs rounded-lg border border-slate-700 flex items-center gap-1.5 transition">
-                <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-                <span>Transfer Receipt</span>
-              </button>
-            ` : '')}
+            ` : ''}
           </div>
         </div>
       </div>
