@@ -19,6 +19,8 @@ const ChainView = {
   categoryFilter: 'ALL',
   statusFilter: 'ALL',
   sortOrder: 'NEWEST',
+  registryPage: 1,
+  registryPageSize: 10,
   verificationState: {},
   auditValidationResult: null,
 
@@ -232,6 +234,19 @@ const ChainView = {
       return this.sortOrder === 'NEWEST' ? dateB - dateA : dateA - dateB;
     });
 
+    // Evidence Registry Pagination calculation
+    const totalEvidenceCount = filteredEvidence.length;
+    const totalRegistryPages = Math.max(1, Math.ceil(totalEvidenceCount / this.registryPageSize));
+    if (this.registryPage > totalRegistryPages) {
+      this.registryPage = totalRegistryPages;
+    }
+    if (this.registryPage < 1) {
+      this.registryPage = 1;
+    }
+    const startIdx = (this.registryPage - 1) * this.registryPageSize;
+    const endIdx = Math.min(startIdx + this.registryPageSize, totalEvidenceCount);
+    const paginatedEvidence = filteredEvidence.slice(startIdx, endIdx);
+
     // Compute 5 Stats Cards
     const totalEvidence = evidenceList.length;
     const totalEvents = blocks.length + this.getTransfers().length;
@@ -337,7 +352,7 @@ const ChainView = {
               </p>
             </div>
             <div class="text-xs font-mono text-slate-400">
-              Showing ${filteredEvidence.length} of ${evidenceList.length} evidence exhibits
+              Showing <span class="text-cyan-400 font-bold">${totalEvidenceCount === 0 ? 0 : startIdx + 1}–${endIdx}</span> of <span class="text-white font-bold">${totalEvidenceCount}</span> exhibits ${totalEvidenceCount !== evidenceList.length ? `<span class="text-slate-500">(${evidenceList.length} total)</span>` : ''}
             </div>
           </div>
 
@@ -412,13 +427,13 @@ const ChainView = {
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-800/60 font-sans">
-                ${filteredEvidence.length === 0 ? `
+                ${paginatedEvidence.length === 0 ? `
                   <tr>
                     <td colspan="9" class="py-8 text-center text-slate-500 font-mono">
                       No evidence records matched your search or filter criteria.
                     </td>
                   </tr>
-                ` : filteredEvidence.map(item => {
+                ` : paginatedEvidence.map(item => {
                   const isSelected = item.id === this.selectedEvidenceId;
                   return `
                     <tr 
@@ -476,6 +491,77 @@ const ChainView = {
               </tbody>
             </table>
           </div>
+
+          <!-- Registry Pagination Controls -->
+          ${totalEvidenceCount > 0 ? `
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800 text-xs">
+              <div class="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
+                <span>Page <strong class="text-cyan-400 font-mono">${this.registryPage}</strong> of <strong class="text-white font-mono">${totalRegistryPages}</strong></span>
+                <span class="text-slate-700">•</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-slate-500">Per page:</span>
+                  <select 
+                    onchange="ChainView.setRegistryPageSize(this.value)" 
+                    class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:border-cyan-500 cursor-pointer font-mono"
+                  >
+                    <option value="5" ${this.registryPageSize === 5 ? 'selected' : ''}>5 exhibits</option>
+                    <option value="10" ${this.registryPageSize === 10 ? 'selected' : ''}>10 exhibits</option>
+                    <option value="20" ${this.registryPageSize === 20 ? 'selected' : ''}>20 exhibits</option>
+                    <option value="30" ${this.registryPageSize === 30 ? 'selected' : ''}>30 exhibits</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Page navigation buttons -->
+              <div class="flex items-center gap-1">
+                <button 
+                  onclick="ChainView.setRegistryPage(1)"
+                  ${this.registryPage === 1 ? 'disabled class="px-2 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed"' : 'class="px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer"'}
+                  title="First Page"
+                >
+                  <i data-lucide="chevrons-left" class="w-3.5 h-3.5"></i>
+                </button>
+                <button 
+                  onclick="ChainView.setRegistryPage(${this.registryPage - 1})"
+                  ${this.registryPage === 1 ? 'disabled class="px-2.5 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed text-xs"' : 'class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer text-xs"'}
+                  title="Previous Page"
+                >
+                  ‹ Prev
+                </button>
+
+                <!-- Page Number Pills -->
+                <div class="flex items-center gap-1 px-1">
+                  ${this.generatePageNumbers(this.registryPage, totalRegistryPages).map(p => `
+                    ${p === '...' ? `
+                      <span class="px-1 text-slate-500 font-mono">...</span>
+                    ` : `
+                      <button 
+                        onclick="ChainView.setRegistryPage(${p})" 
+                        class="w-7 h-7 rounded text-xs font-mono font-semibold transition cursor-pointer ${p === this.registryPage ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20' : 'bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300'}"
+                      >
+                        ${p}
+                      </button>
+                    `}
+                  `).join('')}
+                </div>
+
+                <button 
+                  onclick="ChainView.setRegistryPage(${this.registryPage + 1})"
+                  ${this.registryPage === totalRegistryPages ? 'disabled class="px-2.5 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed text-xs"' : 'class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer text-xs"'}
+                  title="Next Page"
+                >
+                  Next ›
+                </button>
+                <button 
+                  onclick="ChainView.setRegistryPage(${totalRegistryPages})"
+                  ${this.registryPage === totalRegistryPages ? 'disabled class="px-2 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed"' : 'class="px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer"'}
+                  title="Last Page"
+                >
+                  <i data-lucide="chevrons-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          ` : ''}
         </div>
 
         ${selectedEv ? `
@@ -810,22 +896,52 @@ const ChainView = {
 
   handleSearch(val) {
     this.searchQuery = val;
+    this.registryPage = 1;
     this.render(document.getElementById('view-container'));
   },
 
   handleCaseFilter(val) {
     this.caseFilter = val;
+    this.registryPage = 1;
     this.render(document.getElementById('view-container'));
   },
 
   handleStatusFilter(val) {
     this.statusFilter = val;
+    this.registryPage = 1;
     this.render(document.getElementById('view-container'));
   },
 
   handleSort(val) {
     this.sortOrder = val;
+    this.registryPage = 1;
     this.render(document.getElementById('view-container'));
+  },
+
+  setRegistryPage(page) {
+    this.registryPage = Math.max(1, parseInt(page, 10) || 1);
+    this.render(document.getElementById('view-container'));
+  },
+
+  setRegistryPageSize(size) {
+    this.registryPageSize = Math.max(1, parseInt(size, 10) || 10);
+    this.registryPage = 1;
+    this.render(document.getElementById('view-container'));
+  },
+
+  generatePageNumbers(current, total) {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    const pages = [];
+    pages.push(1);
+    if (current > 3) pages.push('...');
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (current < total - 2) pages.push('...');
+    pages.push(total);
+    return pages;
   },
 
   /**

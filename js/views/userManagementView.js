@@ -4,6 +4,9 @@
  */
 
 const UserManagementView = {
+  currentPage: 1,
+  pageSize: 5,
+
   render(container) {
     const store = window.DEISStore;
     const currentUser = store.getCurrentUser();
@@ -33,6 +36,19 @@ const UserManagementView = {
     }
 
     const nonAdminCount = users.filter(u => !u.isAdmin).length;
+
+    // Pagination calculations
+    const totalUsers = users.length;
+    const totalPages = Math.max(1, Math.ceil(totalUsers / this.pageSize));
+    if (this.currentPage > totalPages) {
+      this.currentPage = totalPages;
+    }
+    if (this.currentPage < 1) {
+      this.currentPage = 1;
+    }
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = Math.min(startIndex + this.pageSize, totalUsers);
+    const paginatedUsers = users.slice(startIndex, endIndex);
 
     container.innerHTML = `
       <div class="space-y-6">
@@ -82,12 +98,16 @@ const UserManagementView = {
 
         <!-- Personnel Table -->
         <div class="cyber-card p-5 rounded-xl border border-slate-800 space-y-4">
-          <div class="flex items-center justify-between">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div class="flex items-center gap-2">
               <i data-lucide="shield" class="w-5 h-5 text-cyan-400"></i>
               <h3 class="font-bold text-slate-100 text-sm">Active Officers & Users (${users.length})</h3>
             </div>
-            <span class="text-[11px] text-slate-400 font-mono">Role-Based Access</span>
+            <div class="flex items-center gap-2 font-mono text-[11px]">
+              <span class="text-cyan-400 font-bold">Showing ${totalUsers === 0 ? 0 : startIndex + 1}–${endIndex} of ${totalUsers}</span>
+              <span class="text-slate-600">|</span>
+              <span class="text-slate-400">Role-Based Access</span>
+            </div>
           </div>
 
           <div class="overflow-x-auto">
@@ -103,7 +123,13 @@ const UserManagementView = {
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-800/60 font-sans">
-                ${users.map(u => `
+                ${paginatedUsers.length === 0 ? `
+                  <tr>
+                    <td colspan="6" class="py-6 text-center text-slate-500 font-mono">
+                      No personnel records found.
+                    </td>
+                  </tr>
+                ` : paginatedUsers.map(u => `
                   <tr class="hover:bg-slate-800/40 transition">
                     <td class="py-3 px-3">
                       <div class="flex items-center gap-2.5">
@@ -142,10 +168,10 @@ const UserManagementView = {
 
                     <td class="py-3 px-3 text-right space-x-1.5">
                       ${!u.isAdmin ? `
-                        <button onclick="UserManagementView.testLoginAs('${u.id}')" class="px-2.5 py-1 bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/30 rounded text-[11px] font-semibold transition" title="Log in as this user to test handoff">
+                        <button onclick="UserManagementView.testLoginAs('${u.id}')" class="px-2.5 py-1 bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/30 rounded text-[11px] font-semibold transition cursor-pointer" title="Log in as this user to test handoff">
                           Test Login
                         </button>
-                        <button onclick="UserManagementView.deleteUser('${u.id}', '${u.name}')" class="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 rounded text-[11px] transition" title="Revoke User Access">
+                        <button onclick="UserManagementView.deleteUser('${u.id}', '${u.name}')" class="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 rounded text-[11px] transition cursor-pointer" title="Revoke User Access">
                           Revoke
                         </button>
                       ` : `
@@ -157,6 +183,76 @@ const UserManagementView = {
               </tbody>
             </table>
           </div>
+
+          <!-- Personnel Pagination Controls -->
+          ${totalUsers > 0 ? `
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-800 text-xs">
+              <div class="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
+                <span>Page <strong class="text-cyan-400 font-mono">${this.currentPage}</strong> of <strong class="text-white font-mono">${totalPages}</strong></span>
+                <span class="text-slate-700">•</span>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-slate-500">Per page:</span>
+                  <select 
+                    onchange="UserManagementView.setPageSize(this.value)" 
+                    class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded px-2 py-1 focus:outline-none focus:border-cyan-500 cursor-pointer font-mono"
+                  >
+                    <option value="5" ${this.pageSize === 5 ? 'selected' : ''}>5 officers</option>
+                    <option value="10" ${this.pageSize === 10 ? 'selected' : ''}>10 officers</option>
+                    <option value="20" ${this.pageSize === 20 ? 'selected' : ''}>20 officers</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Page navigation buttons -->
+              <div class="flex items-center gap-1">
+                <button 
+                  onclick="UserManagementView.setPage(1)"
+                  ${this.currentPage === 1 ? 'disabled class="px-2 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed"' : 'class="px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer"'}
+                  title="First Page"
+                >
+                  <i data-lucide="chevrons-left" class="w-3.5 h-3.5"></i>
+                </button>
+                <button 
+                  onclick="UserManagementView.setPage(${this.currentPage - 1})"
+                  ${this.currentPage === 1 ? 'disabled class="px-2.5 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed text-xs"' : 'class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer text-xs"'}
+                  title="Previous Page"
+                >
+                  ‹ Prev
+                </button>
+
+                <!-- Page Number Pills -->
+                <div class="flex items-center gap-1 px-1">
+                  ${this.generatePageNumbers(this.currentPage, totalPages).map(p => `
+                    ${p === '...' ? `
+                      <span class="px-1 text-slate-500 font-mono">...</span>
+                    ` : `
+                      <button 
+                        onclick="UserManagementView.setPage(${p})" 
+                        class="w-7 h-7 rounded text-xs font-mono font-semibold transition cursor-pointer ${p === this.currentPage ? 'bg-cyan-500 text-slate-950 font-bold shadow-md shadow-cyan-500/20' : 'bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300'}"
+                      >
+                        ${p}
+                      </button>
+                    `}
+                  `).join('')}
+                </div>
+
+                <button 
+                  onclick="UserManagementView.setPage(${this.currentPage + 1})"
+                  ${this.currentPage === totalPages ? 'disabled class="px-2.5 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed text-xs"' : 'class="px-2.5 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer text-xs"'}
+                  title="Next Page"
+                >
+                  Next ›
+                </button>
+                <button 
+                  onclick="UserManagementView.setPage(${totalPages})"
+                  ${this.currentPage === totalPages ? 'disabled class="px-2 py-1 rounded bg-slate-900/60 border border-slate-800 text-slate-600 cursor-not-allowed"' : 'class="px-2 py-1 rounded bg-slate-900 border border-slate-700 hover:bg-slate-800 text-slate-300 transition cursor-pointer"'}
+                  title="Last Page"
+                >
+                  <i data-lucide="chevrons-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+          ` : ''}
         </div>
       </div>
     `;
@@ -224,6 +320,32 @@ const UserManagementView = {
     window.DEISStore.setCurrentUser(user);
     window.DEISApp.showToast(`Logged in as ${user.name} (${user.badgeId})`, 'success');
     window.DEISApp.navigate('dashboard');
+  },
+
+  setPage(page) {
+    this.currentPage = Math.max(1, parseInt(page, 10) || 1);
+    this.render(document.getElementById('view-container'));
+  },
+
+  setPageSize(size) {
+    this.pageSize = Math.max(1, parseInt(size, 10) || 5);
+    this.currentPage = 1;
+    this.render(document.getElementById('view-container'));
+  },
+
+  generatePageNumbers(current, total) {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    const pages = [];
+    pages.push(1);
+    if (current > 3) pages.push('...');
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+    for (let i = start; i <= end; i++) pages.push(i);
+    if (current < total - 2) pages.push('...');
+    pages.push(total);
+    return pages;
   }
 };
 
