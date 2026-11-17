@@ -33,7 +33,6 @@ flowchart LR
     A[Cyber Crime Police CCIC\nSeizure & Bitstream Hash] -->|Custody Transfer PIN| B[Forensic Science Lab CFSL\nAnalysis & Artifact Carving]
     B -->|Signed Handoff Token| C[State Prosecution ODA\nExhibit Compilation]
     C -->|Certified Chain Dossier| D[Judicial High Court\nEvidence Admissibility]
-    D -.->|Discovery Verification| E[Defense Coalition\nHash & Merkle Audit]
 
     subgraph DEIS_CORE [DEIS Cryptographic Core Engine]
         direction TB
@@ -47,7 +46,6 @@ flowchart LR
     B --- DEIS_CORE
     C --- DEIS_CORE
     D --- DEIS_CORE
-    E --- DEIS_CORE
 ```
 
 ---
@@ -80,7 +78,7 @@ flowchart LR
 
 ### 6. 👥 Identity Governance & Personnel Management
 - Zero pre-populated mock users.
-- Only the **Root Security Administrator** (`ADMIN-0001`) can provision officers and assign their operating agency clearances (Police, Lab, Prosecution, Court, or Defense).
+- Only the **Root Security Administrator** (`ADMIN-0001`) can provision officers and assign their operating agency clearances (Police, Lab, Prosecution, or Court).
 
 ---
 
