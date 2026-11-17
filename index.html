@@ -504,8 +504,18 @@
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-slate-400 mb-1">Originating Officer (Signer):</label>
-            <input type="text" id="transfer-sender-officer" required class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:border-cyan-500" />
+            <label class="block text-slate-400 mb-1 flex items-center justify-between">
+              <span>Originating Officer (Signer):</span>
+              <span class="text-[10px] text-cyan-400 font-mono">🔒 Locked (Logged-in Identity)</span>
+            </label>
+            <input 
+              type="text" 
+              id="transfer-sender-officer" 
+              readonly 
+              tabindex="-1"
+              required 
+              class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-300 font-mono text-xs cursor-not-allowed focus:outline-none select-none opacity-90" 
+            />
           </div>
           <div>
             <label class="block text-slate-400 mb-1">Designated Recipient Officer:</label>

@@ -873,6 +873,7 @@ class DEISApplication {
 
     if (officerInput) {
       officerInput.value = currentUser ? `${currentUser.name} (${currentUser.badgeId})` : (currentAgency.officers[0] || 'Investigating Officer');
+      officerInput.readOnly = true;
     }
 
     this.currentTransferEvidences = evidenceList || [];
