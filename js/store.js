@@ -2187,12 +2187,39 @@ class DEISStore {
       return [...(this.state.cases || [])];
     }
     const userEvidences = this.getEvidencesForCurrentUser();
-    const caseIdsFromEvidence = new Set(userEvidences.map(e => (e.caseId || e.caseNumber || '').toUpperCase()));
+    const caseIdsFromEvidence = new Set();
+    userEvidences.forEach(e => {
+      if (!e) return;
+      if (e.caseId) {
+        caseIdsFromEvidence.add(e.caseId.toUpperCase());
+        caseIdsFromEvidence.add(e.caseId.replace(/^CASE-/, '').toUpperCase());
+      }
+      if (e.caseNumber) {
+        caseIdsFromEvidence.add(e.caseNumber.toUpperCase());
+        const numOnly = e.caseNumber.split(' ')[0].trim().toUpperCase();
+        if (numOnly) caseIdsFromEvidence.add(numOnly);
+      }
+    });
 
     return (this.state.cases || []).filter(c => {
       if (!c) return false;
-      if (c.leadAgency === user.agencyId) return true;
-      if (caseIdsFromEvidence.has((c.id || '').toUpperCase()) || caseIdsFromEvidence.has((c.caseNumber || '').toUpperCase())) return true;
+      const cId = (c.id || '').toUpperCase();
+      const cNum = (c.caseNumber || '').toUpperCase();
+      const cNumOnly = (c.caseNumber || '').split(' ')[0].trim().toUpperCase();
+      const cStripped = c.id ? c.id.replace(/^CASE-/, '').toUpperCase() : '';
+
+      const hasEvidence = caseIdsFromEvidence.has(cId) ||
+                          caseIdsFromEvidence.has(cNum) ||
+                          caseIdsFromEvidence.has(cNumOnly) ||
+                          (cStripped && caseIdsFromEvidence.has(cStripped));
+
+      if (hasEvidence) return true;
+
+      // Also allow cases created by this officer in current session
+      if (c.createdByUser && c.createdByUser === user.id) {
+        return true;
+      }
+
       return false;
     });
   }
@@ -2251,6 +2278,7 @@ class DEISStore {
       leadAgency: agency.id,
       leadAgencyName: agency.name,
       investigatingOfficer: activeOfficer,
+      createdByUser: this.currentUser ? this.currentUser.id : null,
       courtJurisdiction: caseData.courtJurisdiction || 'Metropolitan High Judicial Registry (Courtroom 4)',
       status: 'ACTIVE_INVESTIGATION',
       openedDate: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC',

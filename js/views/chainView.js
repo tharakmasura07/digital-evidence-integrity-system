@@ -26,12 +26,16 @@ const ChainView = {
 
   getEvidenceList() {
     const store = window.DEISStore;
-    return (store && typeof store.getEvidenceList === 'function') ? store.getEvidenceList() : [];
+    return (store && typeof store.getEvidencesForCurrentUser === 'function') 
+      ? store.getEvidencesForCurrentUser() 
+      : ((store && typeof store.getEvidenceList === 'function') ? store.getEvidenceList() : []);
   },
 
   getCases() {
     const store = window.DEISStore;
-    return (store && typeof store.getCases === 'function') ? store.getCases() : [];
+    return (store && typeof store.getCasesForCurrentUser === 'function') 
+      ? store.getCasesForCurrentUser() 
+      : ((store && typeof store.getCases === 'function') ? store.getCases() : []);
   },
 
   getChainBlocks() {

@@ -16,8 +16,12 @@ const VerifierView = {
     if (!container) return;
 
     const store = window.DEISStore;
-    const evidenceList = (store && typeof store.getEvidenceList === 'function') ? store.getEvidenceList() : [];
-    const cases = (store && typeof store.getCases === 'function') ? store.getCases() : [];
+    const evidenceList = (store && typeof store.getEvidencesForCurrentUser === 'function') 
+      ? store.getEvidencesForCurrentUser() 
+      : ((store && typeof store.getEvidenceList === 'function') ? store.getEvidenceList() : []);
+    const cases = (store && typeof store.getCasesForCurrentUser === 'function') 
+      ? store.getCasesForCurrentUser() 
+      : ((store && typeof store.getCases === 'function') ? store.getCases() : []);
 
     // Default to first evidence if none selected
     if (!this.selectedEvidenceId && evidenceList.length > 0) {
