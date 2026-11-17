@@ -87,11 +87,9 @@ const EvidenceView = {
       this.activeCaseNumber = cases.length > 0 ? cases[0].caseNumber : '';
     }
 
-    // Dynamically include any custom category typed by users on ingestion
-    const dynamicCategories = Array.from(new Set(evidenceList.map(e => e.category).filter(Boolean)));
-    const defaultCategories = ['Memory Dump', 'Video Surveillance', 'Disk Image', 'Mobile Forensics', 'Network Telemetry', 'Encrypted Archive'];
-    const mergedCategories = Array.from(new Set([...defaultCategories, ...dynamicCategories]));
-    const categories = ['ALL', ...mergedCategories];
+    // Dynamically show only the actual categories typed by the user
+    const dynamicCategories = Array.from(new Set(evidenceList.map(e => (e.category || '').trim()).filter(Boolean)));
+    const categories = ['ALL', ...dynamicCategories];
 
     // Check if persistent wrapper already exists inside container
     const existingWrapper = document.getElementById('evidence-vault-wrapper');
