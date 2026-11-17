@@ -2,10 +2,9 @@
  * Digital Evidence Integrity System (DEIS)
  * Supabase Cloud Database Configuration
  * 
- * Paste your Supabase credentials below, or enter them directly inside 
- * the application UI by clicking the "Connect Free Supabase" button in the top navigation bar.
+ * Connected to live Supabase PostgreSQL Project
  */
 window.DEIS_SUPABASE_CONFIG = {
-  url: '',      // e.g. 'https://your-project-id.supabase.co'
-  anonKey: ''  // e.g. 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  url: 'https://vyfmvpkzwgcghgxewcpg.supabase.co',
+  anonKey: 'sb_publishable_h9lgzrX2H0ZuY9KtxXIZrA_YnKdjQ8Z'
 };

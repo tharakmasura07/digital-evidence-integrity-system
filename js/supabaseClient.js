@@ -45,6 +45,7 @@ class DEISSupabaseManager {
 
   initClient() {
     if (!this.url || !this.anonKey) return false;
+    this.url = this.url.trim().replace(/\/rest\/v1\/?$/i, '').replace(/\/+$/, '');
     if (typeof window.supabase === 'undefined' || typeof window.supabase.createClient !== 'function') {
       console.warn('DEIS Supabase: supabase-js SDK not loaded yet. Will retry after script loads.');
       return false;
@@ -103,7 +104,7 @@ class DEISSupabaseManager {
    * Save credentials, re-init, test, and perform initial sync
    */
   async saveCredentials(url, anonKey, autoSync = true) {
-    const cleanUrl = (url || '').trim().replace(/\/+$/, '');
+    const cleanUrl = (url || '').trim().replace(/\/rest\/v1\/?$/i, '').replace(/\/+$/, '');
     const cleanKey = (anonKey || '').trim();
 
     if (!cleanUrl || !cleanKey) {
