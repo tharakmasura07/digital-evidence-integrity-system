@@ -80,9 +80,11 @@ create table if not exists deis_transfers (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- 4. CRYPTOGRAPHIC CHAIN OF CUSTODY BLOCKS TABLE
+-- 4. CRYPTOGRAPHIC CHAIN OF CUSTODY BLOCKS TABLE (One Case, One Blockchain)
+-- Note: Each case possesses its own isolated sovereign blockchain (Height #0, #1, #2...).
 create table if not exists deis_chain_blocks (
   block_height integer primary key,
+  case_block_height integer default 0,
   block_hash text unique not null,
   previous_hash text not null,
   timestamp text not null,
@@ -98,6 +100,10 @@ create table if not exists deis_chain_blocks (
   tampered boolean default false,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Optional Migration to use composite primary key for One Case One Blockchain:
+-- ALTER TABLE deis_chain_blocks DROP CONSTRAINT IF EXISTS deis_chain_blocks_pkey;
+-- ALTER TABLE deis_chain_blocks ADD PRIMARY KEY (case_id, block_height);
 
 -- 5. FORENSIC EXAMINATION REPORTS TABLE
 create table if not exists deis_forensic_reports (

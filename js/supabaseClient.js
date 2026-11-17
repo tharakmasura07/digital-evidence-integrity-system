@@ -233,10 +233,10 @@ class DEISSupabaseManager {
         await this.client.from('deis_transfers').upsert(payload, { onConflict: 'transfer_id' });
       }
 
-      // 4. Upsert Blocks
+      // 4. Upsert Blocks (Per-Case Sovereign Blockchains)
       if (blocks.length > 0) {
-        const payload = blocks.map(b => ({
-          block_height: b.blockHeight,
+        const payload = blocks.map((b, idx) => ({
+          block_height: b.globalHeight !== undefined ? b.globalHeight : (idx + 1),
           block_hash: b.blockHash,
           previous_hash: b.previousHash,
           timestamp: b.timestamp,
@@ -251,7 +251,7 @@ class DEISSupabaseManager {
           signature: b.signature,
           tampered: !!b.tampered
         }));
-        await this.client.from('deis_chain_blocks').upsert(payload, { onConflict: 'block_height' });
+        await this.client.from('deis_chain_blocks').upsert(payload, { onConflict: 'block_hash' });
       }
 
       // 5. Upsert Reports
@@ -397,25 +397,41 @@ class DEISSupabaseManager {
         }));
       }
 
-      // 4. Fetch Chain Blocks
-      const { data: blockData } = await this.client.from('deis_chain_blocks').select('*').order('block_height', { ascending: true });
+      // 4. Fetch Chain Blocks (Reconstruct Per-Case Sovereign Blockchains)
+      const { data: blockData } = await this.client.from('deis_chain_blocks').select('*');
       if (blockData && blockData.length > 0) {
-        store.state.chainBlocks = blockData.map(b => ({
-          blockHeight: b.block_height,
-          blockHash: b.block_hash,
-          previousHash: b.previous_hash,
-          timestamp: b.timestamp,
-          eventType: b.event_type,
-          evidenceId: b.evidence_id,
-          caseId: b.case_id,
-          agency: b.agency,
-          officer: b.officer,
-          actionDescription: b.action_description,
-          evidenceHash: b.evidence_hash,
-          merkleRoot: b.merkle_root,
-          signature: b.signature,
-          tampered: b.tampered
-        }));
+        const byCase = {};
+        blockData.forEach(b => {
+          const cid = b.case_id || 'CR-GENERAL';
+          if (!byCase[cid]) byCase[cid] = [];
+          byCase[cid].push(b);
+        });
+
+        const reconstructedBlocks = [];
+        Object.keys(byCase).forEach(cid => {
+          const cBlocks = byCase[cid];
+          cBlocks.sort((a, b) => new Date(a.timestamp || 0) - new Date(b.timestamp || 0));
+          cBlocks.forEach((b, caseIndex) => {
+            reconstructedBlocks.push({
+              blockHeight: caseIndex,
+              globalHeight: b.block_height,
+              blockHash: b.block_hash,
+              previousHash: b.previous_hash,
+              timestamp: b.timestamp,
+              eventType: b.event_type,
+              evidenceId: b.evidence_id,
+              caseId: b.case_id,
+              agency: b.agency,
+              officer: b.officer,
+              actionDescription: b.action_description,
+              evidenceHash: b.evidence_hash,
+              merkleRoot: b.merkle_root,
+              signature: b.signature,
+              tampered: b.tampered
+            });
+          });
+        });
+        store.state.chainBlocks = reconstructedBlocks;
       }
 
       // 5. Fetch Forensic Reports

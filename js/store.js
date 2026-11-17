@@ -1099,342 +1099,755 @@ const INITIAL_TRANSFERS = [];
 const INITIAL_CHAIN_BLOCKS = [
     {
       blockHeight: 0,
-      blockHash: '00000a941f82938475629102837465019283746501928374650192837465a1b2',
+      globalHeight: 27,
+      blockHash: '0000014f9faaac4bb0a6c9dd5af63dc79a9e86addac4fa14e0bf27e533ec8046',
       previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
-      timestamp: '2026-10-24 00:00:00 UTC',
-      eventType: 'GENESIS_SYSTEM_INIT',
+      timestamp: '2026-11-11 18:00:00 UTC',
+      eventType: 'CASE_GENESIS',
       evidenceId: null,
-      caseId: 'SYSTEM-ROOT',
-      agency: 'admin',
-      officer: 'System Security Administrator',
-      actionDescription: 'DEIS Genesis Block initialized.',
+      caseId: 'CR-2026-1012',
+      agency: 'police',
+      officer: 'Sub-Insp. Priya Sharma (CCIC-7702)',
+      actionDescription: 'Case CR-2026-1012 sovereign blockchain initialized. Case file opened by Sub-Insp. Priya Sharma (CCIC-7702). Cryptographic root ledger anchored.',
       evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
-      merkleRoot: 'd892837465019283746501928374650192837465019283746501928374650192',
-      signature: '0x7F2A90C1B4DE8834AA7712C9010FEE67B9A148902A3CDEF4901847192837465A',
+      merkleRoot: 'e77d4cb6ef49a7f12abbef1db1e90e1d765cc9f4baf4f3487f9919d2c3f8dad0',
+      signature: '0x60AA828CEE948645A451022905318EA316251F2616E309940CE1954028866EC5',
       tampered: false
     },
     {
       blockHeight: 1,
-      blockHash: '00000b2ffdbe5a60e4bd626e48e66358a2b7128a08bdc587802d5c0dc60cb37e',
-      previousHash: '00000a941f82938475629102837465019283746501928374650192837465a1b2',
-      timestamp: '2026-11-01 10:15:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1001',
-      caseId: 'CR-2026-1001',
-      agency: 'police',
-      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1001 for Case CR-2026-1001. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-      merkleRoot: '4787dc3d99ef3da65181df58f3c786e377a97bc55f3825fcb362617e310bb356',
-      signature: '0x28E7E73115E6305C049E90A5F6CB453F13352ED2AADD71D80C9A93B323C33604',
-      tampered: false
-    },
-    {
-      blockHeight: 2,
-      blockHash: '000007f5628044a6ff947e442ff37446bac6473134d640a338a5aa95c4777293',
-      previousHash: '00000b2ffdbe5a60e4bd626e48e66358a2b7128a08bdc587802d5c0dc60cb37e',
-      timestamp: '2026-11-02 12:40:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1002',
-      caseId: 'CR-2026-1002',
-      agency: 'forensics',
-      officer: 'Dr. Aris Thorne (CFSL-4402)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1002 for Case CR-2026-1002. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: 'd2a84f3019e07894178562910485720194857201948572019485720194857201',
-      merkleRoot: '03d6412ed922e768cb715ce1f1fe86938ba7528195c7ba4ce09f0c825bb82057',
-      signature: '0xFC6379A6A74A42C4A9D6B4145D09E9C8E32C6136D04A30FBB69AD7146FD7FD08',
-      tampered: false
-    },
-    {
-      blockHeight: 3,
-      blockHash: '000002fcc48551a7753cd09f9f9aff0edb64427a035f35476f2d8daa7bc5407c',
-      previousHash: '000007f5628044a6ff947e442ff37446bac6473134d640a338a5aa95c4777293',
-      timestamp: '2026-11-03 15:20:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1003',
-      caseId: 'CR-2026-1003',
-      agency: 'forensics',
-      officer: 'Dr. Aris Thorne (CFSL-4402)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1003 for Case CR-2026-1003. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '5063a6809b8965e8514b535c3888509b802249105e148c5c4858e57cdc46fa8e',
-      merkleRoot: '875ff05487a8a94c668a4edc94f748fe0a92d39f27a83faa3d26281c758251da',
-      signature: '0x0293D63E2520DAD329E3FF49104F65775676550FA3D1A2AC731BCDEA4E0874C2',
-      tampered: false
-    },
-    {
-      blockHeight: 4,
-      blockHash: '000005af07785f804feca8df776041cda00f4a4dfcbfca6d908985952b496c9f',
-      previousHash: '000002fcc48551a7753cd09f9f9aff0edb64427a035f35476f2d8daa7bc5407c',
-      timestamp: '2026-11-04 09:30:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1004',
-      caseId: 'CR-2026-1004',
-      agency: 'prosecution',
-      officer: 'Adv. Elena Vance (ODA-8831)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1004 for Case CR-2026-1004. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '7cdb4176c7a247630875c6304d57b5dd13ce484c947a392176af2d1dbfc0842a',
-      merkleRoot: '44cc385504b58c96b0851cfbb38c94e8cc20b539a3f9a143639d313eb5bc0a49',
-      signature: '0xC0A73F4846B695042FFF8DFF67E6D0650C4612AB6B179C7C0D30891D813A5362',
-      tampered: false
-    },
-    {
-      blockHeight: 5,
-      blockHash: '0000077a68b4c90d0fb1bc6661ff211c5bf14d172e2c33ee83932ceadc413160',
-      previousHash: '000005af07785f804feca8df776041cda00f4a4dfcbfca6d908985952b496c9f',
-      timestamp: '2026-11-05 17:10:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1005',
-      caseId: 'CR-2026-1005',
-      agency: 'court',
-      officer: 'Hon. Justice Sarah Sterling (CJMC-101)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1005 for Case CR-2026-1005. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '45d4260f2e20b3d11ca69080ec871ffa0075687f0f6eaa3de0c3bc1cbb8370b3',
-      merkleRoot: '3cdd5c5032c66bed64d8d0b9fcca75d3644b44c60073a0000afde398b740cadb',
-      signature: '0x5E091D3A3713973B905944ED0C5C81AA6EAF88ADA09796FE8D36164784DF6AD8',
-      tampered: false
-    },
-    {
-      blockHeight: 6,
-      blockHash: '0000092d6e5d0f392fad30d595943fcad9eda4bccbf29fb621328e4e5e909469',
-      previousHash: '0000077a68b4c90d0fb1bc6661ff211c5bf14d172e2c33ee83932ceadc413160',
-      timestamp: '2026-11-06 11:00:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1006',
-      caseId: 'CR-2026-1006',
-      agency: 'forensics',
-      officer: 'Dr. Aris Thorne (CFSL-4402)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1006 for Case CR-2026-1006. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: 'ae4cf5bff27e46abe9accb4bf36ddff2bf1f2a99d10e4851994ea84c6d09693e',
-      merkleRoot: '418815b0feb81bba60b72d6382b007222606cdf763b68e46aa5dedad66479ef5',
-      signature: '0x4094922E6C556E834C954C5E65E9EE8B773E3D2EC673A69122F3B63DE6424FDE',
-      tampered: false
-    },
-    {
-      blockHeight: 7,
-      blockHash: '00000e47adca0f1baa054521f1a1e9e4a249b9559966a66e564288940e96f8ca',
-      previousHash: '0000092d6e5d0f392fad30d595943fcad9eda4bccbf29fb621328e4e5e909469',
-      timestamp: '2026-11-07 08:45:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1007',
-      caseId: 'CR-2026-1007',
-      agency: 'police',
-      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1007 for Case CR-2026-1007. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: 'a6cef4c74565fe46ad78308a3ad4c07af2b1c6ff9d57f0a66ac4650bb54a1b2c',
-      merkleRoot: 'f7bfa58d3f7db8c581fa68410c2009543f5bf7bd00302bc3c112e681360f00b4',
-      signature: '0xF988C5841B67775829004963394006CDE4277AB523F1F51206125C31199A413E',
-      tampered: false
-    },
-    {
-      blockHeight: 8,
-      blockHash: '0000039d0f1a7f4d8b4769aab7cf035b76df3798c3d5dd220ed8ed0a4d4783b3',
-      previousHash: '00000e47adca0f1baa054521f1a1e9e4a249b9559966a66e564288940e96f8ca',
-      timestamp: '2026-11-08 13:15:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1008',
-      caseId: 'CR-2026-1008',
-      agency: 'forensics',
-      officer: 'Dr. Aris Thorne (CFSL-4402)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1008 for Case CR-2026-1008. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '00b39c0f81d4a821938475629104857201948572019485720194857201948572',
-      merkleRoot: 'd4a872123da457791785d39b0a7430ec6caa234a9b33fa95b6b393c2e6cfc029',
-      signature: '0xF5E9D998A46E9C1CD4001C1633BDB4AB94DFA80C481230D9F7E27EE0FCF27705',
-      tampered: false
-    },
-    {
-      blockHeight: 9,
-      blockHash: '000002946da3478822e73ba0cd78544233d95c79f8f144cb8ed30eb33dbf0d2b',
-      previousHash: '0000039d0f1a7f4d8b4769aab7cf035b76df3798c3d5dd220ed8ed0a4d4783b3',
-      timestamp: '2026-11-09 16:30:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1009',
-      caseId: 'CR-2026-1009',
-      agency: 'prosecution',
-      officer: 'Adv. Elena Vance (ODA-8831)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1009 for Case CR-2026-1009. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '99c019284756291048572019485720194857201948572019485720194857201a',
-      merkleRoot: '56c6c158e986d7ccfa7825843c7151a8bb8f0777adbd2407fcffc582e1537c99',
-      signature: '0x3135C5B835682BC4D393460DE6C035C4BA54ACA23761C46FD3B391EB4A18AF18',
-      tampered: false
-    },
-    {
-      blockHeight: 10,
-      blockHash: '000003bbcdbfbe3390c76066574c1aff6ffb3b0a0baa1a7d0184d3296d76bced',
-      previousHash: '000002946da3478822e73ba0cd78544233d95c79f8f144cb8ed30eb33dbf0d2b',
-      timestamp: '2026-11-10 10:00:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1010',
-      caseId: 'CR-2026-1010',
-      agency: 'forensics',
-      officer: 'Dr. Aris Thorne (CFSL-4402)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1010 for Case CR-2026-1010. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '33b4920049458902341786ef34a1b2c3d4e5f607182930415263748596a7b8c9',
-      merkleRoot: 'bd3f293ce00bfc3fca17fb6b215dd6c2cc535be942b82df9fb4dcccb12ce5ee3',
-      signature: '0x5993DDBF082F3E4E4B057EBB2C700452653CAC3E528F65C99850EEF4E7CCDDC0',
-      tampered: false
-    },
-    {
-      blockHeight: 11,
-      blockHash: '00000206ae6ea5b54ede405e4bbe24e1cb6360878f9d6525c4e32659faa815f4',
-      previousHash: '000003bbcdbfbe3390c76066574c1aff6ffb3b0a0baa1a7d0184d3296d76bced',
-      timestamp: '2026-11-11 05:45:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1011',
-      caseId: 'CR-2026-1011',
-      agency: 'police',
-      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1011 for Case CR-2026-1011. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '77d8928374650192837465019283746501928374650192837465019283746501',
-      merkleRoot: '9d204826d597dbda13f87f663a693d7582ad11fface1bcbcb214f08dd5ff7a87',
-      signature: '0xB664E6C5709B63E6B17961F947FE5E4B8C34946C9764BED1A7D7CD9E3A49FCF7',
-      tampered: false
-    },
-    {
-      blockHeight: 12,
-      blockHash: '0000021008c2e75dd7b1b46fa0d1933546d3337d2c5a6406c0890fe060a46b23',
-      previousHash: '00000206ae6ea5b54ede405e4bbe24e1cb6360878f9d6525c4e32659faa815f4',
+      globalHeight: 28,
+      blockHash: '00000a04e69239e9449adb5ce8570d5d919b2999ba14c9302ab58725923d1988',
+      previousHash: '0000014f9faaac4bb0a6c9dd5af63dc79a9e86addac4fa14e0bf27e533ec8046',
       timestamp: '2026-11-11 19:15:00 UTC',
       eventType: 'GENESIS_SEIZURE',
       evidenceId: 'EVD-2026-1012',
       caseId: 'CR-2026-1012',
       agency: 'forensics',
-      officer: 'Dr. Aris Thorne (CFSL-4402)',
+      officer: 'CFSL-CYBER',
       actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1012 for Case CR-2026-1012. Standard FIPS 180-4 SHA-256 seal anchored.',
       evidenceHash: '11a4189384756291028374650192837465019283746501928374650192837465',
-      merkleRoot: 'ccd8b8056a0ec9a0d8841c4945d63e3928987d6369a85be739e2483cc1bda2ce',
-      signature: '0x466AEA804C608B37BBC2F2BD6BDFCACBDFBC6085BDF017EE20558846870B5E86',
+      merkleRoot: '9d8c2e72530698f18ef11897b851f7df77dc2ba19531c7087a4403bf22744123',
+      signature: '0xE290D6349F0492811F59F0BB53080F45828794B976857BE5937AD3E391BF5A78',
       tampered: false
     },
     {
-      blockHeight: 13,
-      blockHash: '0000045e885d6746d103ad72a9be7c5425fd1861fb879359db052376648f564a',
-      previousHash: '0000021008c2e75dd7b1b46fa0d1933546d3337d2c5a6406c0890fe060a46b23',
-      timestamp: '2026-11-12 12:10:00 UTC',
+      blockHeight: 0,
+      globalHeight: 25,
+      blockHash: '000001d17073e916834e0290f950277e80aecbef07573ccb5ad5179cdc349af6',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-11 04:30:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1011',
+      agency: 'police',
+      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
+      actionDescription: 'Case CR-2026-1011 sovereign blockchain initialized. Case file opened by Insp. Vikram Singh Rathod (CCIC-7701). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '5073a031ac939ec44ca364dc376e2e17b52f56af7b7c37329df4297ca9d5f58d',
+      signature: '0x7B7978E75514D665BEC9FA4B2729E589482C89DFB32470B3AAF0A4C4ADD9C811',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 26,
+      blockHash: '000004754eaca2b111dd7bab64ee7433182f138c16b02348f6d13fc07bb88a95',
+      previousHash: '000001d17073e916834e0290f950277e80aecbef07573ccb5ad5179cdc349af6',
+      timestamp: '2026-11-11 05:45:00 UTC',
       eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1013',
-      caseId: 'CR-2026-1013',
+      evidenceId: 'EVD-2026-1011',
+      caseId: 'CR-2026-1011',
+      agency: 'police',
+      officer: 'CCIC-HQ',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1011 for Case CR-2026-1011. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '77d8928374650192837465019283746501928374650192837465019283746501',
+      merkleRoot: '4562b1be70a7f2619405b2b605a5f85a55c078d8ab0baebb8639779e9390bb8a',
+      signature: '0x849E290C21AC8AF5FFCEEEC9B2BE241C770FC2BE82B1905FFF9905F4ED02EB32',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 33,
+      blockHash: '00000b0a2fb648a44c5701c73ccbb12346d8461336eb52a7db629a61ff4ead29',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-13 09:00:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1015',
       agency: 'prosecution',
-      officer: 'Adv. Elena Vance (ODA-8831)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1013 for Case CR-2026-1013. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '88f1c34a90c1b4de8834aa7712c9010fee67b9a148902a3cdef4901847192837',
-      merkleRoot: 'bd1a18a629d5b75e8fe0ed643559792bf555b97354a1ca0cb788588bae724248',
-      signature: '0x14BA2A69AE90E80290B3324269F83377C88DD1E1598956B7511FB451472A0D4F',
+      officer: 'Adv. Siddharth Rao (ODA-8832)',
+      actionDescription: 'Case CR-2026-1015 sovereign blockchain initialized. Case file opened by Adv. Siddharth Rao (ODA-8832). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '630a88f051a696664cae6e143f869eec7b08936a6087f572938ea3bbf257f3a7',
+      signature: '0x22FB76868062D41102ED78C760E5A5FD4F032DFC294396140B099E420F1B64D7',
       tampered: false
     },
     {
-      blockHeight: 14,
-      blockHash: '00000cb652c77f8da1de3c45cfdacb6a5598a1ddbb089b32aae8f23789799d83',
-      previousHash: '0000045e885d6746d103ad72a9be7c5425fd1861fb879359db052376648f564a',
-      timestamp: '2026-11-12 15:30:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1014',
-      caseId: 'CR-2026-1014',
-      agency: 'court',
-      officer: 'Hon. Justice Sarah Sterling (CJMC-101)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1014 for Case CR-2026-1014. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '55b1182c4756291028374650192837465019283746501928374650192837465a',
-      merkleRoot: '171e63b733c00ce772eead70b7e8f54153f55dbe7add71bbebfdba36c1e8d291',
-      signature: '0xCEDEE3444824C18B18EAB0C546BF7AD4DF4A1D8DFD26453798A3E430F70037A3',
-      tampered: false
-    },
-    {
-      blockHeight: 15,
-      blockHash: '00000579bb697ee7f5e99662ac1c133a9330367838c6803656732c12cb7eadc4',
-      previousHash: '00000cb652c77f8da1de3c45cfdacb6a5598a1ddbb089b32aae8f23789799d83',
+      blockHeight: 1,
+      globalHeight: 34,
+      blockHash: '00000967fb3baa9aca28c36c13ec9c6b29d6f557dcd8e4aa530ca088b71f8a78',
+      previousHash: '00000b0a2fb648a44c5701c73ccbb12346d8461336eb52a7db629a61ff4ead29',
       timestamp: '2026-11-13 10:15:00 UTC',
       eventType: 'GENESIS_SEIZURE',
       evidenceId: 'EVD-2026-1015',
       caseId: 'CR-2026-1015',
       agency: 'prosecution',
-      officer: 'Adv. Elena Vance (ODA-8831)',
+      officer: 'ODA-LEGAL',
       actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1015 for Case CR-2026-1015. Standard FIPS 180-4 SHA-256 seal anchored.',
       evidenceHash: '44a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b',
-      merkleRoot: '75936951e31243fec3ccfe8ce24c78681802cdea6de0b626e9ddfc943e0eb38f',
-      signature: '0x87DF22A85239DA74198AD1858E55B9E93DD4BCFDC34D947BDDA2954E4977EB01',
+      merkleRoot: 'ec756cdd3a035d7dd92a4469978e9af1c7fe4f130581fef1c6c79e7eee7450ee',
+      signature: '0xA2B442FE1DEC1534805C648423318056E88EEC84A3DCA25962227C39595D824E',
       tampered: false
     },
     {
-      blockHeight: 16,
-      blockHash: '00000c70504a3b5d50ed13c2b137aab3bbe38ec26482c67f90d39501caaa4145',
-      previousHash: '00000579bb697ee7f5e99662ac1c133a9330367838c6803656732c12cb7eadc4',
-      timestamp: '2026-11-13 17:00:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1016',
-      caseId: 'CR-2026-1016',
-      agency: 'forensics',
-      officer: 'Dr. Aris Thorne (CFSL-4402)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1016 for Case CR-2026-1016. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '22c8891d4756291028374650192837465019283746501928374650192837465a',
-      merkleRoot: 'e3ab0fcdb9a967fd2708e516cf9f45e6b76fa31ae190441a8cb8263e4472bf86',
-      signature: '0x817E40F444284CD4D6800753CE9FC2FE7E22117D91696976AC536BB3922163A4',
-      tampered: false
-    },
-    {
-      blockHeight: 17,
-      blockHash: '0000077f82677bf6a54a50ed31ad290cbd15430d1cacb67fc39d7220415caddc',
-      previousHash: '00000c70504a3b5d50ed13c2b137aab3bbe38ec26482c67f90d39501caaa4145',
-      timestamp: '2026-11-14 09:15:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1017',
-      caseId: 'CR-2026-1017',
-      agency: 'prosecution',
-      officer: 'Adv. Elena Vance (ODA-8831)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1017 for Case CR-2026-1017. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '99d2401e4756291028374650192837465019283746501928374650192837465a',
-      merkleRoot: '8332b9bc56027a2e5cf5ca697d98003c70ed4b63677a855777835fc70aacfe9e',
-      signature: '0xEA6BA31E239CD6264E5FA3C0BA6AA1EAE98C541F8F10DC179EC6E391002433C0',
-      tampered: false
-    },
-    {
-      blockHeight: 18,
-      blockHash: '00000b5e7c0cf2c27c5b866de5d7eed575f21631ad2d5329efa2605d5a2cc25b',
-      previousHash: '0000077f82677bf6a54a50ed31ad290cbd15430d1cacb67fc39d7220415caddc',
-      timestamp: '2026-11-14 13:45:00 UTC',
-      eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1018',
-      caseId: 'CR-2026-1018',
+      blockHeight: 0,
+      globalHeight: 1,
+      blockHash: '000008a6e7f0716d149055a263215f419dcab12ab5f6667d710d97adf36f36b3',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-17 10:12:57 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2008-0001',
       agency: 'police',
-      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1018 for Case CR-2026-1018. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: 'd1a78436027212b3c7b4c099d680049cbd2cf9a8a472ce7c9705dd6cd516d477',
-      merkleRoot: '39d5a774af152f99760e4938010a5b6acff2c21695947d6c48271aa77915666d',
-      signature: '0xF5982AEBBA2352CB41DFF451A823EC4F6CA41B621280629CDC8DAF8EE50E0446',
+      officer: 'Insp. Vikram Singh Rathod (INSP-SSR-0001)',
+      actionDescription: 'Case CR-2008-0001 sovereign blockchain initialized. Case file opened by Insp. Vikram Singh Rathod (INSP-SSR-0001). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: 'e9ab6ca8ab9b5b4359b925fee45f3498ef979a71a23b9714df72441e58c65566',
+      signature: '0x6328334DFE7E6F7DAB204FD66F129BD760F93E3B8AE5E00F9ABD958F50C4958A',
       tampered: false
     },
     {
-      blockHeight: 19,
-      blockHash: '0000062e12c9567f359cc9a90d4470f3f7489afab9a3ed8dc0e54d8d6cd9698e',
-      previousHash: '00000b5e7c0cf2c27c5b866de5d7eed575f21631ad2d5329efa2605d5a2cc25b',
-      timestamp: '2026-11-15 11:10:00 UTC',
+      blockHeight: 1,
+      globalHeight: 2,
+      blockHash: '000000b3f2047814cc11d89613564b837f60ff56fe80f4ce3800df13f52f78ff',
+      previousHash: '000008a6e7f0716d149055a263215f419dcab12ab5f6667d710d97adf36f36b3',
+      timestamp: '2026-11-17T10:26:46.219Z',
       eventType: 'GENESIS_SEIZURE',
-      evidenceId: 'EVD-2026-1019',
-      caseId: 'CR-2026-1019',
+      evidenceId: 'EVD-2026-3812',
+      caseId: 'CR-2008-0001',
       agency: 'police',
-      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
-      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1019 for Case CR-2026-1019. Standard FIPS 180-4 SHA-256 seal anchored.',
-      evidenceHash: '6663b3bfc74e65a01e5bd0f274e4152a858b15eaaddd21730412112085c60ad7',
-      merkleRoot: '95ebbfd541d0586125d4dcf053a9764f1dee9a9fe985e740e52765fb388e24bb',
-      signature: '0x03E8428B74CCCD804510F342DDD0A25892D57B6FC835FA3A60D6D74B5E550FC8',
+      officer: 'CCIC-HQ',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-3812 for Case CR-2008-0001. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '1bd3325afd4c0813da88dee881047bf69bd344fd34de8b4736c2fd35e2e38097',
+      merkleRoot: '5df0a12a5739b40cf8f47cd4c9dfaeb0fe2f5b15176b64890c5c8203d9252013',
+      signature: '0xE90BC87A7D5C8D0848822116333065E77925C02B3D9A9E04DAF69A38BC82BFD2',
       tampered: false
     },
     {
-      blockHeight: 20,
-      blockHash: '00000c3ff1f6fdb98e668b719f3e340f6cbd71fa8d2dcd2a67044eec43ef8543',
-      previousHash: '0000062e12c9567f359cc9a90d4470f3f7489afab9a3ed8dc0e54d8d6cd9698e',
+      blockHeight: 2,
+      globalHeight: 3,
+      blockHash: '00000861414af3016daae9614335860dcba83cb29c0173690fbf1f06da588936',
+      previousHash: '000000b3f2047814cc11d89613564b837f60ff56fe80f4ce3800df13f52f78ff',
+      timestamp: '2026-11-17T10:28:23.953Z',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-5524',
+      caseId: 'CR-2008-0001',
+      agency: 'police',
+      officer: 'CCIC-HQ',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-5524 for Case CR-2008-0001. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '0d7c2b1c17537cddfc6806d46e8b94078fcc017178ae0803d5cee7920ee6d47a',
+      merkleRoot: '52bdabbf614f6ad0bc8eff8f1c4b2c1fd6d7b9f54c203eafe45174aa85c06885',
+      signature: '0xD37E5BD1D2C10E2C1BE19B80C8AE99F0F14C59F53E20F4BA21521BA38F4715BC',
+      tampered: false
+    },
+    {
+      blockHeight: 3,
+      globalHeight: 4,
+      blockHash: '00000f07b9ae9db311edcb1d80bd949b98e4488a640cd45dae4dd13c5565d7b8',
+      previousHash: '00000861414af3016daae9614335860dcba83cb29c0173690fbf1f06da588936',
+      timestamp: '2026-11-17T10:30:18.380Z',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-8514',
+      caseId: 'CR-2008-0001',
+      agency: 'police',
+      officer: 'CCIC-HQ',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-8514 for Case CR-2008-0001. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: 'c7d6b8cb0ec852936c4774b6e9f63241d925c74e724fc844156a2f521c453e70',
+      merkleRoot: 'e281a48eb810f36c9c5ad1f92b5023f7c4b011507210491da8ed3a83e60afbe8',
+      signature: '0x6BA24966B0578E60A354E6FDCBB869905CDD96D72B986305F78D74553E33F182',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 7,
+      blockHash: '00000b5098236ce479697100c1e1e84256fde50807cea9ebd493f8e07aad7b93',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-02 11:15:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1002',
+      agency: 'police',
+      officer: 'Sub-Insp. Priya Sharma (CCIC-7702)',
+      actionDescription: 'Case CR-2026-1002 sovereign blockchain initialized. Case file opened by Sub-Insp. Priya Sharma (CCIC-7702). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '20afbf0b9450a6d7326c80ac5ee116a95b1e9d406f33a65e66d2642757315b33',
+      signature: '0x9B75C6A84B820BAF0FBC232AF2F17C67B60B7FC5706220CACC87A2BB5291CFF6',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 8,
+      blockHash: '0000084a07be5ea5150c621df91eab802ca8f349a81ccf38ff8fd8d72c5a2d63',
+      previousHash: '00000b5098236ce479697100c1e1e84256fde50807cea9ebd493f8e07aad7b93',
+      timestamp: '2026-11-02 12:40:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1002',
+      caseId: 'CR-2026-1002',
+      agency: 'police',
+      officer: 'CCIC-HQ',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1002 for Case CR-2026-1002. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: 'd2a84f3019e07894178562910485720194857201948572019485720194857201',
+      merkleRoot: '293920fa2c7da2a446e06a9142bfea20cc1fd3c1e357d0dfa55917fc3e6592f6',
+      signature: '0xBABE462AB066E1B5DB5699070CE80761344806923885282DFCCD897861B81A7D',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 43,
+      blockHash: '000009437fb2610e6f33cda1ed5eb6ad2dc1966c76a4662ea76ec5dec7005fde',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-15 15:50:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1020',
+      agency: 'admin',
+      officer: 'System Security Administrator (ADMIN-0001)',
+      actionDescription: 'Case CR-2026-1020 sovereign blockchain initialized. Case file opened by System Security Administrator (ADMIN-0001). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '8d83853efa938a3c374d0512af3f3bdd411a7cef501a5bf436671a40fcbd0cf6',
+      signature: '0xFE26C50FE59208CC0453A847CEE39D6D596DC005E67A91530F9027EB449EE771',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 44,
+      blockHash: '0000059e8cc6caa8b4593394dd2453c975b42cd527c7a4f2917ced144edc8be4',
+      previousHash: '000009437fb2610e6f33cda1ed5eb6ad2dc1966c76a4662ea76ec5dec7005fde',
       timestamp: '2026-11-15 16:45:00 UTC',
       eventType: 'GENESIS_SEIZURE',
       evidenceId: 'EVD-2026-1020',
       caseId: 'CR-2026-1020',
       agency: 'forensics',
-      officer: 'Dr. Aris Thorne (CFSL-4402)',
+      officer: 'CFSL-CYBER',
       actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1020 for Case CR-2026-1020. Standard FIPS 180-4 SHA-256 seal anchored.',
       evidenceHash: 'eb206cacf8df15f3f54b396461ac40f058ac20e8c5293c927bdd8293c2f5d12e',
-      merkleRoot: '7851504916ef01dc82a528f0ff8976b28f4c03ad45d70636167ac28a0d4e1abb',
-      signature: '0x29D0ACB4466297EBFA3F65FB65C2DAD55D4A89F7B9367D8B761A282692B4CAE4',
+      merkleRoot: '6bd40e5e1ed8f8d8fd540896c0995b627f33f7133fe1eb032a83aa8c742cee6c',
+      signature: '0x37F63439E917D4D6F3B3AF1703EEB2575F76C3660B8DCAA5B4436EA3D2636BF4',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 37,
+      blockHash: '000004b9867bb72fffa6f935502ddf8a243f06fd8b9f16fa0151d50da5c958d7',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-14 08:30:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1017',
+      agency: 'prosecution',
+      officer: 'Adv. Elena Vance (ODA-8831)',
+      actionDescription: 'Case CR-2026-1017 sovereign blockchain initialized. Case file opened by Adv. Elena Vance (ODA-8831). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '4dd4de867a8fbc638b77b46a1f86a1125a1b408efc4b06f271b04b876930a54e',
+      signature: '0x479FABB865346F8325E8709B22A569E0B3777D02C780A584B3BEFE8D846F2BFD',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 38,
+      blockHash: '000009a1f6636dfb193f58208c42f048e34099685332dc1c597d25f5414ea25d',
+      previousHash: '000004b9867bb72fffa6f935502ddf8a243f06fd8b9f16fa0151d50da5c958d7',
+      timestamp: '2026-11-14 09:15:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1017',
+      caseId: 'CR-2026-1017',
+      agency: 'prosecution',
+      officer: 'ODA-LEGAL',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1017 for Case CR-2026-1017. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '99d2401e4756291028374650192837465019283746501928374650192837465a',
+      merkleRoot: '74f26abd5b3c05f85dfcd9c5e58be9c36e50556c77eaeae20615beaf1ed6e9b3',
+      signature: '0x090671A168CCA22C2B0EC1BF966A916C8DE98B1208FBE9EEDEA423EF5F30A579',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 15,
+      blockHash: '000000f7f8e54b5f9acab07b89f8a836baa40935cb4c8e554cefcccf712d3aa2',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-06 10:10:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1006',
+      agency: 'police',
+      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
+      actionDescription: 'Case CR-2026-1006 sovereign blockchain initialized. Case file opened by Insp. Vikram Singh Rathod (CCIC-7701). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '539feba317d6523aa071649dc86b65bb5471e97739da400077886fe105548e7c',
+      signature: '0x4044B20AE2EC08CB3BBE85162807E1FD837DCB40D2D39EB403795D132EE78620',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 16,
+      blockHash: '000000445581c11b922da0cccf4069be190dd3e6c7b32e8ddbff6492ebbb1540',
+      previousHash: '000000f7f8e54b5f9acab07b89f8a836baa40935cb4c8e554cefcccf712d3aa2',
+      timestamp: '2026-11-06 11:00:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1006',
+      caseId: 'CR-2026-1006',
+      agency: 'forensics',
+      officer: 'CFSL-CYBER',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1006 for Case CR-2026-1006. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: 'ae4cf5bff27e46abe9accb4bf36ddff2bf1f2a99d10e4851994ea84c6d09693e',
+      merkleRoot: '81e4ee2d59a8569da252c9b5d6e7779bb95b9cf65c3ce97315e37522c8444fe4',
+      signature: '0x2EAAF976D298470DC2952830F25E62F1C45186E4950491754C9A14D3761F64DA',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 23,
+      blockHash: '000003ad7c710778ee062ce6f83cb0a6b6903c9af77fe29be39f1b3e242ea911',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-10 09:15:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1010',
+      agency: 'police',
+      officer: 'Sub-Insp. Priya Sharma (CCIC-7702)',
+      actionDescription: 'Case CR-2026-1010 sovereign blockchain initialized. Case file opened by Sub-Insp. Priya Sharma (CCIC-7702). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: 'd79479c7d6c9c6765232abea007ac0908bfefcffaf22dc4ff4afb9a580c0b911',
+      signature: '0x15230AA78F57CFEC8BAE23EAFAB39AF6CFF6572EB398BF8A8A4005FC37CA2F60',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 24,
+      blockHash: '0000019abefcd37d446bdaae7c590e7a1236602030c86978099871011118202a',
+      previousHash: '000003ad7c710778ee062ce6f83cb0a6b6903c9af77fe29be39f1b3e242ea911',
+      timestamp: '2026-11-10 10:00:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1010',
+      caseId: 'CR-2026-1010',
+      agency: 'forensics',
+      officer: 'CFSL-CYBER',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1010 for Case CR-2026-1010. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '33b4920049458902341786ef34a1b2c3d4e5f607182930415263748596a7b8c9',
+      merkleRoot: 'd9e14a9b0cf6710685c6e11545ddfa9a2d954d1de822711f9f1217484436a601',
+      signature: '0x1CB26AC8355B68961F9DEC71C1A3EE6F407A8D287694631E8D6F32D4C244B63A',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 21,
+      blockHash: '000006dbe3c106ee4444ff91f09c98cad4ebdfe220580f69f5fd69943557742f',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-09 15:45:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1009',
+      agency: 'prosecution',
+      officer: 'Adv. Siddharth Rao (ODA-8832)',
+      actionDescription: 'Case CR-2026-1009 sovereign blockchain initialized. Case file opened by Adv. Siddharth Rao (ODA-8832). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '88496892ee227d5b595c3e1c9eca9e1b40cb0f84771e3fb34f3a9592975f2ae6',
+      signature: '0xDA49BF88C09FB6D7783A0DD5A37E580EE25F510FE88DC8BE4A2F1AD56C572C66',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 22,
+      blockHash: '00000d227752af1c3073749d061bc375d9b1a99fae417c9b0adaa9830a358ca0',
+      previousHash: '000006dbe3c106ee4444ff91f09c98cad4ebdfe220580f69f5fd69943557742f',
+      timestamp: '2026-11-09 16:30:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1009',
+      caseId: 'CR-2026-1009',
+      agency: 'prosecution',
+      officer: 'ODA-LEGAL',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1009 for Case CR-2026-1009. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '99c019284756291048572019485720194857201948572019485720194857201a',
+      merkleRoot: 'b46d64fca3aff914af9732522b70b3fb3b4055bf469412ccf255521c0afe0b58',
+      signature: '0x0B0FA185E229307B24D159105A28C1B495351741329DC1A984D7DF889CBE5102',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 41,
+      blockHash: '000002ee6fbceb68ad246bf45930055f36bbcd10efa9d9a86ce116058bd49ca2',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-15 10:20:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1019',
+      agency: 'police',
+      officer: 'Sub-Insp. Priya Sharma (CCIC-7702)',
+      actionDescription: 'Case CR-2026-1019 sovereign blockchain initialized. Case file opened by Sub-Insp. Priya Sharma (CCIC-7702). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '0c21ff12b6e6b61951f6ee97fdd826b0f9a1b88c1c64ddb1c904515d90be3cc9',
+      signature: '0x7D7A2F4EE6A86EA686B059AC34955D5C4A54422C27CD11891E02BA1A48B9E8EE',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 42,
+      blockHash: '00000fc98ed2121d166cfc49679a835908a198f314a2dcbb793fb2da3563263c',
+      previousHash: '000002ee6fbceb68ad246bf45930055f36bbcd10efa9d9a86ce116058bd49ca2',
+      timestamp: '2026-11-15 11:10:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1019',
+      caseId: 'CR-2026-1019',
+      agency: 'police',
+      officer: 'CCIC-HQ',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1019 for Case CR-2026-1019. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '6663b3bfc74e65a01e5bd0f274e4152a858b15eaaddd21730412112085c60ad7',
+      merkleRoot: '9e2dd272f2607e2b39f810f01848b7dd789f686ce7e49ae0c0e02252ba4ea826',
+      signature: '0x41AD44DD775FB0595AD2B4EB23FDD056659D75A5EE0AE4B307D3933E36822A42',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 13,
+      blockHash: '000006b34b048e3d6924fb04d3951df49a9b14a1151eef8d921408a21c1d44d5',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-05 16:20:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1005',
+      agency: 'police',
+      officer: 'Sub-Insp. Priya Sharma (CCIC-7702)',
+      actionDescription: 'Case CR-2026-1005 sovereign blockchain initialized. Case file opened by Sub-Insp. Priya Sharma (CCIC-7702). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '3aab37325d190ea0f02f4f7f68f6257346db661fc1262de83d1406d30d42b5dd',
+      signature: '0x672BA61F9417B7549B6B55846F25D7895E3AE985EF53CEB6827F250523847FB7',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 14,
+      blockHash: '000002ed0996d601d5987cf8bcd34c78b7caddf1098b3b6df515b84c9729eb60',
+      previousHash: '000006b34b048e3d6924fb04d3951df49a9b14a1151eef8d921408a21c1d44d5',
+      timestamp: '2026-11-05 17:10:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1005',
+      caseId: 'CR-2026-1005',
+      agency: 'court',
+      officer: 'JUDICIAL-REG',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1005 for Case CR-2026-1005. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '45d4260f2e20b3d11ca69080ec871ffa0075687f0f6eaa3de0c3bc1cbb8370b3',
+      merkleRoot: '906bda7dc50161d3cfdacb0a2c9c5d682e46bbfaa4454e87aabd8d38ff3171aa',
+      signature: '0xC4683376C965D57FA34924E8FB5DA8234ED3D28F0610636937718DA78FD6955E',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 29,
+      blockHash: '0000080d94223bbdf38ba0d3d2565c903075016ae70e7ac8c9c4a9d50c66888f',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-12 11:20:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1013',
+      agency: 'police',
+      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
+      actionDescription: 'Case CR-2026-1013 sovereign blockchain initialized. Case file opened by Insp. Vikram Singh Rathod (CCIC-7701). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '3369f1186f0edb3a7881cb4a157a888a1f881dfeeb1248b6f3ee3b4c778fdb07',
+      signature: '0x5BA9938B53D26DAE9359E7249AD9C77389DAFE6A2FDA4748A127C32611C379AA',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 30,
+      blockHash: '00000629d2f5ed5798915c018b3b2dc6945641b4a880fc82877ff74501b6e88b',
+      previousHash: '0000080d94223bbdf38ba0d3d2565c903075016ae70e7ac8c9c4a9d50c66888f',
+      timestamp: '2026-11-12 12:10:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1013',
+      caseId: 'CR-2026-1013',
+      agency: 'prosecution',
+      officer: 'ODA-LEGAL',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1013 for Case CR-2026-1013. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '88f1c34a90c1b4de8834aa7712c9010fee67b9a148902a3cdef4901847192837',
+      merkleRoot: 'c2abd60fd510e0ed08abd9fa84ff968d933629e364b0b64a31c9c9ae2bc67e09',
+      signature: '0x67A29DAEF0D5B5B23A380903F98ABA429B214FA691A62C1420CBFAC13C4EA422',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 9,
+      blockHash: '00000eef60d96c16ec25be6650a5c43234de7e96f606080ae95069274760ff1e',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-03 14:00:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1003',
+      agency: 'police',
+      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
+      actionDescription: 'Case CR-2026-1003 sovereign blockchain initialized. Case file opened by Insp. Vikram Singh Rathod (CCIC-7701). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '6a6c8ce4205f973f77c172dd9f0939666cf1b6e6afece924053e7d7fe3cfc2f6',
+      signature: '0xB1BB42BA8EA5A682CC82E77FAB2617C8C57F1A8A5B3688A18EB4ED28C0A976C9',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 10,
+      blockHash: '00000ecf0a290687365e550af97980164c17396721f6f3529f4e06f795b03ee4',
+      previousHash: '00000eef60d96c16ec25be6650a5c43234de7e96f606080ae95069274760ff1e',
+      timestamp: '2026-11-03 15:20:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1003',
+      caseId: 'CR-2026-1003',
+      agency: 'forensics',
+      officer: 'CFSL-CYBER',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1003 for Case CR-2026-1003. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '5063a6809b8965e8514b535c3888509b802249105e148c5c4858e57cdc46fa8e',
+      merkleRoot: '182ed47869b53cadf86351f505e837b25d5410217643de193859a73c12a4796c',
+      signature: '0x404C773087B957DFF318620939A7DD14BFE7477849C2E217F33B673C9BEA7A75',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 35,
+      blockHash: '00000752b881f2332710c5faf4dc4689368ce68e54efb73ed4e035ecd8eb2b74',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-13 16:10:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1016',
+      agency: 'police',
+      officer: 'Sub-Insp. Priya Sharma (CCIC-7702)',
+      actionDescription: 'Case CR-2026-1016 sovereign blockchain initialized. Case file opened by Sub-Insp. Priya Sharma (CCIC-7702). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '961140166d895e64a702fd65fe1317f63daaf96bd3fbb5bc4590bcd5aa6cd112',
+      signature: '0xAB3A655A46559F57BA78669D07EE3AC369E37EDEC239644CD3DC0AA1FB6420AA',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 36,
+      blockHash: '00000451ce3ca2a8d92e28c455f54de81292df680dd899f77c7da39c40df08c7',
+      previousHash: '00000752b881f2332710c5faf4dc4689368ce68e54efb73ed4e035ecd8eb2b74',
+      timestamp: '2026-11-13 17:00:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1016',
+      caseId: 'CR-2026-1016',
+      agency: 'forensics',
+      officer: 'CFSL-CYBER',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1016 for Case CR-2026-1016. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '22c8891d4756291028374650192837465019283746501928374650192837465a',
+      merkleRoot: '5513cf974d010c4bc570467c490302035f930c86eadf4089980a8bb8fc155b25',
+      signature: '0x70794D639C2D499672BBDC11D79C852CB4F6A236093D8A8394DD70D5BA17C054',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 31,
+      blockHash: '00000f4b12b2cb1aed038ff1e2c24d4659dfe3c55fab435f697a29f4f74075c0',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-12 14:40:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1014',
+      agency: 'prosecution',
+      officer: 'Adv. Elena Vance (ODA-8831)',
+      actionDescription: 'Case CR-2026-1014 sovereign blockchain initialized. Case file opened by Adv. Elena Vance (ODA-8831). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '8498c4dade64ea5eb13cca6429e68797a3472fd3d6c958f25adf8ae6e575714e',
+      signature: '0x571119C965562A22833D9E03EE7DED927C18CAA67218F379B27534E6BE6405F0',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 32,
+      blockHash: '0000046c003526c50423c3505695862b4fbf1170578b2c338f0fc664fdfdd6dd',
+      previousHash: '00000f4b12b2cb1aed038ff1e2c24d4659dfe3c55fab435f697a29f4f74075c0',
+      timestamp: '2026-11-12 15:30:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1014',
+      caseId: 'CR-2026-1014',
+      agency: 'court',
+      officer: 'JUDICIAL-REG',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1014 for Case CR-2026-1014. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '55b1182c4756291028374650192837465019283746501928374650192837465a',
+      merkleRoot: 'b7167c5c7446d007a20752f421ee05f150f5af135d08277b41c0704ee94b6bd2',
+      signature: '0xE8188F899992460B518BD62B23AAC344A0A1D7759FD12CC417DAA811AA707C32',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 19,
+      blockHash: '0000078659ca9f812e6910fc3d65b5b832294f9f39e10a429ab4abff2c9990cc',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-08 12:00:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1008',
+      agency: 'police',
+      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
+      actionDescription: 'Case CR-2026-1008 sovereign blockchain initialized. Case file opened by Insp. Vikram Singh Rathod (CCIC-7701). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '9467cf1ae6c195d599b4cdc1081995eae511a4ea3db2add4241c90dc55d1e4cc',
+      signature: '0x9D24AE92C5FB092F0F015E0B02D85BD2EE5FC0038C0D760E5C9CE803CBA3D4AF',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 20,
+      blockHash: '00000195cc5acaf8b214167c2b8baaf53a813b03aa249bbdba8fe86cdcadd84b',
+      previousHash: '0000078659ca9f812e6910fc3d65b5b832294f9f39e10a429ab4abff2c9990cc',
+      timestamp: '2026-11-08 13:15:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1008',
+      caseId: 'CR-2026-1008',
+      agency: 'forensics',
+      officer: 'CFSL-CYBER',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1008 for Case CR-2026-1008. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '00b39c0f81d4a821938475629104857201948572019485720194857201948572',
+      merkleRoot: '651f9dd88d1b80675f6a4988e18030c5e5392ebb73b539c7fe52a611be219001',
+      signature: '0x976BC22B94A48DC20B15559E3510BBF6D2A0152C43228B2BC7B482C5F4F95724',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 39,
+      blockHash: '00000e38cfb62d230ce1dd34b381878a179b54890a3eb34a26bdfdb06604477e',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-14 13:00:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1018',
+      agency: 'police',
+      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
+      actionDescription: 'Case CR-2026-1018 sovereign blockchain initialized. Case file opened by Insp. Vikram Singh Rathod (CCIC-7701). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '5d318720ac31f78c5d318fbc4f63a8dcefbb13f0b609222992fc09fb6d35986e',
+      signature: '0x7EAFB6877E31A21CC87BFD88276BA4A70BC70D407257CBD59701BA86E507F895',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 40,
+      blockHash: '00000bd26f7d6604651f974414934e59dba49e80659db4c4a3fa9e827805b721',
+      previousHash: '00000e38cfb62d230ce1dd34b381878a179b54890a3eb34a26bdfdb06604477e',
+      timestamp: '2026-11-14 13:45:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1018',
+      caseId: 'CR-2026-1018',
+      agency: 'police',
+      officer: 'CCIC-HQ',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1018 for Case CR-2026-1018. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: 'd1a78436027212b3c7b4c099d680049cbd2cf9a8a472ce7c9705dd6cd516d477',
+      merkleRoot: '3f0e63aa754e800ea74f16fd7444f9fef1c012b7e946dabf8eb15af29e266478',
+      signature: '0xC389B38648470428F64CA956D945B2FC0358F0724DE7733E0DACBA6BC9FC96DB',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 11,
+      blockHash: '00000b9c69d42015c889f978360857ebed793e170c60125fecb82795c21610f0',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-04 08:45:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1004',
+      agency: 'prosecution',
+      officer: 'Adv. Elena Vance (ODA-8831)',
+      actionDescription: 'Case CR-2026-1004 sovereign blockchain initialized. Case file opened by Adv. Elena Vance (ODA-8831). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '5545f3274cd98d2b4faa3513990e58f1ff84a55cdb7921af9edb9ea71c6075f0',
+      signature: '0x65873D3203254176DE35D866094A464B4C6F0D2EB2536F4BDE7B3822AC0639A8',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 12,
+      blockHash: '000001986e32acd6303ab03eb919319790672caf4b0e8c56ccf6eac52213bfba',
+      previousHash: '00000b9c69d42015c889f978360857ebed793e170c60125fecb82795c21610f0',
+      timestamp: '2026-11-04 09:30:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1004',
+      caseId: 'CR-2026-1004',
+      agency: 'prosecution',
+      officer: 'ODA-LEGAL',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1004 for Case CR-2026-1004. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: '7cdb4176c7a247630875c6304d57b5dd13ce484c947a392176af2d1dbfc0842a',
+      merkleRoot: 'b7a161205bf3707039e6b0817af9221e7488f1076c58f80e2aa5095e4e0eb9ad',
+      signature: '0x21E5FD51730C245EBCAB62868EEF80BE6AD57AE886274ED5C2D5A3FC3307118D',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 5,
+      blockHash: '00000cb570e9e232ee2420833920f09199f5c6fbcdcfa9446ed402def0c30c9d',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-01 09:30:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1001',
+      agency: 'police',
+      officer: 'Insp. Vikram Singh Rathod (CCIC-7701)',
+      actionDescription: 'Case CR-2026-1001 sovereign blockchain initialized. Case file opened by Insp. Vikram Singh Rathod (CCIC-7701). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: '78e5fcdf1ac16c99eb2d929fcbbfdfafd08918c3777f51099cb160452c938f04',
+      signature: '0xBFFDEE3357FD934840FF1308D79E6DF17707D84051A020831C8EDC57B0F024A1',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 6,
+      blockHash: '000007161ad870dca44b40b5f2266ef6499900ef9dbd37fffee635e80f251059',
+      previousHash: '00000cb570e9e232ee2420833920f09199f5c6fbcdcfa9446ed402def0c30c9d',
+      timestamp: '2026-11-01 10:15:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1001',
+      caseId: 'CR-2026-1001',
+      agency: 'police',
+      officer: 'CCIC-HQ',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1001 for Case CR-2026-1001. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      merkleRoot: 'fadd666b2acd6ea03059800e5cec6fba9a6d26e7add1dc479e3b0236348bb47a',
+      signature: '0xA93EA5017C96D2D113E99403E0661BAA0A73B517999FBAE70F74C5B2423B507F',
+      tampered: false
+    },
+    {
+      blockHeight: 0,
+      globalHeight: 17,
+      blockHash: '0000082bccb27f272891c5e4f986c48d487fecebfde87dcbd0dc2f1e29b8e478',
+      previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      timestamp: '2026-11-07 07:30:00 UTC',
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: 'CR-2026-1007',
+      agency: 'police',
+      officer: 'Sub-Insp. Priya Sharma (CCIC-7702)',
+      actionDescription: 'Case CR-2026-1007 sovereign blockchain initialized. Case file opened by Sub-Insp. Priya Sharma (CCIC-7702). Cryptographic root ledger anchored.',
+      evidenceHash: '0000000000000000000000000000000000000000000000000000000000000000',
+      merkleRoot: 'bf4ce20ecc09df503a69a6253dcd229c9c8d261b5a382cb75cdc169697cc3639',
+      signature: '0x377444C3BAA720CFB67A06A43CD71D608DB39E539954A39188BE8EE2D4A4D95C',
+      tampered: false
+    },
+    {
+      blockHeight: 1,
+      globalHeight: 18,
+      blockHash: '00000beddf1935ca4fc115ad158ed6b6cc2833757b39b649645bd62db1f8bb25',
+      previousHash: '0000082bccb27f272891c5e4f986c48d487fecebfde87dcbd0dc2f1e29b8e478',
+      timestamp: '2026-11-07 08:45:00 UTC',
+      eventType: 'GENESIS_SEIZURE',
+      evidenceId: 'EVD-2026-1007',
+      caseId: 'CR-2026-1007',
+      agency: 'police',
+      officer: 'CCIC-HQ',
+      actionDescription: 'Cryptographic genesis intake and bitstream registration of Exhibit EVD-2026-1007 for Case CR-2026-1007. Standard FIPS 180-4 SHA-256 seal anchored.',
+      evidenceHash: 'a6cef4c74565fe46ad78308a3ad4c07af2b1c6ff9d57f0a66ac4650bb54a1b2c',
+      merkleRoot: '91a0af87b84d83c5eb3fb150638361f105336c06cf4fabbe305ed7a366e729ac',
+      signature: '0x402452909CE0CADFE032DD4F59322625BCBCCC8BACB9791CC12E9DDF5B14FA1F',
       tampered: false
     }
 ];
-const INITIAL_FORENSIC_REPORTS = [];
+
+  const INITIAL_FORENSIC_REPORTS = [];
 
 class DEISStore {
   constructor() {
@@ -1527,23 +1940,17 @@ class DEISStore {
           }
         });
 
-        let loadedBlocks = (parsed && Array.isArray(parsed.chainBlocks)) ? parsed.chainBlocks : [...INITIAL_CHAIN_BLOCKS];
+        let loadedBlocks = (parsed && Array.isArray(parsed.chainBlocks) && parsed.chainBlocks.length > 0) ? parsed.chainBlocks : [...INITIAL_CHAIN_BLOCKS];
         INITIAL_CHAIN_BLOCKS.forEach(initBlock => {
           const exists = loadedBlocks.some(b => b && (
-            (initBlock.evidenceId && b.evidenceId === initBlock.evidenceId && b.eventType === initBlock.eventType) ||
-            b.blockHeight === initBlock.blockHeight
+            b.blockHash === initBlock.blockHash ||
+            (b.caseId === initBlock.caseId && b.blockHeight === initBlock.blockHeight) ||
+            (initBlock.evidenceId && b.evidenceId === initBlock.evidenceId && b.eventType === initBlock.eventType)
           ));
           if (!exists) {
-            const nextHeight = loadedBlocks.length;
-            const prevBlock = loadedBlocks[loadedBlocks.length - 1];
-            loadedBlocks.push({
-              ...initBlock,
-              blockHeight: nextHeight,
-              previousHash: prevBlock ? prevBlock.blockHash : initBlock.previousHash
-            });
+            loadedBlocks.push(initBlock);
           }
         });
-        loadedBlocks.sort((a, b) => a.blockHeight - b.blockHeight);
 
         let loadedReports = (parsed && Array.isArray(parsed.forensicReports)) ? parsed.forensicReports : [...INITIAL_FORENSIC_REPORTS];
         INITIAL_FORENSIC_REPORTS.forEach(initRpt => {
@@ -1886,6 +2293,32 @@ class DEISStore {
       this.state.cases = [];
     }
     this.state.cases.unshift(newCase);
+
+    // Anchor Block #0: Sovereign Case Genesis Block
+    const genesisZeroPrev = '0000000000000000000000000000000000000000000000000000000000000000';
+    const randHex = Math.random().toString(16).substring(2) + Math.random().toString(16).substring(2) + Math.random().toString(16).substring(2);
+    const caseBlock0 = {
+      blockHeight: 0,
+      globalHeight: (this.state.chainBlocks && this.state.chainBlocks.length > 0) ? (this.state.chainBlocks.length + 1) : 1,
+      blockHash: '00000' + randHex.substring(0, 59),
+      previousHash: genesisZeroPrev,
+      timestamp: newCase.openedDate,
+      eventType: 'CASE_GENESIS',
+      evidenceId: null,
+      caseId: cleanNumber,
+      agency: agency.id,
+      officer: activeOfficer,
+      actionDescription: 'Case ' + cleanNumber + ' sovereign blockchain initialized. Case file opened by ' + activeOfficer + ' (' + agency.name + '). Cryptographic root ledger anchored.',
+      evidenceHash: genesisZeroPrev,
+      merkleRoot: 'd8928374' + Math.random().toString(16).substring(2).padEnd(56, '0'),
+      signature: '0x' + Math.random().toString(16).substring(2).toUpperCase() + Math.random().toString(16).substring(2).toUpperCase(),
+      tampered: false
+    };
+    if (!Array.isArray(this.state.chainBlocks)) {
+      this.state.chainBlocks = [];
+    }
+    this.state.chainBlocks.push(caseBlock0);
+
     this.saveState();
     if (window.DEISSupabase && window.DEISSupabase.isConfigured()) {
       window.DEISSupabase.syncSingleCase(newCase);
@@ -1975,10 +2408,13 @@ class DEISStore {
 
     this.state.evidence.unshift(newEvidence);
 
-    // Record Genesis block for this evidence in chain of custody
-    const lastBlock = this.state.chainBlocks[this.state.chainBlocks.length - 1];
-    const newBlockHeight = this.state.chainBlocks.length;
+    // Record Genesis block in this Case's Sovereign Blockchain
+    const targetCaseId = newEvidence.caseNumber;
+    const caseBlocks = this.getChainBlocksForCase(targetCaseId);
+    const lastBlock = caseBlocks.length > 0 ? caseBlocks[caseBlocks.length - 1] : null;
+    const newBlockHeight = caseBlocks.length;
     const blockPayload = {
+      caseId: targetCaseId,
       height: newBlockHeight,
       prevHash: lastBlock ? lastBlock.blockHash : '0000000000000000000000000000000000000000000000000000000000000000',
       timestamp: new Date().toISOString(),
@@ -2111,10 +2547,13 @@ class DEISStore {
 
     this.state.transfers.unshift(newTransfer);
 
-    // Commit dispatch block to Chain of Custody
-    const lastBlock = this.state.chainBlocks[this.state.chainBlocks.length - 1];
-    const newBlockHeight = this.state.chainBlocks.length;
+    // Commit dispatch block to Case Sovereign Blockchain
+    const targetCaseId = evidence ? evidence.caseNumber : (forensicReport ? forensicReport.caseNumber : 'CR-CASE');
+    const caseBlocks = this.getChainBlocksForCase(targetCaseId);
+    const lastBlock = caseBlocks.length > 0 ? caseBlocks[caseBlocks.length - 1] : null;
+    const newBlockHeight = caseBlocks.length;
     const blockPayload = {
+      caseId: targetCaseId,
       height: newBlockHeight,
       prevHash: lastBlock ? lastBlock.blockHash : '0000000000000000000000000000000000000000000000000000000000000000',
       timestamp,
@@ -2221,9 +2660,12 @@ class DEISStore {
       }
     }
 
-    const lastBlock = this.state.chainBlocks[this.state.chainBlocks.length - 1];
-    const newBlockHeight = this.state.chainBlocks.length;
+    const targetCaseId = evidence ? evidence.caseNumber : (forensicReport ? forensicReport.caseNumber : 'CR-CASE');
+    const caseBlocks = this.getChainBlocksForCase(targetCaseId);
+    const lastBlock = caseBlocks.length > 0 ? caseBlocks[caseBlocks.length - 1] : null;
+    const newBlockHeight = caseBlocks.length;
     const blockPayload = {
+      caseId: targetCaseId,
       height: newBlockHeight,
       prevHash: lastBlock ? lastBlock.blockHash : '0000000000000000000000000000000000000000000000000000000000000000',
       timestamp,
@@ -2268,9 +2710,27 @@ class DEISStore {
     return transfer;
   }
 
-  // --- Chain of Custody & Tamper Engine ---
+  // --- Chain of Custody & Tamper Engine (One Case, One Blockchain) ---
   getChainBlocks() {
-    return this.state.chainBlocks;
+    return this.state.chainBlocks || [];
+  }
+
+  getChainBlocksForCase(caseIdOrNumber) {
+    if (!caseIdOrNumber) return [];
+    const clean = String(caseIdOrNumber).trim().toUpperCase();
+    const cleanNoPrefix = clean.replace(/^CASE-/, '');
+    return (this.state.chainBlocks || [])
+      .filter(b => {
+        if (!b) return false;
+        const bCase = String(b.caseId || '').trim().toUpperCase();
+        return bCase === clean || bCase === cleanNoPrefix || bCase === ('CASE-' + cleanNoPrefix);
+      })
+      .sort((a, b) => (a.blockHeight ?? 0) - (b.blockHeight ?? 0));
+  }
+
+  getLastBlockForCase(caseIdOrNumber) {
+    const blocks = this.getChainBlocksForCase(caseIdOrNumber);
+    return blocks.length > 0 ? blocks[blocks.length - 1] : null;
   }
 
   // --- Audit Trail & System Verification Logging ---

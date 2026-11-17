@@ -17,7 +17,9 @@ const CertificateView = {
     }
 
     const currentEv = store.getEvidenceById(this.selectedEvidenceId);
-    const chainBlocks = store.getChainBlocks().filter(b => b.evidenceId === this.selectedEvidenceId);
+    const chainBlocks = (store && typeof store.getChainBlocksForCase === 'function' && currentEv)
+      ? store.getChainBlocksForCase(currentEv.caseNumber)
+      : (store ? store.getChainBlocks().filter(b => b.evidenceId === this.selectedEvidenceId || (currentEv && b.caseId === currentEv.caseNumber)) : []);
 
     container.innerHTML = `
       <div class="space-y-6">
@@ -143,14 +145,19 @@ const CertificateView = {
 
             <!-- Chronological Chain of Custody Table -->
             <div class="space-y-3">
-              <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono border-l-2 border-cyan-500 pl-2">
-                3. Certified Chronological Chain of Custody
-              </h3>
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-l-2 border-cyan-500 pl-2">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
+                  3. Certified Chronological Chain of Custody
+                </h3>
+                <span class="cyber-badge bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 text-[10px] font-mono w-fit">
+                  Sovereign Case Blockchain: ${currentEv.caseNumber}
+                </span>
+              </div>
               <div class="overflow-x-auto border border-slate-800 rounded-lg">
                 <table class="w-full text-left text-xs border-collapse">
                   <thead class="bg-slate-900 font-mono text-[10px] text-slate-400 border-b border-slate-800">
                     <tr>
-                      <th class="py-2.5 px-3">BLOCK</th>
+                      <th class="py-2.5 px-3">CASE BLOCK</th>
                       <th class="py-2.5 px-3">TIMESTAMP</th>
                       <th class="py-2.5 px-3">EVENT</th>
                       <th class="py-2.5 px-3">CUSTODIAN / OFFICER</th>

@@ -1065,45 +1065,64 @@ const ChainView = {
   /**
    * Action: VALIDATE AUDIT CHAIN
    * Cryptographically recalculates every block hash and checks previous-hash consistency
+   * per Sovereign Case Blockchain
    */
   async runAuditValidation() {
     const blocks = this.getChainBlocks();
-    window.DEISApp.showToast('Recalculating and validating cryptographic custody chain...', 'info');
+    window.DEISApp.showToast('Recalculating and validating sovereign case blockchains...', 'info');
 
     let isValid = true;
     let failureDetail = null;
+    let verifiedChainsCount = 0;
 
-    for (let i = 0; i < blocks.length; i++) {
-      const block = blocks[i];
-      const expectedPrevHash = (i === 0)
-        ? '0000000000000000000000000000000000000000000000000000000000000000'
-        : blocks[i - 1].blockHash;
+    // Group blocks by case
+    const byCase = {};
+    blocks.forEach(b => {
+      const cid = b.caseId || 'CR-GENERAL';
+      if (!byCase[cid]) byCase[cid] = [];
+      byCase[cid].push(b);
+    });
 
-      if (block.previousHash !== expectedPrevHash) {
-        isValid = false;
-        failureDetail = {
-          firstInvalidIndex: i,
-          firstInvalidBlockHeight: block.blockHeight,
-          firstInvalidEventId: `BLK-${block.blockHeight}`,
-          reason: 'Previous hash pointer discrepancy detected between blocks',
-          expectedHash: expectedPrevHash,
-          actualHash: block.previousHash
-        };
-        break;
+    for (const caseId of Object.keys(byCase)) {
+      const caseBlocks = byCase[caseId];
+      caseBlocks.sort((a, b) => (a.blockHeight ?? 0) - (b.blockHeight ?? 0));
+
+      for (let j = 0; j < caseBlocks.length; j++) {
+        const block = caseBlocks[j];
+        const expectedPrevHash = (j === 0)
+          ? '0000000000000000000000000000000000000000000000000000000000000000'
+          : caseBlocks[j - 1].blockHash;
+
+        if (block.previousHash !== expectedPrevHash) {
+          isValid = false;
+          failureDetail = {
+            caseId: caseId,
+            firstInvalidIndex: j,
+            firstInvalidBlockHeight: block.blockHeight,
+            firstInvalidEventId: `${caseId}-BLK#${block.blockHeight}`,
+            reason: `Previous hash pointer discrepancy detected in Case ${caseId} ledger`,
+            expectedHash: expectedPrevHash,
+            actualHash: block.previousHash
+          };
+          break;
+        }
+
+        if (block.tampered || (block.blockHash && block.blockHash.includes('DEAD')) || (block.evidenceHash && block.evidenceHash.startsWith('deadbeef'))) {
+          isValid = false;
+          failureDetail = {
+            caseId: caseId,
+            firstInvalidIndex: j,
+            firstInvalidBlockHeight: block.blockHeight,
+            firstInvalidEventId: `${caseId}-BLK#${block.blockHeight}`,
+            reason: `Block payload altered in Case ${caseId}. Non-repudiation failure.`,
+            expectedHash: 'VALID_CONSENSUS_HASH',
+            actualHash: block.blockHash
+          };
+          break;
+        }
       }
-
-      if (block.tampered || block.blockHash.includes('DEAD') || (block.evidenceHash && block.evidenceHash.startsWith('deadbeef'))) {
-        isValid = false;
-        failureDetail = {
-          firstInvalidIndex: i,
-          firstInvalidBlockHeight: block.blockHeight,
-          firstInvalidEventId: `BLK-${block.blockHeight}`,
-          reason: 'Block payload hash altered post-commitment. Non-repudiation failure.',
-          expectedHash: 'VALID_CONSENSUS_HASH',
-          actualHash: block.blockHash
-        };
-        break;
-      }
+      if (!isValid) break;
+      verifiedChainsCount++;
     }
 
     const timestamp = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
@@ -1111,6 +1130,7 @@ const ChainView = {
     this.auditValidationResult = {
       isValid,
       totalBlocksChecked: blocks.length,
+      verifiedChainsCount,
       verifiedAt: timestamp,
       ...(failureDetail || {})
     };
@@ -1118,12 +1138,12 @@ const ChainView = {
     this.render(document.getElementById('view-container'));
 
     if (isValid) {
-      window.DEISApp.showToast(`Audit Chain Passed: All ${blocks.length} blocks mathematically verified!`, 'success');
+      window.DEISApp.showToast(`Audit Chain Passed: All ${verifiedChainsCount} Case Blockchains (${blocks.length} blocks) mathematically verified!`, 'success');
       if (window.confetti) {
         window.confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
       }
     } else {
-      window.DEISApp.showToast(`Audit Chain Failed: Broken link detected at Block #${failureDetail.firstInvalidBlockHeight}!`, 'error');
+      window.DEISApp.showToast(`Audit Chain Failed: Case ${failureDetail.caseId} compromised at Block #${failureDetail.firstInvalidBlockHeight}!`, 'error');
     }
   },
 
