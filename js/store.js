@@ -1842,6 +1842,17 @@ class DEISStore {
     this.state = this.loadState();
     this.currentUser = this.loadCurrentUser();
     this.listeners = [];
+
+    // Trigger cloud synchronization if Supabase is configured
+    setTimeout(() => {
+      if (window.DEISSupabase && window.DEISSupabase.isConfigured()) {
+        window.DEISSupabase.syncCloudToLocal(this).then(() => {
+          this.notify();
+        }).catch(err => {
+          console.warn('DEIS: Background cloud sync notice', err);
+        });
+      }
+    }, 800);
   }
 
   loadCurrentUser() {
@@ -2262,6 +2273,9 @@ class DEISStore {
     }
     this.state.cases.unshift(newCase);
     this.saveState();
+    if (window.DEISSupabase && window.DEISSupabase.isConfigured()) {
+      window.DEISSupabase.syncSingleCase(newCase);
+    }
     return newCase;
   }
 
@@ -2380,6 +2394,9 @@ class DEISStore {
     });
 
     this.saveState();
+    if (window.DEISSupabase && window.DEISSupabase.isConfigured()) {
+      window.DEISSupabase.syncSingleEvidence(newEvidence);
+    }
     return newEvidence;
   }
 
@@ -2524,6 +2541,9 @@ class DEISStore {
     });
 
     this.saveState();
+    if (window.DEISSupabase && window.DEISSupabase.isConfigured()) {
+      window.DEISSupabase.syncLocalToCloud(this);
+    }
     return newTransfer;
   }
 
@@ -2628,6 +2648,9 @@ class DEISStore {
     });
 
     this.saveState();
+    if (window.DEISSupabase && window.DEISSupabase.isConfigured()) {
+      window.DEISSupabase.syncLocalToCloud(this);
+    }
     return transfer;
   }
 

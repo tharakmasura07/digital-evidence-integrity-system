@@ -261,6 +261,10 @@ class DEISApplication {
       }
     }
 
+    if (window.DEISSupabase) {
+      window.DEISSupabase.updateStatusBadge();
+    }
+
     // Toggle Transfers Link (Hidden for Court/Judge role)
     const navTransfersLink = document.getElementById('nav-transfers-link');
     if (navTransfersLink) {
@@ -1353,6 +1357,122 @@ class DEISApplication {
       toast.classList.add('opacity-0', 'translate-x-full');
       setTimeout(() => toast.remove(), 300);
     }, 4500);
+  }
+
+  openSupabaseModal() {
+    const urlInput = document.getElementById('supabase-url-input');
+    const keyInput = document.getElementById('supabase-key-input');
+    const statusMsg = document.getElementById('supabase-status-message');
+    const disconnectBtn = document.getElementById('supabase-disconnect-btn');
+
+    if (statusMsg) statusMsg.classList.add('hidden');
+
+    if (window.DEISSupabase) {
+      if (urlInput) urlInput.value = window.DEISSupabase.url || '';
+      if (keyInput) keyInput.value = window.DEISSupabase.anonKey || '';
+
+      if (disconnectBtn) {
+        if (window.DEISSupabase.isConfigured()) {
+          disconnectBtn.classList.remove('hidden');
+        } else {
+          disconnectBtn.classList.add('hidden');
+        }
+      }
+
+      if (window.DEISSupabase.isConfigured() && window.DEISSupabase.isConnected && statusMsg) {
+        statusMsg.className = 'p-3 rounded-xl text-xs font-mono bg-emerald-950/80 border border-emerald-500/50 text-emerald-300';
+        statusMsg.textContent = `✓ Connected to Supabase Cloud Database (${window.DEISSupabase.url}). All records synced.`;
+        statusMsg.classList.remove('hidden');
+      }
+    }
+
+    this.openModal('supabase-config-modal');
+  }
+
+  async saveSupabaseConfig(event) {
+    if (event) event.preventDefault();
+    const url = document.getElementById('supabase-url-input')?.value;
+    const key = document.getElementById('supabase-key-input')?.value;
+    const statusMsg = document.getElementById('supabase-status-message');
+    const saveBtn = document.getElementById('supabase-save-btn');
+
+    if (!window.DEISSupabase) {
+      this.showToast('Supabase manager not loaded.', 'error');
+      return;
+    }
+
+    if (saveBtn) {
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = `<span class="w-3.5 h-3.5 rounded-full border-2 border-white/20 border-t-white animate-spin inline-block"></span><span>Connecting...</span>`;
+    }
+
+    try {
+      const result = await window.DEISSupabase.saveCredentials(url, key, true);
+      if (statusMsg) {
+        statusMsg.classList.remove('hidden');
+        if (result.success) {
+          statusMsg.className = 'p-3 rounded-xl text-xs font-mono bg-emerald-950/80 border border-emerald-500/50 text-emerald-300';
+          statusMsg.textContent = `✓ ${result.message}`;
+          this.showToast('Supabase Cloud Database connected and synchronized successfully!', 'success');
+          if (window.confetti) window.confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+        } else {
+          statusMsg.className = 'p-3 rounded-xl text-xs font-mono bg-rose-950/80 border border-rose-500/50 text-rose-300';
+          statusMsg.textContent = `✕ ${result.message}`;
+          this.showToast(result.message, 'error');
+        }
+      }
+      const disconnectBtn = document.getElementById('supabase-disconnect-btn');
+      if (disconnectBtn && window.DEISSupabase.isConfigured()) {
+        disconnectBtn.classList.remove('hidden');
+      }
+      this.renderCurrentView();
+    } catch (err) {
+      if (statusMsg) {
+        statusMsg.className = 'p-3 rounded-xl text-xs font-mono bg-rose-950/80 border border-rose-500/50 text-rose-300';
+        statusMsg.textContent = `✕ Error: ${err.message}`;
+        statusMsg.classList.remove('hidden');
+      }
+      this.showToast(err.message, 'error');
+    } finally {
+      if (saveBtn) {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>Connect & Sync</span>`;
+      }
+      safeCreateIcons();
+    }
+  }
+
+  disconnectSupabase() {
+    if (window.DEISSupabase) {
+      window.DEISSupabase.disconnect();
+    }
+    const urlInput = document.getElementById('supabase-url-input');
+    const keyInput = document.getElementById('supabase-key-input');
+    const statusMsg = document.getElementById('supabase-status-message');
+    const disconnectBtn = document.getElementById('supabase-disconnect-btn');
+
+    if (urlInput) urlInput.value = '';
+    if (keyInput) keyInput.value = '';
+    if (disconnectBtn) disconnectBtn.classList.add('hidden');
+    if (statusMsg) {
+      statusMsg.className = 'p-3 rounded-xl text-xs font-mono bg-slate-900 border border-slate-700 text-slate-400';
+      statusMsg.textContent = 'Disconnected from Supabase Cloud. Operating in local storage mode.';
+      statusMsg.classList.remove('hidden');
+    }
+    this.showToast('Disconnected from Supabase Cloud. Switched to local storage.', 'info');
+    this.renderCurrentView();
+  }
+
+  async copySupabaseSchema() {
+    try {
+      const response = await fetch('supabase_schema.sql');
+      const sqlText = await response.text();
+      await navigator.clipboard.writeText(sqlText);
+      this.showToast('Supabase SQL Schema copied to clipboard! Paste into Supabase SQL Editor and click Run.', 'success');
+    } catch (e) {
+      window.open('supabase_schema.sql', '_blank');
+      this.showToast('Opened supabase_schema.sql. Copy and run in your Supabase SQL Editor.', 'info');
+    }
   }
 
   copyToClipboard(text, customMessage = 'Copied to clipboard') {
