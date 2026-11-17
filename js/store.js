@@ -2232,6 +2232,11 @@ class DEISStore {
       throw new Error(`A Case File with Title "${cleanTitle}" already exists (Case Number: ${duplicateTitleCase.caseNumber}). Case titles must be unique.`);
     }
 
+    const cleanDescription = (caseData.description || '').trim();
+    if (!cleanDescription) {
+      throw new Error('Case Description & Incident Summary is compulsory. Please enter a brief summary of the criminal investigation.');
+    }
+
     const agency = this.state.agencies[caseData.leadAgency || this.state.currentAgencyId] || this.state.agencies['police'];
     const activeOfficer = this.currentUser ? `${this.currentUser.name} (${this.currentUser.badgeId})` : 'System Security Administrator';
     const folderSanitized = cleanNumber.replace(/[^A-Z0-9_-]/gi, '_');
@@ -2249,7 +2254,7 @@ class DEISStore {
       status: 'ACTIVE_INVESTIGATION',
       openedDate: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC',
       storageFolder: `evidence_vault/Case_${folderSanitized}/`,
-      description: (caseData.description || '').trim() || 'Active criminal prosecution dossier holding verified chain of custody evidence.'
+      description: cleanDescription
     };
 
     if (!Array.isArray(this.state.cases)) {

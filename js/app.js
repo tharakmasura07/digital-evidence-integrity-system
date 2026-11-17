@@ -480,12 +480,13 @@ class DEISApplication {
 
     const caseNumberInput = document.getElementById('case-number-input');
     const titleInput = document.getElementById('case-title-input');
+    const descriptionInput = document.getElementById('case-description-input');
     const caseNumber = (caseNumberInput ? caseNumberInput.value : '').trim().toUpperCase();
     const title = (titleInput ? titleInput.value : '').trim();
     const category = document.getElementById('case-category-input').value;
     const leadAgency = document.getElementById('case-agency-input').value;
     const courtJurisdiction = document.getElementById('case-court-input').value.trim();
-    const description = document.getElementById('case-description-input').value.trim();
+    const description = (descriptionInput ? descriptionInput.value : '').trim();
 
     const showError = (msg) => {
       if (errorBox && errorText) {
@@ -511,6 +512,12 @@ class DEISApplication {
     if (!title) {
       showError('Case Title / Investigation Heading is required.');
       if (titleInput) titleInput.focus();
+      return;
+    }
+
+    if (!description) {
+      showError('Case Description & Incident Summary is compulsory. Please enter a brief summary of the criminal investigation.');
+      if (descriptionInput) descriptionInput.focus();
       return;
     }
 
