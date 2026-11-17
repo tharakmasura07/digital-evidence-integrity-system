@@ -181,3 +181,13 @@ create policy "deis_users_policy" on deis_users for all using (true) with check 
 alter table deis_audit_logs enable row level security;
 drop policy if exists "deis_audit_logs_policy" on deis_audit_logs;
 create policy "deis_audit_logs_policy" on deis_audit_logs for all using (true) with check (true);
+
+-- ==============================================================================
+-- 8. EVIDENCE VAULT STORAGE BUCKET (OPTIONAL FILE BLOB STORAGE)
+-- ==============================================================================
+insert into storage.buckets (id, name, public)
+values ('evidence_vault', 'evidence_vault', true)
+on conflict (id) do nothing;
+
+drop policy if exists "evidence_vault_storage_policy" on storage.objects;
+create policy "evidence_vault_storage_policy" on storage.objects for all using (bucket_id = 'evidence_vault') with check (bucket_id = 'evidence_vault');

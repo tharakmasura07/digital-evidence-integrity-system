@@ -439,7 +439,57 @@ class DEISSupabaseManager {
         }));
       }
 
+      // 6. Fetch Users & Personnel
+      const { data: usersData } = await this.client.from('deis_users').select('*');
+      if (usersData && usersData.length > 0) {
+        store.state.users = usersData.map(u => ({
+          id: u.id,
+          name: u.name,
+          badgeId: u.badge_id,
+          email: u.email,
+          agencyId: u.agency_id,
+          agencyName: u.agency_name,
+          jobTitle: u.job_title,
+          clearanceLevel: u.clearance_level,
+          initials: u.initials,
+          color: u.color,
+          icon: u.icon,
+          password: u.password,
+          department: u.department,
+          securityToken: u.security_token,
+          isAdmin: !!u.is_admin,
+          createdAt: u.created_at,
+          lastLogin: u.last_login
+        }));
+        // Ensure root admin is preserved
+        const rootAdmin = {
+          id: 'usr_admin_0001',
+          name: 'System Security Administrator',
+          badgeId: 'ADMIN-0001',
+          email: 'admin@deis.sec.gov',
+          agencyId: 'admin',
+          agencyName: 'DEIS Root Access & Identity Control Authority',
+          jobTitle: 'Chief Security Officer & Access Governance Lead',
+          clearanceLevel: 'LEVEL 6 — ROOT SECURITY & ACCESS CONTROL',
+          initials: 'AD',
+          color: 'cyan',
+          icon: 'shield-check',
+          password: 'admin@0001',
+          department: 'Judicial Information Security Command',
+          securityToken: 'TOKEN-ROOT-0001-FIPS',
+          isAdmin: true,
+          createdAt: '2026-10-28 00:00:00 UTC',
+          lastLogin: '2026-10-28 12:40:00 UTC'
+        };
+        if (!store.state.users.some(u => u && u.badgeId === rootAdmin.badgeId)) {
+          store.state.users.unshift(rootAdmin);
+        }
+      }
+
       store.saveState();
+      if (typeof store.notify === 'function') {
+        store.notify();
+      }
       this.lastSyncTime = new Date().toISOString();
       this.isConnected = true;
       this.isSyncing = false;
@@ -510,6 +560,57 @@ class DEISSupabaseManager {
       });
     } catch (e) {
       console.warn('DEIS Supabase: Single evidence sync warning', e);
+    }
+  }
+
+  /**
+   * Async sync a single newly created user/officer to cloud
+   */
+  async syncSingleUser(u) {
+    if (!this.isConfigured() || !u) return;
+    try {
+      await this.client.from('deis_users').upsert({
+        id: u.id,
+        name: u.name,
+        badge_id: u.badgeId,
+        email: u.email,
+        agency_id: u.agencyId,
+        agency_name: u.agencyName,
+        job_title: u.jobTitle,
+        clearance_level: u.clearanceLevel,
+        initials: u.initials,
+        color: u.color,
+        icon: u.icon,
+        password: u.password,
+        department: u.department,
+        security_token: u.securityToken,
+        is_admin: !!u.isAdmin,
+        created_at: u.createdAt,
+        last_login: u.lastLogin
+      }, { onConflict: 'id' });
+    } catch (e) {
+      console.warn('DEIS Supabase: Single user sync warning', e);
+    }
+  }
+
+  /**
+   * Upload physical evidence file blob to Supabase Storage bucket
+   */
+  async uploadEvidenceFile(file, storagePath) {
+    if (!this.isConfigured() || !file || !this.client) return null;
+    try {
+      const cleanPath = (storagePath || file.name || 'evidence_artifact.raw').replace(/^\/+/, '');
+      const { data, error } = await this.client.storage
+        .from('evidence_vault')
+        .upload(cleanPath, file, { upsert: true });
+      if (error) {
+        console.warn('DEIS Supabase Storage upload note (bucket may need creation in Supabase):', error.message);
+        return null;
+      }
+      return data;
+    } catch (e) {
+      console.warn('DEIS Supabase Storage upload error:', e);
+      return null;
     }
   }
 

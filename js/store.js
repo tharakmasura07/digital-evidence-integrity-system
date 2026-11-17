@@ -269,6 +269,12 @@ class DEISStore {
       if (window.DEISDatabase && typeof window.DEISDatabase.syncFromStore === 'function') {
         window.DEISDatabase.syncFromStore(this.state).catch(() => {});
       }
+      // Real-time Cloud Sync to Supabase (Cases, Evidence, Users, Transfers, Blocks)
+      if (window.DEISSupabase && typeof window.DEISSupabase.syncLocalToCloud === 'function' && window.DEISSupabase.isConfigured()) {
+        window.DEISSupabase.syncLocalToCloud(this).catch(err => {
+          console.warn('DEIS: Background Supabase cloud sync notice', err);
+        });
+      }
     } catch (e) {
       console.error('DEIS: Could not persist state', e);
     }
@@ -391,6 +397,9 @@ class DEISStore {
     }
 
     this.saveState();
+    if (window.DEISSupabase && window.DEISSupabase.isConfigured()) {
+      window.DEISSupabase.syncSingleUser(newUser);
+    }
     return newUser;
   }
 
@@ -407,6 +416,9 @@ class DEISStore {
     }
 
     this.state.users = this.state.users.filter(u => u.id !== userId);
+    if (window.DEISSupabase && window.DEISSupabase.isConfigured() && window.DEISSupabase.client) {
+      window.DEISSupabase.client.from('deis_users').delete().eq('id', userId).then(() => {}).catch(() => {});
+    }
     this.saveState();
   }
 

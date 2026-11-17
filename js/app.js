@@ -691,6 +691,15 @@ class DEISApplication {
       tags: ['Manual-Ingest', category]
     });
 
+    // Upload physical evidence binary file to Supabase cloud storage bucket if configured
+    if (this.pendingIngestFile && this.pendingIngestFile.file && window.DEISSupabase && window.DEISSupabase.isConfigured()) {
+      const uploadFile = this.pendingIngestFile.file;
+      const targetPath = `${newEvidence.caseNumber}/${newEvidence.id}_${uploadFile.name}`;
+      window.DEISSupabase.uploadEvidenceFile(uploadFile, targetPath).catch(err => {
+        console.warn('DEIS: Cloud evidence blob storage notice', err);
+      });
+    }
+
     this.closeModal('ingest-modal');
     this.pendingIngestFile = null;
     document.getElementById('ingest-form').reset();
