@@ -61,17 +61,6 @@ const INITIAL_AGENCIES = {
     officers: [],
     publicKey: '0xAB198F0029384756192837465019283746501928374650192837465019283746',
     privateKeySeed: 'KEY_SEED_HIGH_COURT_2026'
-  },
-  defense: {
-    id: 'defense',
-    name: 'Bar Association Criminal Defense Coalition',
-    badge: 'DEFENSE-BAR',
-    roleLabel: 'Defense Counsel / Discovery Verifier',
-    icon: 'user-check',
-    color: 'rose',
-    officers: [],
-    publicKey: '0xC32E094857291048572910485729104857291048572910485729104857291048',
-    privateKeySeed: 'KEY_SEED_DEFENSE_BAR_2026'
   }
 };
 
@@ -225,44 +214,6 @@ const INITIAL_USERS = [
     password: 'prosecution@123',
     department: 'Office of the District Attorney',
     securityToken: 'TOKEN-ODA-8832-SEC',
-    isAdmin: false,
-    createdAt: '2026-10-28 00:00:00 UTC',
-    lastLogin: '2026-10-28 12:40:00 UTC'
-  },
-  {
-    id: 'usr_defense_5519',
-    name: 'Adv. Marcus Sterling',
-    badgeId: 'BAR-5519',
-    email: 'sterling@barcouncil.org',
-    agencyId: 'defense',
-    agencyName: 'Bar Association Criminal Defense Coalition',
-    jobTitle: 'Bar Council Defense Advocate',
-    clearanceLevel: 'CONSTITUTIONAL DISCOVERY ACCESS',
-    initials: 'MS',
-    color: 'rose',
-    icon: 'user-check',
-    password: 'defense@123',
-    department: 'Bar Association Criminal Defense Coalition',
-    securityToken: 'TOKEN-BAR-5519-SEC',
-    isAdmin: false,
-    createdAt: '2026-10-28 00:00:00 UTC',
-    lastLogin: '2026-10-28 12:40:00 UTC'
-  },
-  {
-    id: 'usr_defense_5520',
-    name: 'Adv. Ananya Sen',
-    badgeId: 'BAR-5520',
-    email: 'sen@barcouncil.org',
-    agencyId: 'defense',
-    agencyName: 'Bar Association Criminal Defense Coalition',
-    jobTitle: 'Associate Criminal Defense Counsel',
-    clearanceLevel: 'CONSTITUTIONAL DISCOVERY ACCESS',
-    initials: 'AS',
-    color: 'rose',
-    icon: 'user-check',
-    password: 'defense@123',
-    department: 'Bar Association Criminal Defense Coalition',
-    securityToken: 'TOKEN-BAR-5520-SEC',
     isAdmin: false,
     createdAt: '2026-10-28 00:00:00 UTC',
     lastLogin: '2026-10-28 12:40:00 UTC'
@@ -1901,6 +1852,10 @@ class DEISStore {
         const savedBadge = (parsed && parsed.badgeId ? parsed.badgeId : '').toUpperCase();
         if (savedBadge && this.state && Array.isArray(this.state.users)) {
           const matched = this.state.users.find(u => u && u.badgeId && u.badgeId.toUpperCase() === savedBadge);
+          if (matched && (matched.agencyId === 'defense' || (matched.badgeId && matched.badgeId.startsWith('BAR-')))) {
+            localStorage.removeItem(DEIS_AUTH_KEY);
+            return null;
+          }
           return matched || null;
         }
       }
@@ -1916,11 +1871,13 @@ class DEISStore {
       if (saved) {
         const parsed = JSON.parse(saved);
         let loadedUsers = (parsed && Array.isArray(parsed.users)) ? parsed.users : [];
-        // Strict filter: Purge legacy dummy mock users
+        // Strict filter: Purge legacy dummy mock users and defense coalition role
         const legacyDummyBadges = ['CCIC-4492', 'CFSL-9081', 'ODA-1029', 'JUD-0044', 'DEF-7721'];
         loadedUsers = loadedUsers.filter(u => 
           u && 
           u.badgeId && 
+          u.agencyId !== 'defense' &&
+          !u.badgeId.startsWith('BAR-') &&
           !legacyDummyBadges.includes(u.badgeId)
         );
 
@@ -1936,6 +1893,12 @@ class DEISStore {
           ...INITIAL_AGENCIES,
           ...((parsed && parsed.agencies) || {})
         };
+        delete mergedAgencies.defense;
+
+        let activeAgency = (parsed && parsed.currentAgencyId) || 'admin';
+        if (activeAgency === 'defense') {
+          activeAgency = 'admin';
+        }
 
         let loadedCases = (parsed && Array.isArray(parsed.cases) && parsed.cases.length > 0) ? parsed.cases : [...INITIAL_CASES];
         INITIAL_CASES.forEach(initialCase => {
@@ -1976,13 +1939,16 @@ class DEISStore {
           }
         });
 
+        let loadedTransfers = ((parsed && Array.isArray(parsed.transfers)) ? parsed.transfers : INITIAL_TRANSFERS)
+          .filter(t => t && t.fromAgency !== 'defense' && t.toAgency !== 'defense');
+
         return {
-          currentAgencyId: (parsed && parsed.currentAgencyId) || 'admin',
+          currentAgencyId: activeAgency,
           agencies: mergedAgencies,
           users: loadedUsers,
           cases: loadedCases,
           evidence: loadedEvidence,
-          transfers: (parsed && Array.isArray(parsed.transfers)) ? parsed.transfers : INITIAL_TRANSFERS,
+          transfers: loadedTransfers,
           chainBlocks: loadedBlocks,
           forensicReports: loadedReports,
           tamperAlertActive: (parsed && parsed.tamperAlertActive) || false,
@@ -2182,8 +2148,8 @@ class DEISStore {
   getCasesForCurrentUser() {
     const user = this.getCurrentUser();
     if (!user) return [];
-    // Bar Council (defense) and Root Admin have access to ALL cases
-    if (user.isAdmin || user.agencyId === 'defense') {
+    // Root Admin has access to ALL cases
+    if (user.isAdmin) {
       return [...(this.state.cases || [])];
     }
     const userEvidences = this.getEvidencesForCurrentUser();
@@ -2302,8 +2268,8 @@ class DEISStore {
   getEvidencesForCurrentUser() {
     const user = this.getCurrentUser();
     if (!user) return [];
-    // Bar Council (defense) and Root Admin have access to ALL evidences
-    if (user.isAdmin || user.agencyId === 'defense') {
+    // Root Admin has access to ALL evidences
+    if (user.isAdmin) {
       return [...(this.state.evidence || [])];
     }
     const agency = this.state.agencies[user.agencyId];
@@ -2707,7 +2673,7 @@ class DEISStore {
   getForensicReportsForCurrentUser() {
     const user = this.getCurrentUser();
     if (!user) return [];
-    if (user.isAdmin || user.agencyId === 'defense') {
+    if (user.isAdmin) {
       return [...this.getForensicReports()];
     }
     const userEvidences = this.getEvidencesForCurrentUser();

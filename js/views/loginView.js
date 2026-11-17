@@ -157,7 +157,7 @@ const LoginView = {
                 </div>
                 
                 <p class="text-xs text-slate-400 mb-4 leading-relaxed">
-                  Only the <strong class="text-white">Administrator (ADMIN-0001)</strong> can provision new personnel and assign departmental roles (Police, Forensics Lab, Prosecution, Court, Defense).
+                  Only the <strong class="text-white">Administrator (ADMIN-0001)</strong> can provision new personnel and assign departmental roles (Police, Forensics Lab, Prosecution, Court).
                 </p>
 
                 <!-- Provisioned Users List -->

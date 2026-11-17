@@ -217,7 +217,7 @@ const DashboardView = {
                 <span class="w-2 h-2 rounded-full bg-amber-400"></span>
               </div>
               <p class="text-xs text-slate-300 font-semibold">Legal Case Prep</p>
-              <p class="text-[10px] text-slate-500 mt-0.5">Shared with defense lawyers and legal prosecution</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Prepared for trial prosecution and legal proceedings</p>
             </div>
 
             <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 relative">

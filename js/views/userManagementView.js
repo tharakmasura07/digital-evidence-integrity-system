@@ -85,8 +85,8 @@ const UserManagementView = {
 
           <div class="cyber-card p-4 rounded-xl border border-slate-800">
             <div class="text-[10px] font-mono text-slate-400 uppercase">Operating Bodies Configured</div>
-            <div class="mt-1 text-2xl font-bold text-emerald-400 font-mono">5 Departments</div>
-            <div class="text-[10px] text-slate-400 mt-1">Police • Lab • Prosecution • Court • Defense</div>
+            <div class="mt-1 text-2xl font-bold text-emerald-400 font-mono">4 Departments</div>
+            <div class="text-[10px] text-slate-400 mt-1">Police • Lab • Prosecution • Court</div>
           </div>
 
           <div class="cyber-card p-4 rounded-xl border border-slate-800">
