@@ -17,9 +17,12 @@ const CertificateView = {
     }
 
     const currentEv = store.getEvidenceById(this.selectedEvidenceId);
-    const chainBlocks = (store && typeof store.getChainBlocksForCase === 'function' && currentEv)
+    const caseBlocks = (store && typeof store.getChainBlocksForCase === 'function' && currentEv)
       ? store.getChainBlocksForCase(currentEv.caseNumber)
-      : (store ? store.getChainBlocks().filter(b => b.evidenceId === this.selectedEvidenceId || (currentEv && b.caseId === currentEv.caseNumber)) : []);
+      : (store ? store.getChainBlocks().filter(b => currentEv && b.caseId === currentEv.caseNumber) : []);
+    
+    // In an evidence certificate, show the Case Genesis Root (#0) + this specific exhibit's blocks
+    const chainBlocks = caseBlocks.filter(b => b.blockHeight === 0 || b.evidenceId === this.selectedEvidenceId || (!b.evidenceId && b.eventType === 'CASE_GENESIS'));
 
     container.innerHTML = `
       <div class="space-y-6">
@@ -160,6 +163,7 @@ const CertificateView = {
                       <th class="py-2.5 px-3">CASE BLOCK</th>
                       <th class="py-2.5 px-3">TIMESTAMP</th>
                       <th class="py-2.5 px-3">EVENT</th>
+                      <th class="py-2.5 px-3">ARTIFACT / DETAILS</th>
                       <th class="py-2.5 px-3">CUSTODIAN / OFFICER</th>
                       <th class="py-2.5 px-3">BLOCK HASH</th>
                     </tr>
@@ -169,7 +173,17 @@ const CertificateView = {
                       <tr>
                         <td class="py-2 px-3 font-mono font-bold text-cyan-400">#${b.blockHeight}</td>
                         <td class="py-2 px-3 font-mono text-slate-400 text-[10px]">${b.timestamp}</td>
-                        <td class="py-2 px-3 font-semibold text-slate-200">${b.eventType}</td>
+                        <td class="py-2 px-3 font-semibold text-slate-200">
+                          <span class="cyber-badge ${b.eventType === 'CASE_GENESIS' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40' : (b.eventType.includes('TRANSFER') ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40')} text-[10px] font-mono">
+                            ${b.eventType}
+                          </span>
+                        </td>
+                        <td class="py-2 px-3 text-slate-300 text-[11px]">
+                          ${b.eventType === 'CASE_GENESIS' 
+                            ? `<span class="text-slate-400 font-mono">Case Dossier Root (${currentEv.caseNumber})</span>` 
+                            : `<span class="font-mono text-cyan-300 font-semibold">${b.evidenceId || currentEv.id}</span> <span class="text-slate-400">(${currentEv.title})</span>`
+                          }
+                        </td>
                         <td class="py-2 px-3 text-slate-300">${b.agency.toUpperCase()} (${b.officer})</td>
                         <td class="py-2 px-3 font-mono text-slate-400 text-[10px]">${CryptoEngine.shortenHash(b.blockHash, 6)}</td>
                       </tr>
