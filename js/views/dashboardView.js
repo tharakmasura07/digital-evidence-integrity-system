@@ -31,27 +31,6 @@ const DashboardView = {
 
     container.innerHTML = `
       <div class="space-y-6">
-        <!-- Top Simple Guide Banner -->
-        <div class="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-cyan-950/60 via-navy-900 to-slate-900 border border-cyan-500/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 font-bold text-xs font-mono uppercase tracking-wider">How DEIS Works</span>
-              <span class="text-xs text-slate-400">Digital Evidence in 3 Simple Steps</span>
-            </div>
-            <p class="text-xs sm:text-sm text-slate-200">
-              <strong>1. Upload</strong> file to create its unique digital fingerprint (SHA-256) &bull;
-              <strong>2. Transfer</strong> safely using a 6-digit secret PIN &bull;
-              <strong>3. Verify</strong> in court to prove nobody modified or tampered with the file!
-            </p>
-          </div>
-          <div class="flex items-center gap-2 shrink-0">
-            <button onclick="window.DEISApp.navigate('chain')" class="px-3 py-1.5 bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/40 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-              <i data-lucide="layers" class="w-3.5 h-3.5"></i>
-              <span>View Evidence Lifecycle</span>
-            </button>
-          </div>
-        </div>
-
         <!-- Top Operational Banner & Tamper Alert -->
         ${tamperAlert ? `
           <div class="cyber-glow-rose bg-rose-950/80 border-2 border-rose-500/80 rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-pulse">

@@ -2714,7 +2714,7 @@ class DEISStore {
 
   saveForensicReport(reportData) {
     const user = this.getCurrentUser();
-    if (!user || (user.agencyId !== 'forensics' && !user.isAdmin)) {
+    if (!user || user.agencyId !== 'forensics') {
       throw new Error('UNAUTHORIZED: Only authorized Central Forensic Science Laboratory officers can write and submit forensic reports.');
     }
 

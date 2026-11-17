@@ -241,7 +241,7 @@ const ForensicReportView = {
 
     const store = window.DEISStore;
     const currentUser = store.getCurrentUser();
-    const isAuthoringOfficer = currentUser && (currentUser.agencyId === 'forensics' || currentUser.isAdmin);
+    const isAuthoringOfficer = currentUser && currentUser.agencyId === 'forensics';
 
     // If a non-authoring user attempts to enter 'author' mode, force back to 'view'
     if (!isAuthoringOfficer && this.currentMode === 'author') {
@@ -814,8 +814,8 @@ const ForensicReportView = {
               </button>
             `}
 
-            <!-- Edit Report Button (Forensic Officers & Admin only) -->
-            ${(currentUser?.agencyId === 'forensics' || currentUser?.isAdmin) ? `
+            <!-- Edit Report Button (Forensic Officers only) -->
+            ${(currentUser?.agencyId === 'forensics') ? `
               <button 
                 onclick="ForensicReportView.switchMode('author', '${activeEvidence.id}')" 
                 class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"

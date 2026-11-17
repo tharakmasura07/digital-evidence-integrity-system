@@ -942,7 +942,7 @@ class DEISApplication {
     const evidenceId = document.getElementById('transfer-evidence-select')?.value;
     const reportId = document.getElementById('transfer-report-select')?.value;
     const toAgency = document.getElementById('transfer-to-agency-select').value;
-    const transferMode = document.getElementById('transfer-mode-select').value;
+    const transferMode = document.getElementById('transfer-mode-select')?.value || 'Secure Cryptographic Protocol';
     const initiatorOfficer = document.getElementById('transfer-sender-officer').value.trim();
     const recipientOfficer = document.getElementById('transfer-recipient-officer').value.trim();
     const purpose = document.getElementById('transfer-purpose').value.trim();
