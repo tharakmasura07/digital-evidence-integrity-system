@@ -632,29 +632,13 @@ class DEISSupabaseManager {
   }
 
   /**
-   * Update header badges & indicators across DEIS UI
+   * Update header badges & indicators across DEIS UI (Hidden from UI per user configuration)
    */
   updateStatusBadge() {
     const badge = document.getElementById('cloud-db-badge');
     if (!badge) return;
-
-    if (this.isSyncing) {
-      badge.className = 'px-2.5 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/50 text-[10px] font-mono text-cyan-300 flex items-center gap-1.5 cursor-pointer shadow-sm';
-      badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-spin"></span><span>Supabase Syncing...</span>`;
-    } else if (this.isConfigured() && this.isConnected) {
-      badge.className = 'px-2.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/50 text-[10px] font-mono text-emerald-300 flex items-center gap-1.5 cursor-pointer hover:bg-emerald-900/60 transition shadow-sm';
-      badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>⚡ Supabase Cloud Connected</span>`;
-    } else if (this.isConfigured() && !this.isConnected) {
-      badge.className = 'px-2.5 py-1 rounded-full bg-amber-950/80 border border-amber-500/50 text-[10px] font-mono text-amber-300 flex items-center gap-1.5 cursor-pointer hover:bg-amber-900/60 transition shadow-sm';
-      badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span><span>⚠️ Supabase Configured (Unverified)</span>`;
-    } else {
-      badge.className = 'px-2.5 py-1 rounded-full bg-slate-900/90 border border-slate-700 hover:border-cyan-500/50 text-[10px] font-mono text-slate-400 hover:text-cyan-300 flex items-center gap-1.5 cursor-pointer transition shadow-sm';
-      badge.innerHTML = `<i data-lucide="database" class="w-3 h-3 text-cyan-400"></i><span>Connect Free Supabase</span>`;
-    }
-
-    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-      try { window.lucide.createIcons(); } catch (e) {}
-    }
+    badge.className = 'hidden';
+    badge.style.display = 'none';
   }
 }
 

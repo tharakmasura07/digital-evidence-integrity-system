@@ -1199,14 +1199,14 @@ class DEISApplication {
           <div>
             <label class="block text-slate-400 text-[11px] mb-1">
               Enter 6-Digit Time-based Handoff PIN:
-              <span class="text-amber-400 font-mono">(Hint: sender token is ${transfer.handoffToken})</span>
             </label>
             <input 
               type="text" 
               id="accept-token-input" 
               required 
               maxlength="6" 
-              placeholder="e.g. ${transfer.handoffToken}"
+              placeholder="••••••"
+              autocomplete="off"
               class="w-full bg-slate-950 border border-amber-500/50 rounded-lg p-2.5 font-mono text-center text-lg tracking-widest text-amber-300 focus:outline-none focus:border-amber-400" 
             />
           </div>
