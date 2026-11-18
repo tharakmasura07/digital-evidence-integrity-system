@@ -816,6 +816,14 @@ class DEISApplication {
     this.openInitiateTransferModal(evidenceId);
   }
 
+  initiateTransfer(evidenceId) {
+    this.openInitiateTransferModal(evidenceId);
+  }
+
+  openTransferModal(evidenceId) {
+    this.openInitiateTransferModal(evidenceId);
+  }
+
   openInitiateTransferModalForReport(reportId) {
     this.openInitiateTransferModal(null, reportId);
   }
@@ -1064,7 +1072,10 @@ class DEISApplication {
 
   selectEvidenceOption(evidenceId, shouldClose = true) {
     const list = this.currentTransferEvidences || [];
-    const ev = list.find(e => e.id === evidenceId);
+    let ev = list.find(e => e.id === evidenceId);
+    if (!ev && evidenceId && window.DEISStore) {
+      ev = window.DEISStore.getEvidenceById(evidenceId);
+    }
     const hiddenInput = document.getElementById('transfer-evidence-select');
     const triggerText = document.getElementById('transfer-evidence-trigger-text');
 
@@ -1136,6 +1147,11 @@ class DEISApplication {
 
     if (isReport && !reportId) {
       this.showToast('Please select a signed forensic report to transfer.', 'error');
+      return;
+    }
+
+    if (!isReport && !evidenceId) {
+      this.showToast('Please select an evidence artifact to transfer.', 'error');
       return;
     }
 
@@ -1239,6 +1255,11 @@ class DEISApplication {
       this.showToast('Transfer accepted! 100% Bit-for-bit SHA-256 verified and committed to custody ledger.', 'success');
       if (window.confetti) {
         window.confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
+      }
+      if (this.currentRoute === 'transfers' && window.TransferView) {
+        this.navigate('transfers');
+      } else if (this.currentRoute === 'evidence' && window.EvidenceView) {
+        this.navigate('evidence');
       }
     } catch (e) {
       this.showToast(e.message, 'error');

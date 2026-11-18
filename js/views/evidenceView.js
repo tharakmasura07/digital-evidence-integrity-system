@@ -611,7 +611,7 @@ const EvidenceView = {
                             </button>
                             ${window.DEISStore.getCurrentUser()?.agencyId === 'court' ? '' : `
                               <button 
-                                onclick="window.DEISApp.initiateTransfer('${item.id}')"
+                                onclick="window.DEISApp.openInitiateTransferModal('${item.id}')"
                                 class="px-2.5 py-1 bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/30 rounded text-[11px] font-semibold transition cursor-pointer"
                                 title="Initiate custody transfer to another operating body"
                               >
